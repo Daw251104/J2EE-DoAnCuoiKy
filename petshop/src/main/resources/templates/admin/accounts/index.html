@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Tài Khoản – Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #f0f2f8; }
+        .sidebar {
+            width: 240px; min-height: 100vh;
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            color: #cbd5e1; padding: 24px 0; position: fixed; top: 0; left: 0;
+        }
+        .sidebar .brand {
+            font-size: 1.3rem; font-weight: 700; color: #f97316;
+            padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sidebar .nav-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+            color: #64748b; padding: 20px 24px 6px;
+        }
+        .sidebar a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 24px; color: #94a3b8; text-decoration: none;
+            transition: background 0.2s, color 0.2s; font-size: 0.9rem;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(249,115,22,0.15); color: #f97316;
+        }
+        .main { margin-left: 240px; padding: 32px; }
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px;
+        }
+        .page-header h2 { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0; }
+        .card { border: none; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); }
+        .card-body { padding: 0; }
+        .table { margin: 0; }
+        .table thead th {
+            background: #f8fafc; font-size: 0.78rem; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #64748b; border: none; padding: 14px 16px;
+        }
+        .table tbody td { padding: 12px 16px; vertical-align: middle; border-color: #f1f5f9; }
+        .table tbody tr:hover td { background: #fafafa; }
+        .avatar-sm {
+            width: 38px; height: 38px; border-radius: 50%; object-fit: cover;
+            background: #e2e8f0;
+        }
+        .avatar-placeholder {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg,#f97316,#ec4899);
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 0.85rem;
+        }
+        .badge-active   { background: #dcfce7; color: #16a34a; }
+        .badge-inactive { background: #fee2e2; color: #dc2626; }
+        .badge-pending  { background: #fef3c7; color: #d97706; }
+        .status-badge {
+            font-size: 0.76rem; font-weight: 600; padding: 4px 10px;
+            border-radius: 20px; display: inline-block;
+        }
+        .btn-create {
+            background: linear-gradient(135deg,#f97316,#ec4899);
+            color: #fff; border: none; border-radius: 10px;
+            padding: 9px 20px; font-weight: 600; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 6px; text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .btn-create:hover { opacity: 0.9; transform: translateY(-1px); color: #fff; }
+        .role-chip {
+            display: inline-block; font-size: 0.72rem; font-weight: 600;
+            padding: 2px 8px; border-radius: 10px;
+            background: #ede9fe; color: #7c3aed; margin: 1px;
+        }
+        .action-form { display: inline-flex; align-items: center; gap: 6px; }
+        .action-form select {
+            font-size: 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0;
+            padding: 4px 8px; background: #f8fafc; outline: none; color: #334155;
+        }
+        .btn-apply {
+            font-size: 0.78rem; border: none; border-radius: 8px;
+            background: #0ea5e9; color: #fff; padding: 4px 10px; cursor: pointer;
+            font-weight: 600; transition: background 0.2s;
+        }
+        .btn-apply:hover { background: #0284c7; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand"><i class="bi bi-shop"></i> PetShop Admin</div>
+    <div class="nav-label">Quản lý</div>
+    <a th:href="@{/sanpham}" class=""><i class="bi bi-box-seam"></i> Sản phẩm</a>
+    <a th:href="@{/admin/accounts}" class="active"><i class="bi bi-people"></i> Tài khoản</a>
+    <div class="nav-label">Hệ thống</div>
+    <a th:href="@{/}"><i class="bi bi-house"></i> Trang chủ</a>
+    <form th:action="@{/logout}" method="post" style="padding: 10px 24px; margin-top: auto;">
+        <button type="submit" style="background:none;border:none;color:#94a3b8;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:0.9rem;">
+            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+        </button>
+    </form>
+</div>
+
+<div class="main">
+    <div class="page-header">
+        <h2><i class="bi bi-people-fill me-2" style="color:#f97316"></i>Danh Sách Tài Khoản</h2>
+        <a th:href="@{/admin/accounts/create}" class="btn-create">
+            <i class="bi bi-plus-lg"></i> Tạo tài khoản
+        </a>
+    </div>
+
+    <!-- Thông báo -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tài khoản</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>SDT</th>
+                            <th>Vai trò</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="acc : ${accounts}">
+                            <td class="text-muted small" th:text="${acc.maTK}"></td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <img th:if="${acc.anhDaiDien != null && !acc.anhDaiDien.isEmpty()}"
+                                         th:src="${acc.anhDaiDien}" class="avatar-sm" alt="avatar">
+                                    <span th:unless="${acc.anhDaiDien != null && !acc.anhDaiDien.isEmpty()}"
+                                          class="avatar-placeholder"
+                                          th:text="${#strings.substring(acc.hoTen, 0, 1)}">A</span>
+                                    <span th:text="${acc.username}" style="font-weight:600;"></span>
+                                </div>
+                            </td>
+                            <td th:text="${acc.hoTen}"></td>
+                            <td th:text="${acc.email}" class="text-muted small"></td>
+                            <td th:text="${acc.sdt}" class="text-muted small"></td>
+                            <td>
+                                <span th:each="role : ${acc.loaiTaiKhoan}" class="role-chip" th:text="${role.tenLoaiTK}"></span>
+                            </td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="${acc.trangThai.name() == 'ACTIVE'} ? 'badge-active' : (${acc.trangThai.name() == 'INACTIVE'} ? 'badge-inactive' : 'badge-pending')"
+                                      th:text="${acc.trangThai}"></span>
+                            </td>
+                            <td class="text-muted small" th:text="${#temporals.format(acc.ngayTao, 'dd/MM/yyyy')}"></td>
+                            <td>
+                                <form th:action="@{/admin/accounts/{id}/status(id=${acc.maTK})}" method="post" class="action-form">
+                                    <select name="trangThai">
+                                        <option th:each="ts : ${trangThais}"
+                                                th:value="${ts}" th:text="${ts}"
+                                                th:selected="${ts == acc.trangThai}"></option>
+                                    </select>
+                                    <button type="submit" class="btn-apply" title="Cập nhật">
+                                        <i class="bi bi-check2"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${accounts.empty}">
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="bi bi-person-x" style="font-size:2rem;"></i>
+                                <p class="mt-2">Chưa có tài khoản nào.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

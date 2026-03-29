@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Sản Phẩm</title>
+    <!-- Thêm Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .product-img {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar (Optional, bạn có thể include từ fragment khác) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">Trang Chủ</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sanpham">Sản Phẩm</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/gio-hang">
+                            <i class="bi bi-cart3"></i> Giỏ Hàng
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex text-white align-items-center">
+                    <span sec:authorize="isAuthenticated()" class="me-3">
+                        Xin chào, <span sec:authentication="name"></span>
+                    </span>
+                    <a sec:authorize="isAnonymous()" href="/login" class="btn btn-outline-light btn-sm">Đăng Nhập</a>
+                    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Đăng Xuất</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Danh Sách Sản Phẩm</h2>
+
+            <!-- Chỉ tài khoản có Role OWNER hoặc CHU_CUA_HANG mới thấy nút THÊM SẢN PHẨM -->
+            <a sec:authorize="hasAnyAuthority('STAFF', 'OWNER')" href="/sanpham/them" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Thêm Sản Phẩm Mới
+            </a>
+        </div>
+
+        <!-- Hiển thị thông báo (nếu có) -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">ID</th>
+                                <th class="text-center">Hình Ảnh</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Loại SP / Thú Cưng</th>
+                                <th class="text-end">Giá Bán</th>
+                                <th class="text-center">Tồn Kho</th>
+                                <th class="text-center">Trạng Thái</th>
+                                <!-- Cột Hành Động chỉ hiện cho OWNER -->
+                                <th sec:authorize="hasAnyAuthority('OWNER', 'STAFF')" class="text-center"
+                                    style="width: 150px;">Hành Động</th>
+                                <!-- Cột Giỏ hàng chỉ hiện cho CUSTOMER -->
+                                <th sec:authorize="hasAnyAuthority('CUSTOMER', 'KHACH_HANG')" class="text-center"
+                                    style="width: 160px;">Giỏ Hàng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Lặp danh sách sản phẩm -->
+                            <tr th:each="sp : ${sanPhams}">
+                                <td class="text-center" th:text="${sp.maSP}">1</td>
+                                <td class="text-center">
+                                    <img th:if="${sp.hinhDaiDien != null && !sp.hinhDaiDien.isEmpty()}"
+                                        th:src="${sp.hinhDaiDien}" class="product-img img-thumbnail" alt="Hình ảnh">
+                                    <span th:unless="${sp.hinhDaiDien != null && !sp.hinhDaiDien.isEmpty()}"
+                                        class="text-muted small">Chưa có ảnh</span>
+                                </td>
+                                <td class="fw-bold" th:text="${sp.tenSP}">Tên Sản Phẩm</td>
+                                <td>
+                                    <span class="badge bg-info text-dark"
+                                        th:text="${sp.loaiSanPham != null ? sp.loaiSanPham.tenLoai : 'N/A'}">Hạt</span>
+                                    <span class="badge bg-secondary"
+                                        th:text="${sp.loaiThuCung != null ? sp.loaiThuCung.tenLoaiTC : 'N/A'}">Chó</span>
+                                </td>
+                                <td class="text-end fw-bold text-danger dropdown-toggle"
+                                    th:text="${#numbers.formatDecimal(sp.giaBan, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    100.000 đ</td>
+                                <td class="text-center">
+                                    <span
+                                        th:classappend="${sp.slTon > 10 ? 'badge bg-success' : 'badge bg-warning text-dark'}"
+                                        th:text="${sp.slTon}">50</span>
+                                </td>
+                                <td class="text-center">
+                                    <span th:if="${sp.tinhTrang == 1}" class="badge bg-success">Đang bán</span>
+                                    <span th:if="${sp.tinhTrang == 0}" class="badge bg-danger">Ngừng bán</span>
+                                    <span th:if="${sp.tinhTrang == null}" class="badge bg-secondary">Không rõ</span>
+                                </td>
+
+                                <!-- Nút Sửa/Xóa chỉ hiển thị với OWNER / CHU_CUA_HANG -->
+                                <td sec:authorize="hasAnyAuthority('OWNER', 'STAFF')" class="text-center">
+                                    <a th:href="@{/sanpham/sua/{id}(id=${sp.maSP})}"
+                                        class="btn btn-sm btn-outline-primary mb-1" title="Sửa">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </a>
+                                    <a th:href="@{/sanpham/xoa/{id}(id=${sp.maSP})}"
+                                        class="btn btn-sm btn-outline-danger mb-1" title="Xóa"
+                                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </a>
+                                </td>
+                                <!-- Nút Thêm vào giỏ hàng chỉ hiển thị với CUSTOMER -->
+                                <td sec:authorize="hasAnyAuthority('CUSTOMER', 'KHACH_HANG')" class="text-center">
+                                    <form th:action="@{/gio-hang/them}" method="post">
+                                        <input type="hidden" name="maSP" th:value="${sp.maSP}">
+                                        <input type="hidden" name="soLuong" value="1">
+                                        <button type="submit" class="btn btn-sm btn-warning fw-semibold"
+                                            title="Thêm vào giỏ hàng"
+                                            th:disabled="${sp.tinhTrang == 0 || sp.slTon == 0}">
+                                            <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${sanPhams.empty}">
+                                <td colspan="9" class="text-center py-4 text-muted">Chưa có sản phẩm nào trong hệ thống.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

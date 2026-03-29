@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Đơn Hàng - Staff</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f0f2f5; }
+        .top-bar { background: linear-gradient(135deg, #1e3a5f, #2d6a9f); }
+        .stat-card { border: none; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .order-table-card { border: none; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+        .badge-status { font-size: 0.78rem; padding: 5px 12px; border-radius: 50px; font-weight: 600; }
+        .badge-CHO_XAC_NHAN { background: #fff3cd; color: #664d03; }
+        .badge-DANG_GIAO    { background: #d1e7dd; color: #0a3622; }
+        .badge-DA_GIAO      { background: #198754; color: #fff; }
+        .badge-DA_HUY       { background: #f8d7da; color: #842029; }
+        .action-col { min-width: 190px; }
+        thead.table-dark th { background-color: #1e3a5f; }
+        .btn-confirm { background-color: #0d6efd; border: none; color: white; }
+        .btn-confirm:hover { background-color: #0b5ed7; color: white; }
+        .btn-reject  { background-color: #dc3545; border: none; color: white; }
+        .btn-reject:hover  { background-color: #bb2d3b; color: white; }
+    </style>
+</head>
+<body>
+    <!-- Top navbar -->
+    <nav class="navbar top-bar navbar-dark mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold fs-5" href="/"><i class="bi bi-shop me-2"></i>PetShop</a>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-white opacity-75">
+                    <i class="bi bi-person-badge"></i>
+                    <span sec:authentication="name"></span>
+                    <span class="badge bg-warning text-dark ms-1 small">STAFF</span>
+                </span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-box-arrow-right"></i> Đăng Xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 pb-5">
+        <h4 class="fw-bold mb-4"><i class="bi bi-clipboard2-list text-primary"></i> Quản Lý Đơn Hàng</h4>
+
+        <!-- Thống kê nhanh -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card stat-card p-3 text-center">
+                    <div class="fs-2 fw-bold text-warning" th:text="${countChoXacNhan}">0</div>
+                    <div class="text-muted small">⏳ Chờ xác nhận</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card p-3 text-center">
+                    <div class="fs-2 fw-bold text-info" th:text="${countDangGiao}">0</div>
+                    <div class="text-muted small">🚚 Đang giao</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card p-3 text-center">
+                    <div class="fs-2 fw-bold text-success" th:text="${countDaGiao}">0</div>
+                    <div class="text-muted small">✅ Đã giao</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card stat-card p-3 text-center">
+                    <div class="fs-2 fw-bold text-danger" th:text="${countDaHuy}">0</div>
+                    <div class="text-muted small">❌ Đã hủy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông báo -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Bảng đơn hàng -->
+        <div class="card order-table-card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="ps-4 py-3">Mã ĐH</th>
+                                <th>Khách Hàng</th>
+                                <th>Ngày Đặt</th>
+                                <th>Tổng Tiền</th>
+                                <th>Thanh Toán</th>
+                                <th>Trạng Thái</th>
+                                <th class="action-col text-center pe-4">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${donHangs.empty}">
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    Chưa có đơn hàng nào
+                                </td>
+                            </tr>
+                            <tr th:each="dh : ${donHangs}" th:unless="${donHangs.empty}">
+                                <td class="ps-4 fw-bold text-primary">#<span th:text="${dh.maDH}"></span></td>
+                                <td>
+                                    <div class="fw-semibold" th:text="${dh.tenNguoiNhan}"></div>
+                                    <small class="text-muted" th:text="${dh.sdtNguoiNhan}"></small>
+                                </td>
+                                <td>
+                                    <div th:text="${#temporals.format(dh.ngayLapDonHang, 'dd/MM/yyyy')}"></div>
+                                    <small class="text-muted" th:text="${#temporals.format(dh.ngayLapDonHang, 'HH:mm')}"></small>
+                                </td>
+                                <td class="fw-bold text-danger"
+                                    th:text="${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary" th:text="${dh.tenLoaiTT ?: 'N/A'}"></span>
+                                </td>
+                                <td>
+                                    <span th:class="'badge-status badge-' + ${dh.trangThai}">
+                                        <span th:switch="${dh.trangThai}">
+                                            <span th:case="'CHO_XAC_NHAN'">⏳ Chờ xác nhận</span>
+                                            <span th:case="'DANG_GIAO'">🚚 Đang giao</span>
+                                            <span th:case="'DA_GIAO'">✅ Đã giao</span>
+                                            <span th:case="'DA_HUY'">❌ Đã hủy</span>
+                                            <span th:case="*" th:text="${dh.trangThai}"></span>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="text-center pe-4">
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <!-- Xem chi tiết -->
+                                        <a th:href="@{/staff/don-hang/{id}(id=${dh.maDH})}"
+                                           class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <!-- Chỉ hiện nút xác nhận/từ chối khi đơn CHO_XAC_NHAN -->
+                                        <div th:if="${dh.trangThai == 'CHO_XAC_NHAN'}" class="d-flex gap-1">
+                                            <form th:action="@{/staff/don-hang/{id}/xac-nhan(id=${dh.maDH})}" method="post">
+                                                <button type="submit" class="btn btn-sm btn-confirm"
+                                                        title="Xác nhận đơn hàng"
+                                                        onclick="return confirm('Xác nhận đơn hàng #' + this.closest('tr').querySelector('.fw-bold').innerText + '?')">
+                                                    <i class="bi bi-check-lg"></i> Duyệt
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/staff/don-hang/{id}/tu-choi(id=${dh.maDH})}" method="post">
+                                                <button type="submit" class="btn btn-sm btn-reject"
+                                                        title="Từ chối đơn hàng"
+                                                        onclick="return confirm('Từ chối đơn hàng này?')">
+                                                    <i class="bi bi-x-lg"></i> Từ Chối
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

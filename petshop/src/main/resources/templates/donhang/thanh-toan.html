@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh Toán - PetShop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .checkout-card { border: none; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+        .section-title { font-weight: 700; color: #343a40; border-left: 4px solid #198754; padding-left: 10px; }
+        .product-img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+        .badge-pttt { font-size: 0.85rem; }
+        .btn-checkout { background: linear-gradient(135deg, #198754, #20c997); border: none; font-size: 1.1rem; font-weight: 600; }
+        .btn-checkout:hover { background: linear-gradient(135deg, #157347, #1aaa82); }
+        .summary-total { font-size: 1.4rem; font-weight: 700; color: #dc3545; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/"><i class="bi bi-shop"></i> PetShop</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/sanpham"><i class="bi bi-grid"></i> Sản Phẩm</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/gio-hang"><i class="bi bi-cart3"></i> Giỏ Hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/don-hang"><i class="bi bi-bag-check"></i> Đơn Hàng</a></li>
+                </ul>
+                <div class="d-flex text-white align-items-center">
+                    <span sec:authorize="isAuthenticated()" class="me-3">
+                        <i class="bi bi-person-circle"></i> <span sec:authentication="name"></span>
+                    </span>
+                    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Đăng Xuất
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <h2 class="mb-4"><i class="bi bi-credit-card text-success"></i> Thanh Toán</h2>
+
+        <!-- Thông báo lỗi -->
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row g-4">
+            <!-- Form thông tin giao hàng -->
+            <div class="col-lg-7">
+                <div class="card checkout-card p-4">
+                    <h5 class="section-title mb-4"><i class="bi bi-truck me-2"></i>Thông Tin Giao Hàng</h5>
+                    <form th:action="@{/thanh-toan}" th:object="${thanhToanRequest}" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tên người nhận <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{tenNguoiNhan}" class="form-control"
+                                   placeholder="Nhập tên người nhận" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input type="tel" th:field="*{sdtNguoiNhan}" class="form-control"
+                                   placeholder="Ví dụ: 0912345678" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Địa chỉ nhận hàng <span class="text-danger">*</span></label>
+                            <textarea th:field="*{diaChiNhanHang}" class="form-control" rows="3"
+                                      placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Phương thức thanh toán <span class="text-danger">*</span></label>
+                            <div class="row g-2">
+                                <div th:each="pttt, iterStat : ${dsPTTT}" class="col-12">
+                                    <div class="form-check border rounded p-3 d-flex align-items-center gap-2">
+                                        <input class="form-check-input" type="radio"
+                                               th:id="'pttt-' + ${pttt.maLoaiTT}"
+                                               th:value="${pttt.maLoaiTT}"
+                                               th:field="*{maLoaiTT}"
+                                               th:checked="${iterStat.first}" required>
+                                        <label class="form-check-label w-100" th:for="'pttt-' + ${pttt.maLoaiTT}">
+                                            <i class="bi bi-cash-coin text-success me-2"></i>
+                                            <span th:text="${pttt.tenLoaiTT}" class="fw-semibold"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Fallback nếu chưa có dữ liệu -->
+                                <div th:if="${dsPTTT.empty}" class="col-12">
+                                    <div class="alert alert-warning mb-0">
+                                        <i class="bi bi-info-circle"></i> Chưa có phương thức thanh toán. Vui lòng liên hệ shop.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-checkout btn-success btn-lg text-white">
+                                <i class="bi bi-bag-check-fill me-2"></i>Đặt Hàng Ngay
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tóm tắt đơn hàng -->
+            <div class="col-lg-5">
+                <div class="card checkout-card p-4">
+                    <h5 class="section-title mb-4"><i class="bi bi-receipt me-2"></i>Đơn Hàng Của Bạn</h5>
+
+                    <div th:each="item : ${gioHangItems}" class="d-flex align-items-center gap-3 mb-3">
+                        <img th:if="${item.hinhDaiDien != null && !item.hinhDaiDien.isEmpty()}"
+                             th:src="${item.hinhDaiDien}" class="product-img" alt="SP">
+                        <div class="rounded bg-secondary d-flex align-items-center justify-content-center product-img text-white"
+                             th:unless="${item.hinhDaiDien != null && !item.hinhDaiDien.isEmpty()}">
+                            <i class="bi bi-image"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold" th:text="${item.tenSP}">Tên SP</div>
+                            <small class="text-muted">x<span th:text="${item.soLuong}">1</span></small>
+                        </div>
+                        <div class="fw-bold text-danger"
+                             th:text="${#numbers.formatDecimal(item.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted fw-semibold">Tổng cộng:</span>
+                        <span class="summary-total"
+                              th:text="${#numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                        </span>
+                    </div>
+                    <hr>
+                    <div class="mt-2">
+                        <a href="/gio-hang" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

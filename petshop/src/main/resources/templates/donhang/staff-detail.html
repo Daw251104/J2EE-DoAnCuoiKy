@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi Tiết Đơn Hàng - Staff</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f0f2f5; }
+        .top-bar { background: linear-gradient(135deg, #1e3a5f, #2d6a9f); }
+        .detail-card { border: none; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+        .section-title { font-weight: 700; color: #1e3a5f; border-left: 4px solid #0d6efd; padding-left: 10px; }
+        .info-label { color: #6c757d; font-size: 0.83rem; margin-bottom: 2px; }
+        .info-value { font-weight: 600; font-size: 0.95rem; }
+        .product-img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+        thead.thead-staff th { background-color: #1e3a5f; color: #fff; }
+        .status-badge { font-size: 0.88rem; padding: 6px 16px; border-radius: 50px; font-weight: 600; display: inline-block; }
+        .status-CHO_XAC_NHAN { background: #fff3cd; color: #664d03; }
+        .status-DANG_GIAO    { background: #d1e7dd; color: #0a3622; }
+        .status-DA_GIAO      { background: #198754; color: #fff; }
+        .status-DA_HUY       { background: #f8d7da; color: #842029; }
+        .action-panel { background: #fff8e1; border-radius: 12px; border: 1px solid #ffe082; }
+    </style>
+</head>
+<body>
+    <nav class="navbar top-bar navbar-dark mb-4">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="/"><i class="bi bi-shop me-2"></i>PetShop</a>
+            <div class="d-flex gap-3 align-items-center">
+                <a href="/staff/don-hang" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-arrow-left"></i> Danh sách đơn hàng
+                </a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-box-arrow-right"></i> Đăng Xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 pb-5">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <h4 class="mb-0 fw-bold">
+                <i class="bi bi-receipt text-primary"></i>
+                Chi Tiết Đơn Hàng <span class="text-primary">#<span th:text="${donHang.maDH}"></span></span>
+            </h4>
+        </div>
+
+        <div class="row g-4">
+            <!-- Thông tin + Thao tác -->
+            <div class="col-lg-4">
+                <div class="card detail-card p-4 mb-4">
+                    <h6 class="section-title mb-3">Thông Tin Đơn Hàng</h6>
+                    <div class="mb-3">
+                        <div class="info-label">Trạng thái hiện tại</div>
+                        <span th:class="'status-badge status-' + ${donHang.trangThai}">
+                            <span th:switch="${donHang.trangThai}">
+                                <span th:case="'CHO_XAC_NHAN'">⏳ Chờ xác nhận</span>
+                                <span th:case="'DANG_GIAO'">🚚 Đang giao hàng</span>
+                                <span th:case="'DA_GIAO'">✅ Đã giao thành công</span>
+                                <span th:case="'DA_HUY'">❌ Đã hủy</span>
+                                <span th:case="*" th:text="${donHang.trangThai}"></span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <div class="info-label">Người nhận</div>
+                            <div class="info-value" th:text="${donHang.tenNguoiNhan}"></div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-label">Số điện thoại</div>
+                            <div class="info-value" th:text="${donHang.sdtNguoiNhan}"></div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-label">Địa chỉ nhận hàng</div>
+                            <div class="info-value" th:text="${donHang.diaChiNhanHang}"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-label">Ngày đặt</div>
+                            <div class="info-value"
+                                 th:text="${#temporals.format(donHang.ngayLapDonHang, 'dd/MM/yyyy HH:mm')}"></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-label">Phương thức TT</div>
+                            <div class="info-value" th:text="${donHang.tenLoaiTT ?: 'N/A'}"></div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-label">Tổng tiền</div>
+                            <div class="fw-bold text-danger fs-5"
+                                 th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel thao tác -->
+                <div th:if="${donHang.trangThai == 'CHO_XAC_NHAN'}" class="card detail-card p-4 action-panel">
+                    <h6 class="section-title mb-3" style="border-color: #f0ad4e;">⚙️ Thao Tác</h6>
+                    <p class="text-muted small mb-3">Đơn hàng đang chờ xử lý. Chọn một trong hai thao tác bên dưới:</p>
+                    <div class="d-grid gap-2">
+                        <form th:action="@{/staff/don-hang/{id}/xac-nhan(id=${donHang.maDH})}" method="post">
+                            <button type="submit" class="btn btn-success w-100 fw-semibold"
+                                    onclick="return confirm('Xác nhận và chuyển sang trạng thái Đang Giao?')">
+                                <i class="bi bi-check2-circle me-2"></i>Xác Nhận – Chuyển Sang Đang Giao
+                            </button>
+                        </form>
+                        <form th:action="@{/staff/don-hang/{id}/tu-choi(id=${donHang.maDH})}" method="post">
+                            <button type="submit" class="btn btn-danger w-100 fw-semibold"
+                                    onclick="return confirm('Từ chối và hủy đơn hàng này?')">
+                                <i class="bi bi-x-circle me-2"></i>Từ Chối – Hủy Đơn Hàng
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:unless="${donHang.trangThai == 'CHO_XAC_NHAN'}"
+                     class="card detail-card p-3 text-center text-muted small">
+                    <i class="bi bi-lock fs-4 d-block mb-1"></i>
+                    Đơn hàng đã qua giai đoạn chờ xác nhận
+                </div>
+            </div>
+
+            <!-- Sản phẩm trong đơn -->
+            <div class="col-lg-8">
+                <div class="card detail-card p-4">
+                    <h6 class="section-title mb-3">Sản Phẩm Trong Đơn</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="thead-staff">
+                                <tr>
+                                    <th class="ps-3">Sản Phẩm</th>
+                                    <th class="text-center">SL</th>
+                                    <th class="text-end">Đơn Giá</th>
+                                    <th class="text-end pe-3">Thành Tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="ct : ${donHang.chiTietDonHangs}">
+                                    <td class="ps-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img th:if="${ct.hinhDaiDien != null && !ct.hinhDaiDien.isEmpty()}"
+                                                 th:src="${ct.hinhDaiDien}" class="product-img" alt="">
+                                            <div class="rounded bg-secondary d-flex align-items-center justify-content-center product-img text-white"
+                                                 th:unless="${ct.hinhDaiDien != null && !ct.hinhDaiDien.isEmpty()}">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                            <span class="fw-semibold" th:text="${ct.tenSP}"></span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center" th:text="${ct.soLuong}">1</td>
+                                    <td class="text-end"
+                                        th:text="${#numbers.formatDecimal(ct.giaBanRa, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                                    <td class="text-end pe-3 fw-bold text-danger"
+                                        th:text="${#numbers.formatDecimal(ct.thanhTien, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-light">
+                                    <td colspan="3" class="ps-3 fw-bold text-end">Tổng cộng:</td>
+                                    <td class="pe-3 fw-bold text-danger fs-5"
+                                        th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
