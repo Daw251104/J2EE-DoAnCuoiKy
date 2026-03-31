@@ -1,174 +1,828 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
 <head>
     <meta charset="UTF-8">
-    <title>Quản Lý Đơn Hàng - Staff</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đơn Hàng – PetShop Staff</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body { background-color: #f0f2f5; }
-        .top-bar { background: linear-gradient(135deg, #1e3a5f, #2d6a9f); }
-        .stat-card { border: none; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
-        .order-table-card { border: none; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
-        .badge-status { font-size: 0.78rem; padding: 5px 12px; border-radius: 50px; font-weight: 600; }
-        .badge-CHO_XAC_NHAN { background: #fff3cd; color: #664d03; }
-        .badge-DANG_GIAO    { background: #d1e7dd; color: #0a3622; }
-        .badge-DA_GIAO      { background: #198754; color: #fff; }
-        .badge-DA_HUY       { background: #f8d7da; color: #842029; }
-        .action-col { min-width: 190px; }
-        thead.table-dark th { background-color: #1e3a5f; }
-        .btn-confirm { background-color: #0d6efd; border: none; color: white; }
-        .btn-confirm:hover { background-color: #0b5ed7; color: white; }
-        .btn-reject  { background-color: #dc3545; border: none; color: white; }
-        .btn-reject:hover  { background-color: #bb2d3b; color: white; }
+        :root {
+            --pink-50: #fff0f6;
+            --pink-100: #ffd6e8;
+            --pink-200: #ffadd2;
+            --pink-300: #ff85bc;
+            --pink-400: #f06595;
+            --rose: #ff6b9d;
+            --rose-deep: #e05585;
+            --peach: #ffb3c6;
+            --cream: #fff8fb;
+            --white: #fff;
+            --gray-100: #f8f0f4;
+            --gray-200: #f0e6ec;
+            --gray-300: #ddc8d6;
+            --gray-400: #c4a0b5;
+            --gray-600: #8b5e76;
+            --gray-800: #4a2c3d;
+            --indigo: #4f46e5;
+            --indigo-light: #e0e7ff;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column
+        }
+
+        /* Staff topbar – darker tone */
+        .staff-topbar {
+            background: linear-gradient(90deg, #2d1b2d, #4a2c3d);
+            color: rgba(255, 255, 255, .8);
+            font-size: .78rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 7px 16px
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--white);
+            box-shadow: 0 2px 12px rgba(240, 101, 149, .10);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0 5vw
+        }
+
+        .navbar-inner {
+            display: flex;
+            align-items: center;
+            height: 68px;
+            gap: 16px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none;
+            flex-shrink: 0
+        }
+
+        .brand .li {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 14px rgba(255, 107, 157, .35)
+        }
+
+        .brand .lt {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 13px;
+            border-radius: 10px;
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all .2s
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: var(--pink-50);
+            color: var(--rose)
+        }
+
+        .spacer {
+            flex: 1
+        }
+
+        .staff-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+            border: 1.5px solid #c4b5fd;
+            border-radius: 50px;
+            padding: 6px 14px 6px 8px;
+            color: #7c3aed;
+            font-weight: 700;
+            font-size: .83rem
+        }
+
+        .staff-badge .av {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: .8rem
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1.5px solid var(--pink-200);
+            border-radius: 50px;
+            padding: 7px 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .83rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .2s
+        }
+
+        .logout-btn:hover {
+            background: #fff0f0;
+            color: #e05555;
+            border-color: #fca5a5
+        }
+
+        /* Page hero */
+        .page-hero {
+            background: linear-gradient(135deg, #f5f3ff, #ede9fe 50%, #fce7f3);
+            padding: 32px 5vw 24px;
+            border-bottom: 1.5px solid #e9d5ff
+        }
+
+        .hero-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px
+        }
+
+        .hero-left {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .hero-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, .28)
+        }
+
+        .hero-left h1 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--gray-800)
+        }
+
+        .hero-left p {
+            font-size: .87rem;
+            color: var(--gray-400);
+            font-weight: 500;
+            margin-top: 3px
+        }
+
+        /* Container */
+        .container {
+            flex: 1;
+            padding: 28px 5vw 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%
+        }
+
+        /* Stat cards */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 28px
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 12px rgba(240, 101, 149, .07);
+            border: 1.5px solid var(--pink-100);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: transform .2s, box-shadow .2s
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(240, 101, 149, .14)
+        }
+
+        .stat-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0
+        }
+
+        .si-yellow {
+            background: linear-gradient(135deg, #fef3c7, #fde68a)
+        }
+
+        .si-blue {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe)
+        }
+
+        .si-green {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0)
+        }
+
+        .si-red {
+            background: linear-gradient(135deg, #fee2e2, #fecaca)
+        }
+
+        .stat-info .sv {
+            font-size: 1.7rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--gray-800)
+        }
+
+        .stat-info .sl {
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            margin-top: 3px
+        }
+
+        /* Alerts */
+        .alert-box {
+            border-radius: 14px;
+            padding: 13px 18px;
+            font-size: .87rem;
+            font-weight: 700;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .alert-s {
+            background: #f0fff8;
+            border: 1.5px solid #86efac;
+            color: #166534
+        }
+
+        .alert-e {
+            background: #fff0f0;
+            border: 1.5px solid #fca5a5;
+            color: #cc3333
+        }
+
+        .alert-box button {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: inherit;
+            opacity: .6
+        }
+
+        /* Table card */
+        .table-card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 2px 14px rgba(240, 101, 149, .08);
+            border: 1.5px solid var(--pink-100);
+            overflow: hidden
+        }
+
+        .table-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 22px;
+            background: linear-gradient(135deg, var(--pink-50), var(--white));
+            border-bottom: 1.5px solid var(--pink-100);
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        .tc-title {
+            display: flex;
+            align-items: center;
+            gap: 9px
+        }
+
+        .tc-title .tci {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: .85rem
+        }
+
+        .tc-title h2 {
+            font-size: .95rem;
+            font-weight: 800;
+            color: var(--gray-800)
+        }
+
+        /* Search/filter */
+        .table-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .tf-chip {
+            padding: 6px 13px;
+            border-radius: 50px;
+            border: 1.5px solid var(--pink-200);
+            background: var(--pink-50);
+            color: var(--rose);
+            font-family: 'Nunito', sans-serif;
+            font-size: .78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .tf-chip.active,
+        .tf-chip:hover {
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            border-color: transparent;
+            color: #fff
+        }
+
+        /* Order table */
+        .order-tbl {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        .order-tbl thead th {
+            padding: 12px 16px;
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #7c3aed;
+            background: #f5f3ff;
+            border-bottom: 2px solid #e9d5ff;
+            white-space: nowrap
+        }
+
+        .order-tbl tbody tr {
+            border-bottom: 1px solid var(--pink-100);
+            transition: background .15s
+        }
+
+        .order-tbl tbody tr:hover {
+            background: var(--pink-50)
+        }
+
+        .order-tbl tbody td {
+            padding: 13px 16px;
+            font-size: .88rem;
+            font-weight: 600;
+            vertical-align: middle
+        }
+
+        .order-tbl tfoot td {
+            padding: 14px 16px;
+            font-size: .8rem;
+            color: var(--gray-400);
+            font-weight: 600;
+            background: var(--gray-100);
+            border-top: 1.5px solid var(--pink-100)
+        }
+
+        .order-id {
+            font-weight: 900;
+            color: #7c3aed;
+            font-size: .93rem
+        }
+
+        .customer-name {
+            font-weight: 800;
+            color: var(--gray-800)
+        }
+
+        .customer-phone {
+            font-size: .78rem;
+            color: var(--gray-400);
+            margin-top: 2px
+        }
+
+        .date-main {
+            font-weight: 700;
+            color: var(--gray-800)
+        }
+
+        .date-time {
+            font-size: .75rem;
+            color: var(--gray-400)
+        }
+
+        .price-col {
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .pttt-tag {
+            padding: 3px 9px;
+            border-radius: 50px;
+            background: var(--pink-50);
+            border: 1px solid var(--pink-100);
+            color: var(--rose);
+            font-size: .75rem;
+            font-weight: 700;
+            display: inline-block
+        }
+
+        /* Status pills */
+        .spill {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: .75rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px
+        }
+
+        .s-cho {
+            background: #fef3c7;
+            color: #92400e
+        }
+
+        .s-giao {
+            background: #dbeafe;
+            color: #1e40af
+        }
+
+        .s-dagiao {
+            background: #dcfce7;
+            color: #166534
+        }
+
+        .s-huy {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        /* Action buttons */
+        .action-cell {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: nowrap
+        }
+
+        .abtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 12px;
+            border-radius: 9px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .78rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all .2s;
+            white-space: nowrap
+        }
+
+        .abtn-view {
+            background: var(--pink-50);
+            color: var(--rose);
+            border: 1.5px solid var(--pink-200) !important
+        }
+
+        .abtn-view:hover {
+            background: var(--pink-100)
+        }
+
+        .abtn-ok {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(34, 197, 94, .25)
+        }
+
+        .abtn-ok:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(34, 197, 94, .35)
+        }
+
+        .abtn-reject {
+            background: linear-gradient(135deg, #f87171, #dc2626);
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(220, 38, 38, .2)
+        }
+
+        .abtn-reject:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(220, 38, 38, .3)
+        }
+
+        /* Empty state */
+        .empty-row td {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--gray-400)
+        }
+
+        .empty-row .ee {
+            font-size: 3rem;
+            margin-bottom: 12px
+        }
+
+        /* Footer */
+        .site-footer {
+            background: var(--gray-800);
+            color: rgba(255, 255, 255, .5);
+            text-align: center;
+            padding: 20px 5vw;
+            font-size: .8rem
+        }
+
+        .site-footer a {
+            color: var(--peach);
+            text-decoration: none
+        }
+
+        @media(max-width:900px) {
+            .stat-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .nav-links {
+                display: none
+            }
+
+        }
+
+        @media(max-width:500px) {
+            .stat-grid {
+                grid-template-columns: 1fr
+            }
+        }
     </style>
 </head>
+
 <body>
-    <!-- Top navbar -->
-    <nav class="navbar top-bar navbar-dark mb-4">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold fs-5" href="/"><i class="bi bi-shop me-2"></i>PetShop</a>
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-white opacity-75">
-                    <i class="bi bi-person-badge"></i>
-                    <span sec:authentication="name"></span>
-                    <span class="badge bg-warning text-dark ms-1 small">STAFF</span>
-                </span>
-                <form th:action="@{/logout}" method="post" class="m-0">
-                    <button class="btn btn-outline-light btn-sm">
-                        <i class="bi bi-box-arrow-right"></i> Đăng Xuất
-                    </button>
+
+    <div class="staff-topbar">⚙️ PetShop Staff Panel – Quản lý đơn hàng</div>
+
+    <header class="navbar">
+        <nav class="navbar-inner">
+            <a th:href="@{/}" class="brand">
+                <div class="li">🐾</div><span class="lt">PetShop</span>
+            </a>
+            <ul class="nav-links">
+                <li><a th:href="@{/sanpham}"><i class="bi bi-grid-3x3-gap-fill"></i> Sản phẩm</a></li>
+                <li><a th:href="@{/staff/don-hang}" class="active"><i class="bi bi-clipboard2-list"></i> Đơn hàng</a>
+                </li>
+                <li><a th:href="@{/admin}"><i class="bi bi-shield-check"></i> Admin</a></li>
+            </ul>
+            <div class="spacer"></div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="staff-badge">
+                    <div class="av"><i class="bi bi-person-badge"></i></div>
+                    <span sec:authentication="name">Staff</span>
+                    <span
+                        style="background:#7c3aed;color:#fff;padding:2px 8px;border-radius:50px;font-size:.68rem;font-weight:800;">STAFF</span>
+                </div>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="logout-btn"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
                 </form>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <div class="container-fluid px-4 pb-5">
-        <h4 class="fw-bold mb-4"><i class="bi bi-clipboard2-list text-primary"></i> Quản Lý Đơn Hàng</h4>
-
-        <!-- Thống kê nhanh -->
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-                <div class="card stat-card p-3 text-center">
-                    <div class="fs-2 fw-bold text-warning" th:text="${countChoXacNhan}">0</div>
-                    <div class="text-muted small">⏳ Chờ xác nhận</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card stat-card p-3 text-center">
-                    <div class="fs-2 fw-bold text-info" th:text="${countDangGiao}">0</div>
-                    <div class="text-muted small">🚚 Đang giao</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card stat-card p-3 text-center">
-                    <div class="fs-2 fw-bold text-success" th:text="${countDaGiao}">0</div>
-                    <div class="text-muted small">✅ Đã giao</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="card stat-card p-3 text-center">
-                    <div class="fs-2 fw-bold text-danger" th:text="${countDaHuy}">0</div>
-                    <div class="text-muted small">❌ Đã hủy</div>
+    <!-- Hero -->
+    <section class="page-hero">
+        <div class="hero-row">
+            <div class="hero-left">
+                <div class="hero-icon">📋</div>
+                <div>
+                    <h1>Quản lý đơn hàng</h1>
+                    <p>Xem và xử lý các đơn hàng từ khách hàng</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Thông báo -->
-        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill"></i> <span th:text="${successMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <main class="container">
+        <!-- Stat cards -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-icon si-yellow">⏳</div>
+                <div class="stat-info">
+                    <div class="sv" th:text="${countChoXacNhan}">0</div>
+                    <div class="sl">Chờ xác nhận</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-blue">🚚</div>
+                <div class="stat-info">
+                    <div class="sv" th:text="${countDangGiao}">0</div>
+                    <div class="sl">Đang giao</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-green">✅</div>
+                <div class="stat-info">
+                    <div class="sv" th:text="${countDaGiao}">0</div>
+                    <div class="sl">Đã giao</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-red">❌</div>
+                <div class="stat-info">
+                    <div class="sv" th:text="${countDaHuy}">0</div>
+                    <div class="sl">Đã hủy</div>
+                </div>
+            </div>
         </div>
-        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${errorMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert-box alert-s">
+            <i class="bi bi-check-circle-fill"></i><span th:text="${successMessage}"></span>
+            <button onclick="this.parentElement.remove()">✕</button>
+        </div>
+        <div th:if="${errorMessage}" class="alert-box alert-e">
+            <i class="bi bi-exclamation-circle-fill"></i><span th:text="${errorMessage}"></span>
+            <button onclick="this.parentElement.remove()">✕</button>
         </div>
 
-        <!-- Bảng đơn hàng -->
-        <div class="card order-table-card">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-dark">
-                            <tr>
-                                <th class="ps-4 py-3">Mã ĐH</th>
-                                <th>Khách Hàng</th>
-                                <th>Ngày Đặt</th>
-                                <th>Tổng Tiền</th>
-                                <th>Thanh Toán</th>
-                                <th>Trạng Thái</th>
-                                <th class="action-col text-center pe-4">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${donHangs.empty}">
-                                <td colspan="7" class="text-center py-5 text-muted">
-                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                                    Chưa có đơn hàng nào
-                                </td>
-                            </tr>
-                            <tr th:each="dh : ${donHangs}" th:unless="${donHangs.empty}">
-                                <td class="ps-4 fw-bold text-primary">#<span th:text="${dh.maDH}"></span></td>
-                                <td>
-                                    <div class="fw-semibold" th:text="${dh.tenNguoiNhan}"></div>
-                                    <small class="text-muted" th:text="${dh.sdtNguoiNhan}"></small>
-                                </td>
-                                <td>
-                                    <div th:text="${#temporals.format(dh.ngayLapDonHang, 'dd/MM/yyyy')}"></div>
-                                    <small class="text-muted" th:text="${#temporals.format(dh.ngayLapDonHang, 'HH:mm')}"></small>
-                                </td>
-                                <td class="fw-bold text-danger"
-                                    th:text="${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
-                                </td>
-                                <td>
-                                    <span class="badge bg-secondary" th:text="${dh.tenLoaiTT ?: 'N/A'}"></span>
-                                </td>
-                                <td>
-                                    <span th:class="'badge-status badge-' + ${dh.trangThai}">
-                                        <span th:switch="${dh.trangThai}">
-                                            <span th:case="'CHO_XAC_NHAN'">⏳ Chờ xác nhận</span>
-                                            <span th:case="'DANG_GIAO'">🚚 Đang giao</span>
-                                            <span th:case="'DA_GIAO'">✅ Đã giao</span>
-                                            <span th:case="'DA_HUY'">❌ Đã hủy</span>
-                                            <span th:case="*" th:text="${dh.trangThai}"></span>
-                                        </span>
-                                    </span>
-                                </td>
-                                <td class="text-center pe-4">
-                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
-                                        <!-- Xem chi tiết -->
-                                        <a th:href="@{/staff/don-hang/{id}(id=${dh.maDH})}"
-                                           class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+        <!-- Table card -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <div class="tc-title">
+                    <div class="tci"><i class="bi bi-table"></i></div>
+                    <h2>Danh sách đơn hàng</h2>
+                </div>
+                <div class="table-filters">
+                    <button class="tf-chip active">Tất cả</button>
+                    <button class="tf-chip">⏳ Chờ duyệt</button>
+                    <button class="tf-chip">🚚 Đang giao</button>
+                    <button class="tf-chip">✅ Đã giao</button>
+                    <button class="tf-chip">❌ Đã hủy</button>
+                </div>
+            </div>
 
-                                        <!-- Chỉ hiện nút xác nhận/từ chối khi đơn CHO_XAC_NHAN -->
-                                        <div th:if="${dh.trangThai == 'CHO_XAC_NHAN'}" class="d-flex gap-1">
-                                            <form th:action="@{/staff/don-hang/{id}/xac-nhan(id=${dh.maDH})}" method="post">
-                                                <button type="submit" class="btn btn-sm btn-confirm"
-                                                        title="Xác nhận đơn hàng"
-                                                        onclick="return confirm('Xác nhận đơn hàng #' + this.closest('tr').querySelector('.fw-bold').innerText + '?')">
-                                                    <i class="bi bi-check-lg"></i> Duyệt
-                                                </button>
-                                            </form>
-                                            <form th:action="@{/staff/don-hang/{id}/tu-choi(id=${dh.maDH})}" method="post">
-                                                <button type="submit" class="btn btn-sm btn-reject"
-                                                        title="Từ chối đơn hàng"
-                                                        onclick="return confirm('Từ chối đơn hàng này?')">
-                                                    <i class="bi bi-x-lg"></i> Từ Chối
-                                                </button>
-                                            </form>
-                                        </div>
+            <div style="overflow-x:auto;">
+                <table class="order-tbl">
+                    <thead>
+                        <tr>
+                            <th>Mã ĐH</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Thanh toán</th>
+                            <th>Trạng thái</th>
+                            <th style="text-align:center;min-width:210px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty -->
+                        <tr class="empty-row" th:if="${donHangs.empty}">
+                            <td colspan="7">
+                                <div class="ee">📭</div>
+                                <div style="font-weight:800;color:var(--gray-600);font-size:1rem;">Chưa có đơn hàng nào
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr th:each="dh : ${donHangs}">
+                            <td class="order-id">#<span th:text="${dh.maDH}">0</span></td>
+                            <td>
+                                <div class="customer-name" th:text="${dh.tenNguoiNhan}">Tên</div>
+                                <div class="customer-phone" th:text="${dh.sdtNguoiNhan}">SĐT</div>
+                            </td>
+                            <td>
+                                <div class="date-main" th:text="${#temporals.format(dh.ngayLapDonHang,'dd/MM/yyyy')}">
+                                    01/01</div>
+                                <div class="date-time" th:text="${#temporals.format(dh.ngayLapDonHang,'HH:mm')}">00:00
+                                </div>
+                            </td>
+                            <td>
+                                <span class="price-col"
+                                    th:text="${#numbers.formatDecimal(dh.tongTien,0,'COMMA',0,'POINT')} + ' đ'">0
+                                    đ</span>
+                            </td>
+                            <td><span class="pttt-tag" th:text="${dh.tenLoaiTT ?: 'N/A'}">COD</span></td>
+                            <td>
+                                <span th:switch="${dh.trangThai}">
+                                    <span th:case="'CHO_XAC_NHAN'" class="spill s-cho">⏳ Chờ xác nhận</span>
+                                    <span th:case="'DANG_GIAO'" class="spill s-giao">🚚 Đang giao</span>
+                                    <span th:case="'DA_GIAO'" class="spill s-dagiao">✅ Đã giao</span>
+                                    <span th:case="'DA_HUY'" class="spill s-huy">❌ Đã hủy</span>
+                                    <span th:case="*" class="spill s-cho" th:text="${dh.trangThai}"></span>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-cell" style="justify-content:center;">
+                                    <!-- View detail -->
+                                    <a th:href="@{/staff/don-hang/{id}(id=${dh.maDH})}" class="abtn abtn-view">
+                                        <i class="bi bi-eye-fill"></i> Chi tiết
+                                    </a>
+                                    <!-- Approve/reject only for CHO_XAC_NHAN -->
+                                    <div th:if="${dh.trangThai == 'CHO_XAC_NHAN'}" style="display:flex;gap:5px;">
+                                        <form th:action="@{/staff/don-hang/{id}/xac-nhan(id=${dh.maDH})}" method="post">
+                                            <button type="submit" class="abtn abtn-ok"
+                                                th:onclick="'return confirm(\'Duyệt đơn #' + ${dh.maDH} + '?\')'"
+                                                title="Xác nhận">
+                                                <i class="bi bi-check-lg"></i> Duyệt
+                                            </button>
+                                        </form>
+                                        <form th:action="@{/staff/don-hang/{id}/tu-choi(id=${dh.maDH})}" method="post">
+                                            <button type="submit" class="abtn abtn-reject"
+                                                th:onclick="'return confirm(\'Từ chối đơn #' + ${dh.maDH} + '?\')'"
+                                                title="Từ chối">
+                                                <i class="bi bi-x-lg"></i> Từ chối
+                                            </button>
+                                        </form>
                                     </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot th:unless="${donHangs.empty}">
+                        <tr>
+                            <td colspan="7">
+                                Hiển thị <strong th:text="${donHangs.size()}">0</strong> đơn hàng
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
-    </div>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <footer class="site-footer">
+        🐾 PetShop Staff Panel &nbsp;|&nbsp; <a th:href="@{/}">Trang chủ</a>
+    </footer>
 </body>
+
 </html>

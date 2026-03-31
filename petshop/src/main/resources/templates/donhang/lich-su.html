@@ -1,118 +1,197 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
-    <title>Lịch Sử Đơn Hàng - PetShop</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Đơn Hàng – PetShop 🐾</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .order-card { border: none; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
-        .section-title { font-weight: 700; color: #343a40; border-left: 4px solid #0d6efd; padding-left: 10px; }
-        .status-badge { font-size: 0.82rem; padding: 5px 12px; border-radius: 50px; }
-        .status-CHO_XAC_NHAN { background-color: #fff3cd; color: #664d03; }
-        .status-DA_XAC_NHAN  { background-color: #cff4fc; color: #055160; }
-        .status-DANG_GIAO    { background-color: #d1e7dd; color: #0a3622; }
-        .status-DA_GIAO      { background-color: #198754; color: #fff; }
-        .status-DA_HUY       { background-color: #f8d7da; color: #842029; }
-        .order-id { font-size: 1.1rem; font-weight: 700; color: #0d6efd; }
+        :root{--pink-50:#fff0f6;--pink-100:#ffd6e8;--pink-200:#ffadd2;--pink-300:#ff85bc;--pink-400:#f06595;--rose:#ff6b9d;--rose-deep:#e05585;--peach:#ffb3c6;--cream:#fff8fb;--white:#fff;--gray-100:#f8f0f4;--gray-200:#f0e6ec;--gray-300:#ddc8d6;--gray-400:#c4a0b5;--gray-600:#8b5e76;--gray-800:#4a2c3d;}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--gray-800);min-height:100vh;display:flex;flex-direction:column}
+        .topbar{background:linear-gradient(90deg,var(--pink-400),var(--rose));color:#fff;font-size:.78rem;font-weight:700;text-align:center;padding:7px 16px}
+        .navbar{background:var(--white);box-shadow:0 2px 12px rgba(240,101,149,.10);position:sticky;top:0;z-index:1000;padding:0 5vw}
+        .navbar-inner{display:flex;align-items:center;height:68px;gap:16px}
+        .brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+        .brand .li{width:40px;height:40px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 14px rgba(255,107,157,.35)}
+        .brand .lt{font-family:'Pacifico',cursive;font-size:1.4rem;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .nav-links{display:flex;align-items:center;gap:2px;list-style:none}
+        .nav-links a{display:flex;align-items:center;gap:5px;padding:8px 13px;border-radius:10px;font-size:.88rem;font-weight:700;color:var(--gray-600);text-decoration:none;transition:all .2s}
+        .nav-links a:hover,.nav-links a.active{background:var(--pink-50);color:var(--rose)}
+        .spacer{flex:1}
+        .nav-user{display:flex;align-items:center;gap:10px}
+        .user-badge{display:flex;align-items:center;gap:8px;background:var(--pink-50);border:1.5px solid var(--pink-100);border-radius:50px;padding:6px 14px 6px 8px;color:var(--rose);font-weight:700;font-size:.85rem}
+        .user-badge .av{width:30px;height:30px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
+        .logout-btn{background:none;border:1.5px solid var(--pink-200);border-radius:50px;padding:7px 14px;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:700;color:var(--gray-600);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+        .logout-btn:hover{background:#fff0f0;color:#e05555;border-color:#fca5a5}
+        /* Page */
+        .page-hero{background:linear-gradient(135deg,var(--pink-50),#fff3f8,var(--pink-100));padding:36px 5vw 28px;border-bottom:1.5px solid var(--pink-100)}
+        .hero-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+        .hero-left{display:flex;align-items:center;gap:14px}
+        .hero-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 8px 24px rgba(255,107,157,.28)}
+        .hero-left h1{font-size:1.55rem;font-weight:900;color:var(--gray-800)}
+        .hero-left p{font-size:.87rem;color:var(--gray-400);font-weight:500;margin-top:3px}
+        .container{padding:30px 5vw;flex:1;max-width:1000px;margin:0 auto;width:100%}
+        /* Alerts */
+        .alert-box{border-radius:14px;padding:13px 18px;font-size:.87rem;font-weight:700;margin-bottom:22px;display:flex;align-items:center;gap:10px}
+        .alert-s{background:#f0fff8;border:1.5px solid #86efac;color:#166534}
+        .alert-e{background:#fff0f0;border:1.5px solid #fca5a5;color:#cc3333}
+        .alert-box button{margin-left:auto;background:none;border:none;cursor:pointer;font-size:1rem;color:inherit;opacity:.6}
+        /* Empty state */
+        .empty-state{text-align:center;padding:72px 24px;color:var(--gray-400)}
+        .empty-state .ee{font-size:4rem;margin-bottom:16px}
+        .empty-state h3{font-size:1.1rem;font-weight:800;margin-bottom:8px;color:var(--gray-600)}
+        .empty-state p{font-size:.88rem;margin-bottom:20px}
+        .btn-shop{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:14px;background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:800;text-decoration:none;box-shadow:0 6px 20px rgba(255,107,157,.38);transition:all .2s}
+        .btn-shop:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,157,.48)}
+        /* Filter tabs */
+        .order-tabs{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap}
+        .otab{padding:8px 18px;border-radius:50px;border:1.5px solid var(--pink-200);background:var(--pink-50);color:var(--rose);font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+        .otab.active,.otab:hover{background:linear-gradient(135deg,var(--pink-300),var(--rose));border-color:transparent;color:#fff}
+        /* Order cards */
+        .order-card{background:var(--white);border-radius:18px;box-shadow:0 2px 14px rgba(240,101,149,.08);border:1.5px solid var(--pink-100);margin-bottom:14px;overflow:hidden;transition:box-shadow .25s,border-color .25s}
+        .order-card:hover{box-shadow:0 8px 30px rgba(240,101,149,.15);border-color:var(--pink-200)}
+        .oc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(135deg,var(--pink-50),var(--white));border-bottom:1.5px solid var(--pink-100);flex-wrap:wrap;gap:8px}
+        .order-id-tag{display:flex;align-items:center;gap:8px}
+        .order-id-tag .tag{background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;padding:4px 12px;border-radius:50px;font-size:.8rem;font-weight:800}
+        .order-date{font-size:.78rem;color:var(--gray-400);font-weight:600}
+        .oc-body{display:flex;align-items:center;padding:16px 20px;gap:20px;flex-wrap:wrap}
+        .oc-info{display:flex;gap:32px;flex:1;flex-wrap:wrap}
+        .oc-field .of-label{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:3px}
+        .oc-field .of-val{font-size:.92rem;font-weight:700;color:var(--gray-800)}
+        .price-val{font-size:1rem!important;font-weight:900!important;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        /* Status pills */
+        .status-pill{padding:5px 13px;border-radius:50px;font-size:.78rem;font-weight:800;display:inline-flex;align-items:center;gap:5px}
+        .s-cho{background:#fef3c7;color:#92400e}
+        .s-xacnhan{background:#cff4fc;color:#0c4a6e}
+        .s-giao{background:#dbeafe;color:#1e40af}
+        .s-dagiao{background:#dcfce7;color:#166534}
+        .s-huy{background:#fee2e2;color:#991b1b}
+        /* View button */
+        .oc-actions{flex-shrink:0}
+        .btn-view{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:12px;background:var(--pink-50);border:1.5px solid var(--pink-200);color:var(--rose);font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;text-decoration:none;transition:all .2s}
+        .btn-view:hover{background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;border-color:transparent;transform:translateY(-1px)}
+        /* Footer */
+        .site-footer{background:var(--gray-800);color:rgba(255,255,255,.5);text-align:center;padding:22px 5vw;font-size:.82rem}
+        .site-footer a{color:var(--peach);text-decoration:none}
+        @media(max-width:640px){.nav-links{display:none}.oc-info{gap:16px}.oc-body{flex-direction:column;align-items:flex-start}}
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/"><i class="bi bi-shop"></i> PetShop</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/sanpham"><i class="bi bi-grid"></i> Sản Phẩm</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/gio-hang"><i class="bi bi-cart3"></i> Giỏ Hàng</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/don-hang"><i class="bi bi-bag-check"></i> Đơn Hàng</a></li>
-                </ul>
-                <div class="d-flex text-white align-items-center">
-                    <span sec:authorize="isAuthenticated()" class="me-3">
-                        <i class="bi bi-person-circle"></i> <span sec:authentication="name"></span>
-                    </span>
-                    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-box-arrow-right"></i> Đăng Xuất
-                        </button>
-                    </form>
-                </div>
-            </div>
+<div class="topbar">🐾 PetShop – Thiên đường mua sắm cho thú cưng yêu của bạn 💕</div>
+
+<header class="navbar">
+    <nav class="navbar-inner">
+        <a th:href="@{/}" class="brand"><div class="li">🐾</div><span class="lt">PetShop</span></a>
+        <ul class="nav-links">
+            <li><a th:href="@{/sanpham}"><i class="bi bi-grid-3x3-gap-fill"></i> Sản phẩm</a></li>
+            <li><a th:href="@{/gio-hang}"><i class="bi bi-bag-heart"></i> Giỏ hàng</a></li>
+            <li><a th:href="@{/don-hang}" class="active"><i class="bi bi-bag-check"></i> Đơn hàng</a></li>
+            <li><a th:href="@{/profile}"><i class="bi bi-person-circle"></i> Hồ sơ</a></li>
+        </ul>
+        <div class="spacer"></div>
+        <div class="nav-user">
+            <div class="user-badge"><div class="av">🐾</div><span sec:authentication="name">User</span></div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="logout-btn"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
+            </form>
         </div>
     </nav>
+</header>
 
-    <div class="container pb-5">
-        <h2 class="mb-4"><i class="bi bi-bag-check text-primary"></i> Lịch Sử Đơn Hàng</h2>
-
-        <!-- Thông báo -->
-        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill"></i> <span th:text="${successMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<section class="page-hero">
+    <div class="hero-row">
+        <div class="hero-left">
+            <div class="hero-icon">📦</div>
+            <div><h1>Lịch sử đơn hàng</h1><p>Theo dõi tất cả đơn hàng của bạn tại PetShop 🐾</p></div>
         </div>
-        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle"></i> <span th:text="${errorMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</section>
+
+<main class="container">
+    <div th:if="${successMessage}" class="alert-box alert-s">
+        <i class="bi bi-check-circle-fill"></i><span th:text="${successMessage}"></span>
+        <button onclick="this.parentElement.remove()">✕</button>
+    </div>
+    <div th:if="${errorMessage}" class="alert-box alert-e">
+        <i class="bi bi-exclamation-circle-fill"></i><span th:text="${errorMessage}"></span>
+        <button onclick="this.parentElement.remove()">✕</button>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${donHangs.empty}" class="empty-state">
+        <div class="ee">🛒</div>
+        <h3>Bạn chưa có đơn hàng nào!</h3>
+        <p>Hãy khám phá cửa hàng và chọn những sản phẩm tuyệt vời cho thú cưng nhé.</p>
+        <a th:href="@{/sanpham}" class="btn-shop"><i class="bi bi-bag-heart-fill"></i> Mua sắm ngay</a>
+    </div>
+
+    <!-- Order list -->
+    <div th:unless="${donHangs.empty}">
+        <!-- Filter tabs -->
+        <div class="order-tabs">
+            <button class="otab active">Tất cả</button>
+            <button class="otab">⏳ Chờ xác nhận</button>
+            <button class="otab">🚚 Đang giao</button>
+            <button class="otab">✅ Đã giao</button>
+            <button class="otab">❌ Đã hủy</button>
         </div>
 
-        <!-- Không có đơn hàng -->
-        <div th:if="${donHangs.empty}" class="text-center py-5">
-            <i class="bi bi-bag-x" style="font-size: 4rem; color: #adb5bd;"></i>
-            <h5 class="mt-3 text-muted">Bạn chưa có đơn hàng nào!</h5>
-            <a href="/sanpham" class="btn btn-primary mt-3">
-                <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
-            </a>
-        </div>
-
-        <!-- Danh sách đơn hàng -->
-        <div th:unless="${donHangs.empty}">
-            <div th:each="dh : ${donHangs}" class="card order-card mb-3">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-2 mb-2 mb-md-0">
-                            <div class="text-muted small">Mã đơn hàng</div>
-                            <div class="order-id">#<span th:text="${dh.maDH}"></span></div>
-                        </div>
-                        <div class="col-md-3 mb-2 mb-md-0">
-                            <div class="text-muted small">Ngày đặt</div>
-                            <div class="fw-semibold"
-                                 th:text="${#temporals.format(dh.ngayLapDonHang, 'dd/MM/yyyy HH:mm')}">
-                            </div>
-                        </div>
-                        <div class="col-md-2 mb-2 mb-md-0">
-                            <div class="text-muted small">Thanh toán</div>
-                            <div class="fw-semibold" th:text="${dh.tenLoaiTT ?: 'N/A'}"></div>
-                        </div>
-                        <div class="col-md-2 mb-2 mb-md-0">
-                            <div class="text-muted small">Tổng tiền</div>
-                            <div class="fw-bold text-danger"
-                                 th:text="${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
-                            </div>
-                        </div>
-                        <div class="col-md-2 mb-2 mb-md-0">
-                            <span th:class="'status-badge fw-semibold status-' + ${dh.trangThai}">
-                                <span th:switch="${dh.trangThai}">
-                                    <span th:case="'CHO_XAC_NHAN'">⏳ Chờ xác nhận</span>
-                                    <span th:case="'DA_XAC_NHAN'">✅ Đã xác nhận</span>
-                                    <span th:case="'DANG_GIAO'">🚚 Đang giao</span>
-                                    <span th:case="'DA_GIAO'">🎉 Đã giao</span>
-                                    <span th:case="'DA_HUY'">❌ Đã hủy</span>
-                                    <span th:case="*" th:text="${dh.trangThai}"></span>
-                                </span>
-                            </span>
-                        </div>
-                        <div class="col-md-1 text-end">
-                            <a th:href="@{/don-hang/{id}(id=${dh.maDH})}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-eye"></i>
-                            </a>
+        <div class="order-card" th:each="dh : ${donHangs}">
+            <!-- Card header -->
+            <div class="oc-header">
+                <div class="order-id-tag">
+                    <span class="tag">#<span th:text="${dh.maDH}">0</span></span>
+                    <span class="order-date">
+                        <i class="bi bi-calendar3"></i>
+                        <span th:text="${#temporals.format(dh.ngayLapDonHang,'dd/MM/yyyy HH:mm')}">01/01/2024</span>
+                    </span>
+                </div>
+                <!-- Status pill -->
+                <span th:switch="${dh.trangThai}">
+                    <span th:case="'CHO_XAC_NHAN'" class="status-pill s-cho">⏳ Chờ xác nhận</span>
+                    <span th:case="'DA_XAC_NHAN'"  class="status-pill s-xacnhan">✅ Đã xác nhận</span>
+                    <span th:case="'DANG_GIAO'"     class="status-pill s-giao">🚚 Đang giao</span>
+                    <span th:case="'DA_GIAO'"       class="status-pill s-dagiao">🎉 Đã giao</span>
+                    <span th:case="'DA_HUY'"        class="status-pill s-huy">❌ Đã hủy</span>
+                    <span th:case="*" class="status-pill s-cho" th:text="${dh.trangThai}"></span>
+                </span>
+            </div>
+            <!-- Card body -->
+            <div class="oc-body">
+                <div class="oc-info">
+                    <div class="oc-field">
+                        <div class="of-label">Thanh toán</div>
+                        <div class="of-val" th:text="${dh.tenLoaiTT ?: 'N/A'}">COD</div>
+                    </div>
+                    <div class="oc-field">
+                        <div class="of-label">Tổng tiền</div>
+                        <div class="of-val price-val"
+                             th:text="${#numbers.formatDecimal(dh.tongTien,0,'COMMA',0,'POINT')} + ' đ'">0 đ</div>
+                    </div>
+                    <div class="oc-field">
+                        <div class="of-label">Đã thanh toán</div>
+                        <div class="of-val">
+                            <span th:if="${dh.daThanhToan == 1}" style="color:#15803d;">✅ Đã thanh toán</span>
+                            <span th:unless="${dh.daThanhToan == 1}" style="color:#92400e;">⏳ Chưa thanh toán</span>
                         </div>
                     </div>
+                </div>
+                <div class="oc-actions">
+                    <a th:href="@{/don-hang/{id}(id=${dh.maDH})}" class="btn-view">
+                        <i class="bi bi-eye-fill"></i> Xem chi tiết
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+</main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<footer class="site-footer">
+    🐾 PetShop – Chăm sóc thú cưng với tình yêu thương 💕 &nbsp;|&nbsp; <a th:href="@{/}">Trang chủ</a>
+</footer>
 </body>
 </html>
