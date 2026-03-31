@@ -1,180 +1,385 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${sanPham.maSP == null ? 'Thêm Sản Phẩm Mới' : 'Cập Nhật Sản Phẩm'}">Form Sản Phẩm</title>
-    <!-- Thêm Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${sanPham.maSP == null ? 'Thêm Sản Phẩm – PetShop 🐾' : 'Chỉnh Sửa Sản Phẩm – PetShop 🐾'}">Form Sản Phẩm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .form-container {
-            max-width: 800px;
-            margin: 0 auto;
+        :root{
+            --pink-50:#fff0f6;--pink-100:#ffd6e8;--pink-200:#ffadd2;
+            --pink-300:#ff85bc;--pink-400:#f06595;
+            --rose:#ff6b9d;--rose-deep:#e05585;--peach:#ffb3c6;
+            --cream:#fff8fb;--white:#fff;
+            --gray-100:#f8f0f4;--gray-200:#f0e6ec;--gray-300:#ddc8d6;
+            --gray-400:#c4a0b5;--gray-600:#8b5e76;--gray-800:#4a2c3d;
         }
-        .preview-image {
-            max-width: 200px;
-            max-height: 200px;
-            object-fit: contain;
-            border: 1px dashed #ced4da;
-            padding: 5px;
-            border-radius: .375rem;
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--gray-800);min-height:100vh;display:flex;flex-direction:column}
+        /* Topbar */
+        .topbar{background:linear-gradient(90deg,var(--pink-400),var(--rose));color:#fff;font-size:.78rem;font-weight:700;text-align:center;padding:7px 16px}
+        /* Navbar */
+        .navbar{background:var(--white);box-shadow:0 2px 12px rgba(240,101,149,.10);position:sticky;top:0;z-index:1000;padding:0 5vw}
+        .navbar-inner{display:flex;align-items:center;height:68px;gap:14px}
+        .brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+        .li{width:40px;height:40px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 14px rgba(255,107,157,.35)}
+        .lt{font-family:'Pacifico',cursive;font-size:1.4rem;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .breadcrumb{display:flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;color:var(--gray-400);margin-left:8px}
+        .breadcrumb a{color:var(--rose);text-decoration:none}
+        .breadcrumb a:hover{text-decoration:underline}
+        .bc-sep{color:var(--gray-300)}
+        .spacer{flex:1}
+        /* Page */
+        .page-wrap{max-width:860px;margin:0 auto;padding:36px 5vw 60px}
+        /* Page header */
+        .form-header{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+        .form-header .fh-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 8px 24px rgba(255,107,157,.28);flex-shrink:0}
+        .form-header h1{font-size:1.6rem;font-weight:900;color:var(--gray-800)}
+        .form-header p{font-size:.87rem;color:var(--gray-400);font-weight:500;margin-top:3px}
+        /* Card */
+        .form-card{background:var(--white);border-radius:24px;box-shadow:0 4px 6px rgba(240,101,149,.07),0 16px 48px rgba(240,101,149,.12),0 0 0 1px rgba(255,144,196,.1);overflow:hidden}
+        /* Section */
+        .fsection{padding:28px 32px;border-bottom:1.5px solid var(--pink-100)}
+        .fsection:last-child{border-bottom:none}
+        .section-title{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--rose);margin-bottom:20px}
+        .section-title i{font-size:1rem}
+        /* Form grid */
+        .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+        .fgroup{margin-bottom:18px}
+        .fgroup.full{grid-column:1/-1}
+        .fgroup.col3{grid-column:span 1}
+        .fgroup label{display:flex;align-items:center;gap:6px;font-size:.77rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--gray-600);margin-bottom:8px}
+        .fgroup label i{font-size:.9rem;color:var(--pink-300)}
+        .fgroup label .req{color:var(--rose)}
+        /* Input */
+        .iw{position:relative}
+        .iw .ii{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--pink-300);font-size:1rem;pointer-events:none}
+        .iw:focus-within .ii{color:var(--rose)}
+        .iw input,.iw select,.iw textarea{
+            width:100%;padding:12px 16px 12px 42px;
+            border:2px solid var(--gray-200);border-radius:14px;
+            font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:600;
+            color:var(--gray-800);background:var(--gray-100);outline:none;appearance:none;
+            transition:border-color .25s,background .25s,box-shadow .25s;
         }
+        .iw textarea{padding-top:13px;resize:vertical;line-height:1.6;min-height:110px}
+        .iw input:focus,.iw select:focus,.iw textarea:focus{border-color:var(--pink-300);background:var(--white);box-shadow:0 0 0 4px rgba(255,133,188,.13)}
+        .iw input::placeholder,.iw textarea::placeholder{color:var(--gray-400);font-weight:400}
+        /* Select arrow */
+        .sw::after{content:'\F282';font-family:'bootstrap-icons';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--pink-300);pointer-events:none;font-size:.85rem}
+        /* Price hint */
+        .input-hint{font-size:.72rem;color:var(--gray-400);font-weight:600;margin-top:5px}
+        /* Image upload */
+        .img-upload-area{border:2.5px dashed var(--pink-200);border-radius:18px;background:var(--pink-50);padding:28px 20px;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+        .img-upload-area:hover{border-color:var(--rose);background:var(--pink-100)}
+        .img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+        .upload-icon{font-size:2.4rem;margin-bottom:8px}
+        .upload-label{font-size:.85rem;font-weight:700;color:var(--gray-600)}
+        .upload-hint{font-size:.73rem;color:var(--gray-400);margin-top:4px}
+        /* Image preview */
+        .current-img-wrap{text-align:center;margin-top:14px}
+        .current-img-label{font-size:.75rem;font-weight:700;color:var(--gray-400);margin-bottom:6px}
+        .current-img{width:120px;height:120px;object-fit:cover;border-radius:14px;border:3px solid var(--pink-100);box-shadow:0 4px 14px rgba(240,101,149,.15)}
+        /* Status toggle */
+        .status-row{display:flex;gap:12px}
+        .status-opt{flex:1;border:2px solid var(--gray-200);border-radius:14px;padding:14px;cursor:pointer;text-align:center;transition:all .2s;background:var(--gray-100)}
+        .status-opt:has(input:checked){border-color:var(--pink-300);background:var(--pink-50);box-shadow:0 0 0 3px rgba(255,133,188,.15)}
+        .status-opt input{display:none}
+        .status-opt .so-emoji{font-size:1.4rem;margin-bottom:4px}
+        .status-opt .so-label{font-size:.82rem;font-weight:800;color:var(--gray-600)}
+        .status-opt:has(input:checked) .so-label{color:var(--rose)}
+        /* Footer */
+        .form-footer-actions{display:flex;align-items:center;justify-content:space-between;padding:24px 32px;background:linear-gradient(135deg,var(--pink-50),var(--white));border-top:1.5px solid var(--pink-100)}
+        .btn-back{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:14px;color:var(--gray-600);background:var(--white);border:1.5px solid var(--gray-200);font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s}
+        .btn-back:hover{background:var(--gray-100);border-color:var(--gray-300)}
+        .btn-save{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:14px;background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 6px 20px rgba(255,107,157,.38);transition:all .2s;position:relative;overflow:hidden}
+        .btn-save::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent)}
+        .btn-save:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,157,.48)}
+        .btn-save:active{transform:translateY(0)}
+        /* Required note */
+        .req-note{font-size:.75rem;color:var(--gray-400);font-weight:600}
+        /* Footer */
+        .site-footer{background:var(--gray-800);color:rgba(255,255,255,.5);text-align:center;padding:20px;font-size:.8rem;margin-top:auto}
+        @media(max-width:640px){.fgrid{grid-template-columns:1fr}.fsection{padding:20px 18px}.form-footer-actions{flex-direction:column;gap:12px}.btn-save,.btn-back{width:100%;justify-content:center}}
     </style>
 </head>
-<body class="bg-light">
+<body>
+
+<div class="topbar">🐾 PetShop – Quản lý sản phẩm</div>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="/">Trang Chủ</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/sanpham">Sản Phẩm</a>
-                </li>
-            </ul>
+<header class="navbar">
+    <nav class="navbar-inner">
+        <a th:href="@{/}" class="brand">
+            <div class="li">🐾</div>
+            <span class="lt">PetShop</span>
+        </a>
+        <div class="breadcrumb">
+            <span class="bc-sep">/</span>
+            <a th:href="@{/sanpham}">Sản phẩm</a>
+            <span class="bc-sep">/</span>
+            <span th:text="${sanPham.maSP == null ? 'Thêm mới' : 'Chỉnh sửa'}">Form</span>
+        </div>
+        <div class="spacer"></div>
+        <a th:href="@{/sanpham}"
+           style="display:flex;align-items:center;gap:6px;color:var(--gray-600);font-size:.85rem;font-weight:700;text-decoration:none;padding:8px 14px;border-radius:50px;border:1.5px solid var(--gray-200);transition:all .2s"
+           onmouseover="this.style.background='var(--gray-100)'" onmouseout="this.style.background=''">
+            <i class="bi bi-arrow-left"></i> Danh sách
+        </a>
+    </nav>
+</header>
+
+<!-- Page -->
+<div class="page-wrap">
+
+    <!-- Header -->
+    <div class="form-header">
+        <div class="fh-icon" th:text="${sanPham.maSP == null ? '✨' : '✏️'}">✨</div>
+        <div>
+            <h1 th:text="${sanPham.maSP == null ? 'Thêm sản phẩm mới' : 'Chỉnh sửa sản phẩm'}">Form</h1>
+            <p th:text="${sanPham.maSP == null ? 'Điền thông tin để tạo sản phẩm mới cho cửa hàng' : 'Cập nhật thông tin sản phẩm #' + sanPham.maSP}">Mô tả</p>
         </div>
     </div>
-</nav>
 
-<div class="container py-4">
-    <div class="form-container">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center py-3">
-                <h3 class="mb-0" th:text="${sanPham.maSP == null ? 'Thêm Mới Sản Phẩm' : 'Chỉnh Sửa Sản Phẩm'}">Form Sản Phẩm</h3>
-            </div>
-            <div class="card-body p-4">
-                
-                <form th:action="@{${sanPham.maSP == null ? '/sanpham/them' : '/sanpham/sua/' + sanPham.maSP}}" th:object="${sanPham}" method="post" enctype="multipart/form-data">
+    <div class="form-card">
+        <form th:action="@{${sanPham.maSP == null ? '/sanpham/them' : '/sanpham/sua/' + sanPham.maSP}}"
+              th:object="${sanPham}" method="post" enctype="multipart/form-data" id="productForm">
+            <input type="hidden" th:field="*{maSP}">
 
-                    <!-- Trường Ẩn: Mã SP (chỉ dùng khi Sửa) -->
-                    <input type="hidden" th:field="*{maSP}">
+            <!-- Section 1: Basic info -->
+            <div class="fsection">
+                <div class="section-title">
+                    <i class="bi bi-info-circle-fill"></i> Thông tin cơ bản
+                </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="tenSP" class="form-label fw-bold">Tên Sản Phẩm <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="tenSP" th:field="*{tenSP}" required placeholder="Nhập tên sản phẩm">
-                        </div>
+                <!-- Product name -->
+                <div class="fgroup full">
+                    <label><i class="bi bi-tag-fill"></i> Tên sản phẩm <span class="req">*</span></label>
+                    <div class="iw">
+                        <i class="bi bi-tag-fill ii"></i>
+                        <input type="text" th:field="*{tenSP}" placeholder="Nhập tên sản phẩm..." required>
                     </div>
+                </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="loaiSanPham" class="form-label fw-bold">Loại Sản Phẩm <span class="text-danger">*</span></label>
-                            <select class="form-select" id="loaiSanPham" th:field="*{maLoai}" required>
-                                <option value="">-- Chọn Loại SP --</option>
-                                <option th:each="loai : ${loaiSanPhams}" 
-                                        th:value="${loai.maLoai}" 
+                <div class="fgrid">
+                    <!-- Product type -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-grid-fill"></i> Loại sản phẩm <span class="req">*</span></label>
+                        <div class="iw sw">
+                            <i class="bi bi-grid-fill ii"></i>
+                            <select th:field="*{maLoai}" required>
+                                <option value="">-- Chọn loại sản phẩm --</option>
+                                <option th:each="loai : ${loaiSanPhams}"
+                                        th:value="${loai.maLoai}"
                                         th:text="${loai.tenLoai}"></option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="loaiThuCung" class="form-label fw-bold">Dành cho Thú Cưng <span class="text-danger">*</span></label>
-                            <select class="form-select" id="loaiThuCung" th:field="*{maLoaiTC}" required>
-                                <option value="">-- Chọn Loại Thú Cưng --</option>
-                                <option th:each="thuCung : ${loaiThuCungs}" 
-                                        th:value="${thuCung.maLoaiTC}" 
-                                        th:text="${thuCung.tenLoaiTC}"></option>
+                    </div>
+                    <!-- Pet type -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-heart-fill"></i> Dành cho thú cưng <span class="req">*</span></label>
+                        <div class="iw sw">
+                            <i class="bi bi-heart-fill ii"></i>
+                            <select th:field="*{maLoaiTC}" required>
+                                <option value="">-- Chọn loại thú cưng --</option>
+                                <option th:each="tc : ${loaiThuCungs}"
+                                        th:value="${tc.maLoaiTC}"
+                                        th:text="${tc.tenLoaiTC}"></option>
                             </select>
                         </div>
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="giaBan" class="form-label fw-bold">Giá Bán (VNĐ) <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" class="form-control" id="giaBan" th:field="*{giaBan}" required placeholder="150000">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="slTon" class="form-label fw-bold">Số Lượng Tồn <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="slTon" th:field="*{slTon}" required placeholder="100">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="khuyenMai" class="form-label fw-bold">Khuyến Mãi (%)</label>
-                            <input type="number" step="0.01" class="form-control" id="khuyenMai" th:field="*{khuyenMai}" placeholder="0">
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="hinhDaiDien" class="form-label fw-bold">Hình Ảnh Đại Diện</label>
-                            <input type="file" class="form-control" id="hinhDaiDien" name="hinhDaiDien" accept="image/*" onchange="previewImage(this)">
-                            
-                            <!-- Hiển thị ảnh cũ nếu đang ở chế độ sửa (có data) -->
-                            <div class="mt-2 text-center" th:if="${oldHinhDaiDien != null && !oldHinhDaiDien.isEmpty()}">
-                                <p class="small text-muted mb-1">Ảnh hiện tại:</p>
-                                <img th:src="${oldHinhDaiDien}" alt="Ảnh hiện tại" class="preview-image">
-                            </div>
-
-                            <div class="mt-2 text-center">
-                                <p class="small text-muted mb-1 d-none" id="previewLabel">Ảnh tải lên mới:</p>
-                                <img id="imagePreview" alt="Xem trước ảnh" class="preview-image d-none">
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="hinhAnhs" class="form-label fw-bold">Hình Ảnh Phụ (Nhiều ảnh)</label>
-                            <input type="file" class="form-control" id="hinhAnhs" name="hinhAnhs" accept="image/*" multiple>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="tinhTrang" class="form-label fw-bold">Trạng Thái</label>
-                            <select class="form-select" id="tinhTrang" th:field="*{tinhTrang}">
-                                <option value="1">Đang bán (1)</option>
-                                <option value="0">Ngừng bán (0)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            <label for="moTa" class="form-label fw-bold">Mô Tả Sản Phẩm</label>
-                            <textarea class="form-control" id="moTa" th:field="*{moTa}" rows="4" placeholder="Nhập mô tả chi tiết về sản phẩm này..."></textarea>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="/sanpham" class="btn btn-secondary px-4">
-                            <i class="bi bi-arrow-left"></i> Quay lại
-                        </a>
-                        <button type="submit" class="btn btn-success px-5 fw-bold">
-                            <i class="bi bi-save"></i> Lưu Sản Phẩm
-                        </button>
-                    </div>
-
-                </form>
+                </div>
             </div>
-        </div>
+
+            <!-- Section 2: Price & stock -->
+            <div class="fsection">
+                <div class="section-title">
+                    <i class="bi bi-currency-dollar"></i> Giá & Kho hàng
+                </div>
+                <div class="fgrid">
+                    <!-- Price -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-currency-exchange"></i> Giá bán (VNĐ) <span class="req">*</span></label>
+                        <div class="iw">
+                            <i class="bi bi-currency-exchange ii"></i>
+                            <input type="number" th:field="*{giaBan}" placeholder="150000" min="0" step="1000" required
+                                   oninput="formatPrice(this)">
+                        </div>
+                        <div class="input-hint" id="priceDisplay">Nhập giá bán</div>
+                    </div>
+                    <!-- Stock -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-box-seam-fill"></i> Số lượng tồn <span class="req">*</span></label>
+                        <div class="iw">
+                            <i class="bi bi-box-seam-fill ii"></i>
+                            <input type="number" th:field="*{slTon}" placeholder="100" min="0" required>
+                        </div>
+                    </div>
+                    <!-- Discount -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-percent"></i> Khuyến mãi (%)</label>
+                        <div class="iw">
+                            <i class="bi bi-percent ii"></i>
+                            <input type="number" th:field="*{khuyenMai}" placeholder="0" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    <!-- Status -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-toggle-on"></i> Trạng thái bán</label>
+                        <div class="status-row">
+                            <label class="status-opt">
+                                <input type="radio" name="tinhTrang" th:value="1"
+                                       th:checked="${sanPham.tinhTrang == 1 or sanPham.tinhTrang == null}">
+                                <div class="so-emoji">✅</div>
+                                <div class="so-label">Đang bán</div>
+                            </label>
+                            <label class="status-opt">
+                                <input type="radio" name="tinhTrang" th:value="0"
+                                       th:checked="${sanPham.tinhTrang == 0}">
+                                <div class="so-emoji">⛔</div>
+                                <div class="so-label">Ngừng bán</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Images -->
+            <div class="fsection">
+                <div class="section-title">
+                    <i class="bi bi-images"></i> Hình ảnh sản phẩm
+                </div>
+                <div class="fgrid">
+                    <!-- Main image -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-image-fill"></i> Ảnh đại diện</label>
+                        <div class="img-upload-area" id="mainUploadArea">
+                            <input type="file" id="hinhDaiDien" name="hinhDaiDien"
+                                   accept="image/*" onchange="previewMain(this)">
+                            <div class="upload-icon" id="mainUploadIcon">🌸</div>
+                            <div class="upload-label">Nhấn hoặc kéo thả ảnh</div>
+                            <div class="upload-hint">PNG, JPG tối đa 5MB</div>
+                        </div>
+                        <!-- Current image -->
+                        <div class="current-img-wrap"
+                             th:if="${oldHinhDaiDien != null and !oldHinhDaiDien.isEmpty()}">
+                            <div class="current-img-label">Ảnh hiện tại:</div>
+                            <img th:src="${oldHinhDaiDien}" alt="Ảnh hiện tại" class="current-img" id="mainPreview">
+                        </div>
+                        <div class="current-img-wrap" id="mainPreviewWrap" style="display:none;"
+                             th:unless="${oldHinhDaiDien != null and !oldHinhDaiDien.isEmpty()}">
+                            <div class="current-img-label">Ảnh tải lên:</div>
+                            <img id="mainPreviewNew" alt="Preview" class="current-img">
+                        </div>
+                    </div>
+                    <!-- Extra images -->
+                    <div class="fgroup">
+                        <label><i class="bi bi-collection-fill"></i> Hình ảnh phụ (nhiều ảnh)</label>
+                        <div class="img-upload-area">
+                            <input type="file" id="hinhAnhs" name="hinhAnhs"
+                                   accept="image/*" multiple>
+                            <div class="upload-icon">🖼️</div>
+                            <div class="upload-label">Chọn nhiều ảnh</div>
+                            <div class="upload-hint">Giữ Ctrl/Cmd để chọn nhiều file</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Description -->
+            <div class="fsection">
+                <div class="section-title"><i class="bi bi-file-text-fill"></i> Mô tả sản phẩm</div>
+                <div class="fgroup full">
+                    <label><i class="bi bi-pencil-fill"></i> Mô tả chi tiết</label>
+                    <div class="iw">
+                        <i class="bi bi-pencil-fill ii" style="top:16px;transform:none;"></i>
+                        <textarea th:field="*{moTa}" rows="5"
+                                  placeholder="Nhập mô tả chi tiết về sản phẩm này..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-footer-actions">
+                <span class="req-note"><span style="color:var(--rose)">*</span> Trường bắt buộc</span>
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <a th:href="@{/sanpham}" class="btn-back">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn-save">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span th:text="${sanPham.maSP == null ? 'Thêm sản phẩm' : 'Lưu thay đổi'}">Lưu</span>
+                    </button>
+                </div>
+            </div>
+
+        </form>
     </div>
 </div>
 
-<!-- Bootstrap 5 JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<footer class="site-footer">
+    © 2025 PetShop 🐾 — Hệ thống quản lý sản phẩm
+</footer>
 
-<!-- Script xem trước ảnh -->
 <script>
-    function previewImage(input) {
-        const preview = document.getElementById('imagePreview');
-        const previewLabel = document.getElementById('previewLabel');
-        
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.classList.remove('d-none');
-                previewLabel.classList.remove('d-none');
-            }
-            
-            reader.readAsDataURL(input.files[0]);
+    /* Format price display */
+    function formatPrice(input) {
+        const val = parseInt(input.value) || 0;
+        const display = document.getElementById('priceDisplay');
+        if (val > 0) {
+            display.textContent = '≈ ' + val.toLocaleString('vi-VN') + ' đồng';
+            display.style.color = 'var(--rose)';
         } else {
-            preview.src = "";
-            preview.classList.add('d-none');
-            previewLabel.classList.add('d-none');
+            display.textContent = 'Nhập giá bán';
+            display.style.color = 'var(--gray-400)';
         }
     }
+    /* Init price display */
+    (() => {
+        const pi = document.querySelector('input[name="giaBan"]');
+        if (pi && pi.value) formatPrice(pi);
+    })();
+
+    /* Preview main image */
+    function previewMain(input) {
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            // If existing img shown, update it
+            const cur = document.getElementById('mainPreview');
+            if (cur) { cur.src = e.target.result; return; }
+            // Otherwise show new preview area
+            const wrap = document.getElementById('mainPreviewWrap');
+            const img  = document.getElementById('mainPreviewNew');
+            if (wrap && img) {
+                img.src = e.target.result;
+                wrap.style.display = 'block';
+                document.getElementById('mainUploadIcon').textContent = '✅';
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    /* Drag-and-drop highlight */
+    document.querySelectorAll('.img-upload-area').forEach(area => {
+        area.addEventListener('dragover', e => {
+            e.preventDefault();
+            area.style.borderColor = 'var(--rose)';
+            area.style.background  = 'var(--pink-100)';
+        });
+        area.addEventListener('dragleave', () => {
+            area.style.borderColor = '';
+            area.style.background  = '';
+        });
+        area.addEventListener('drop', e => {
+            e.preventDefault();
+            area.style.borderColor = '';
+            area.style.background  = '';
+        });
+    });
 </script>
 </body>
 </html>

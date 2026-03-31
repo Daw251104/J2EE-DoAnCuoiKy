@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Cá Nhân – PetShop 🐾</title>
+    <meta name="description" content="Xem và cập nhật thông tin hồ sơ cá nhân tại PetShop.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --pink-50:   #fff0f6;
+            --pink-100:  #ffd6e8;
+            --pink-200:  #ffadd2;
+            --pink-300:  #ff85bc;
+            --pink-400:  #f06595;
+            --rose:      #ff6b9d;
+            --rose-deep: #e05585;
+            --peach:     #ffb3c6;
+            --cream:     #fff8fb;
+            --white:     #ffffff;
+            --gray-100:  #f8f0f4;
+            --gray-200:  #f0e6ec;
+            --gray-300:  #ddc8d6;
+            --gray-400:  #c4a0b5;
+            --gray-600:  #8b5e76;
+            --gray-800:  #4a2c3d;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Topbar ─── */
+        .topbar {
+            background: linear-gradient(90deg, var(--pink-400), var(--rose));
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 7px 16px;
+        }
+
+        /* ── Navbar ─── */
+        .navbar {
+            background: var(--white);
+            box-shadow: 0 2px 12px rgba(240,101,149,.10);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0 5vw;
+        }
+        .navbar-inner {
+            display: flex;
+            align-items: center;
+            height: 68px;
+            gap: 16px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .brand .li {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 14px rgba(255,107,157,.35);
+        }
+        .brand .lt {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none;
+        }
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 13px;
+            border-radius: 10px;
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all .2s;
+        }
+        .nav-links a:hover { background: var(--pink-50); color: var(--rose); }
+        .spacer { flex: 1; }
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--pink-50);
+            border: 1.5px solid var(--pink-100);
+            border-radius: 50px;
+            padding: 6px 14px 6px 8px;
+            color: var(--rose);
+            font-weight: 700;
+            font-size: .85rem;
+        }
+        .user-badge .av {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: .9rem;
+        }
+        .logout-btn {
+            background: none;
+            border: 1.5px solid var(--pink-200);
+            border-radius: 50px;
+            padding: 7px 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .83rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .2s;
+        }
+        .logout-btn:hover { background: #fff0f0; color: #e05555; border-color: #fca5a5; }
+
+        /* ── Page layout ─── */
+        .page-wrap { flex: 1; padding: 36px 5vw 60px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+        /* ── Page header ─── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+        .page-header .ph-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 8px 24px rgba(255,107,157,.28);
+        }
+        .page-header h1 { font-size: 1.6rem; font-weight: 900; color: var(--gray-800); }
+        .page-header p  { font-size: .87rem; color: var(--gray-400); font-weight: 500; margin-top: 3px; }
+
+        /* ── Grid ─── */
+        .pg-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ── Sidebar card ─── */
+        .sidebar-card {
+            background: linear-gradient(155deg, var(--pink-300) 0%, var(--rose) 55%, var(--rose-deep) 100%);
+            border-radius: 24px;
+            padding: 36px 24px;
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(255,107,157,.30);
+            position: sticky;
+            top: 100px;
+        }
+        .sidebar-card::before {
+            content: '';
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.07);
+            bottom: -50px;
+            right: -50px;
+        }
+        /* Avatar */
+        .avatar-ring {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+        .avatar-ring::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.30);
+            z-index: 0;
+        }
+        .avatar-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,.85);
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 6px 24px rgba(0,0,0,.15);
+        }
+        .avatar-placeholder {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,.85);
+            background: rgba(255,255,255,.20);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 6px 24px rgba(0,0,0,.10);
+        }
+        /* Name */
+        .sb-name  { font-size: 1.2rem; font-weight: 900; margin-bottom: 4px; }
+        .sb-uname { font-size: .83rem; opacity: .8; margin-bottom: 16px; }
+        /* Roles */
+        .role-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 18px; }
+        .role-tag  {
+            padding: 3px 11px;
+            border-radius: 50px;
+            font-size: .72rem;
+            font-weight: 800;
+            background: rgba(255,255,255,.22);
+            border: 1px solid rgba(255,255,255,.30);
+        }
+        /* Info strips */
+        .info-strip {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: rgba(255,255,255,.16);
+            border: 1px solid rgba(255,255,255,.22);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            font-size: .84rem;
+            text-align: left;
+            word-break: break-all;
+        }
+        .info-strip i { font-size: .95rem; opacity: .9; flex-shrink: 0; }
+        /* Stats row */
+        .stats-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .stat-box {
+            flex: 1;
+            background: rgba(255,255,255,.15);
+            border-radius: 14px;
+            padding: 12px 8px;
+            border: 1px solid rgba(255,255,255,.20);
+        }
+        .stat-box .sval { font-size: 1.4rem; font-weight: 900; }
+        .stat-box .slbl { font-size: .7rem; opacity: .8; font-weight: 600; margin-top: 2px; }
+
+        /* ── Right panel ─── */
+        .right-panel { display: flex; flex-direction: column; gap: 20px; }
+
+        /* ── Cards ─── */
+        .panel-card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(240,101,149,.08), 0 0 0 1px rgba(255,144,196,.10);
+            overflow: hidden;
+        }
+        .card-header-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 24px;
+            border-bottom: 1.5px solid var(--pink-100);
+            background: linear-gradient(135deg, var(--pink-50), var(--white));
+        }
+        .card-header-bar .ch-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: .95rem;
+        }
+        .card-header-bar h2 { font-size: 1rem; font-weight: 800; color: var(--gray-800); }
+        .card-header-bar p  { font-size: .78rem; color: var(--gray-400); font-weight: 500; margin-top: 1px; }
+        .card-body { padding: 24px; }
+
+        /* ── Alerts ─── */
+        .alert-box {
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: .87rem;
+            font-weight: 700;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-s { background: #f0fff8; border: 1.5px solid #86efac; color: #166534; }
+        .alert-e { background: #fff0f0; border: 1.5px solid #fca5a5; color: #cc3333; }
+        .alert-box button { margin-left: auto; background: none; border: none; cursor: pointer; font-size: 1rem; color: inherit; opacity: .6; }
+
+        /* ── Form ─── */
+        .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+        .fgroup { margin-bottom: 18px; }
+        .fgroup.full { grid-column: 1/-1; }
+        .fgroup label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+        }
+        .fgroup label i { color: var(--pink-300); font-size: .9rem; }
+        .fgroup label .req { color: var(--rose); font-size: .85rem; }
+        .fgroup .hint { font-size: .73rem; color: var(--gray-400); font-weight: 600; margin-top: 5px; }
+
+        .iw { position: relative; }
+        .iw .ii {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--pink-300);
+            font-size: .95rem;
+            pointer-events: none;
+        }
+        .iw:focus-within .ii { color: var(--rose); }
+        .iw input, .iw select {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 2px solid var(--gray-200);
+            border-radius: 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .92rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            background: var(--gray-100);
+            outline: none;
+            appearance: none;
+            transition: border-color .25s, background .25s, box-shadow .25s;
+        }
+        .iw input:focus, .iw select:focus {
+            border-color: var(--pink-300);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(255,133,188,.12);
+        }
+        .iw input::placeholder { color: var(--gray-400); font-weight: 400; }
+        .iw input.readonly {
+            background: var(--gray-200) !important;
+            color: var(--gray-400) !important;
+            cursor: not-allowed;
+        }
+        .iw input.readonly:focus { border-color: var(--gray-200); box-shadow: none; }
+        /* Select arrow */
+        .sw::after {
+            content: '\F282';
+            font-family: 'bootstrap-icons';
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--pink-300);
+            pointer-events: none;
+            font-size: .85rem;
+        }
+
+        /* ── Tab bar ─── */
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            padding: 0 24px;
+            border-bottom: 2px solid var(--pink-100);
+            background: var(--white);
+        }
+        .tab-btn {
+            padding: 14px 18px;
+            border: none;
+            background: none;
+            font-family: 'Nunito', sans-serif;
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            cursor: pointer;
+            position: relative;
+            bottom: -2px;
+            border-bottom: 2px solid transparent;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn.active { color: var(--rose); border-bottom-color: var(--rose); }
+        .tab-btn:hover  { color: var(--rose); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── Password section ─── */
+        .pw-tip {
+            background: var(--pink-50);
+            border: 1.5px solid var(--pink-100);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: .82rem;
+            color: var(--gray-600);
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+        }
+        .pw-tip i { color: var(--rose); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── Submit button ─── */
+        .form-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            border: none;
+            font-family: 'Nunito', sans-serif;
+            font-size: .95rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255,107,157,.38);
+            transition: all .2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-save::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.15), transparent); }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255,107,157,.48); }
+
+        /* ── Quick links card ─── */
+        .quick-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .quick-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gray-100);
+            border: 1.5px solid var(--pink-100);
+            border-radius: 14px;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: var(--gray-800);
+            font-size: .88rem;
+            font-weight: 700;
+            transition: all .2s;
+        }
+        .quick-link:hover { background: var(--pink-50); border-color: var(--pink-200); color: var(--rose); transform: translateX(3px); }
+        .quick-link .ql-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .ql-pink   { background: linear-gradient(135deg, var(--pink-100), var(--pink-200)); }
+        .ql-purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+        .ql-green  { background: linear-gradient(135deg, #dcfce7, #bbf7d0); }
+        .ql-orange { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+
+        /* ── Footer ─── */
+        .site-footer {
+            background: var(--gray-800);
+            color: rgba(255,255,255,.5);
+            text-align: center;
+            padding: 22px 5vw;
+            font-size: .82rem;
+        }
+        .site-footer a { color: var(--peach); text-decoration: none; }
+
+        /* ── Responsive ─── */
+        @media (max-width: 860px) {
+            .pg-grid { grid-template-columns: 1fr; }
+            .sidebar-card { position: static; }
+        }
+        @media (max-width: 640px) {
+            .fgrid { grid-template-columns: 1fr; }
+            .quick-links { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">🐾 PetShop – Thiên đường mua sắm cho thú cưng yêu của bạn 💕</div>
+
+<!-- ── Navbar ── -->
+<header class="navbar">
+    <nav class="navbar-inner">
+        <a th:href="@{/}" class="brand">
+            <div class="li">🐾</div>
+            <span class="lt">PetShop</span>
+        </a>
+        <ul class="nav-links">
+            <li><a th:href="@{/sanpham}"><i class="bi bi-grid-3x3-gap-fill"></i> Sản phẩm</a></li>
+            <li sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')">
+                <a th:href="@{/gio-hang}"><i class="bi bi-bag-heart"></i> Giỏ hàng</a>
+            </li>
+            <li sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')">
+                <a th:href="@{/don-hang}"><i class="bi bi-bag-check"></i> Đơn hàng</a>
+            </li>
+            <li sec:authorize="hasAnyAuthority('OWNER','STAFF')">
+                <a th:href="@{/admin}"><i class="bi bi-shield-check"></i> Quản trị</a>
+            </li>
+        </ul>
+        <div class="spacer"></div>
+        <div class="nav-user">
+            <div class="user-badge">
+                <div class="av">🐾</div>
+                <span sec:authentication="name">User</span>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="logout-btn">
+                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                </button>
+            </form>
+        </div>
+    </nav>
+</header>
+
+<!-- ── Page ── -->
+<div class="page-wrap">
+
+    <!-- Page header -->
+    <div class="page-header">
+        <div class="ph-icon">👤</div>
+        <div>
+            <h1>Hồ Sơ Cá Nhân</h1>
+            <p>Quản lý thông tin tài khoản và cài đặt của bạn</p>
+        </div>
+    </div>
+
+    <div class="pg-grid">
+
+        <!-- ══ SIDEBAR ══ -->
+        <aside class="sidebar-card">
+
+            <!-- Avatar -->
+            <div class="avatar-ring" style="display:inline-block;margin-bottom:16px;">
+                <img th:if="${!#strings.isEmpty(taiKhoan.anhDaiDien)}"
+                     th:src="${taiKhoan.anhDaiDien}"
+                     alt="Avatar" class="avatar-img">
+                <div th:unless="${!#strings.isEmpty(taiKhoan.anhDaiDien)}"
+                     class="avatar-placeholder">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+            </div>
+
+            <!-- Name & username -->
+            <div class="sb-name" th:text="${taiKhoan.hoTen ?: taiKhoan.username}">Tên</div>
+            <div class="sb-uname">@<span th:text="${taiKhoan.username}">username</span></div>
+
+            <!-- Roles -->
+            <div class="role-tags">
+                <span class="role-tag" th:each="role : ${taiKhoan.loaiTaiKhoan}"
+                      th:text="${role.tenLoaiTK}">Role</span>
+            </div>
+
+            <!-- Info strips -->
+            <div class="info-strip">
+                <i class="bi bi-envelope-fill"></i>
+                <span th:text="${taiKhoan.email}">email@example.com</span>
+            </div>
+            <div class="info-strip" th:if="${taiKhoan.sdt != null and !#strings.isEmpty(taiKhoan.sdt)}">
+                <i class="bi bi-telephone-fill"></i>
+                <span th:text="${taiKhoan.sdt}">0909 000 000</span>
+            </div>
+            <div class="info-strip" th:if="${taiKhoan.diaChi != null and !#strings.isEmpty(taiKhoan.diaChi)}">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span th:text="${taiKhoan.diaChi}">Địa chỉ</span>
+            </div>
+            <div class="info-strip">
+                <i class="bi bi-calendar3"></i>
+                <span>Tham gia:
+                    <b th:text="${taiKhoan.ngayTao != null
+                        ? #temporals.format(taiKhoan.ngayTao,'dd/MM/yyyy')
+                        : 'Chưa rõ'}">01/01/2024</b>
+                </span>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="sval">0</div>
+                    <div class="slbl">Đơn hàng</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sval">0</div>
+                    <div class="slbl">Đã mua</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sval">❤️</div>
+                    <div class="slbl">Yêu thích</div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ══ RIGHT PANEL ══ -->
+        <div class="right-panel">
+
+            <!-- ── Edit profile card ── -->
+            <div class="panel-card">
+                <!-- Tab bar -->
+                <div class="tab-bar">
+                    <button class="tab-btn active" onclick="switchTab(this,'tab-info')">
+                        <i class="bi bi-person-fill"></i> Thông tin cá nhân
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(this,'tab-password')">
+                        <i class="bi bi-lock-fill"></i> Đổi mật khẩu
+                    </button>
+                </div>
+
+                <!-- ─ Tab 1: Info ─ -->
+                <div id="tab-info" class="tab-content active">
+                    <div class="card-header-bar">
+                        <div class="ch-icon"><i class="bi bi-pencil-fill"></i></div>
+                        <div>
+                            <h2>Cập nhật thông tin</h2>
+                            <p>Cập nhật hồ sơ cá nhân của bạn</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Alerts -->
+                        <div th:if="${successMessage}" class="alert-box alert-s">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span th:text="${successMessage}"></span>
+                            <button onclick="this.parentElement.remove()">✕</button>
+                        </div>
+                        <div th:if="${errorMessage}" class="alert-box alert-e">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            <span th:text="${errorMessage}"></span>
+                            <button onclick="this.parentElement.remove()">✕</button>
+                        </div>
+
+                        <form th:action="@{/profile/update}" th:object="${updateProfileRequest}" method="post">
+                            <div class="fgrid">
+
+                                <!-- Username (readonly) -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-at"></i> Tên đăng nhập</label>
+                                    <div class="iw">
+                                        <i class="bi bi-at ii"></i>
+                                        <input type="text" th:value="${taiKhoan.username}" readonly class="readonly">
+                                    </div>
+                                    <div class="hint">🔒 Không thể thay đổi</div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-envelope-fill"></i> Email <span class="req">*</span></label>
+                                    <div class="iw">
+                                        <i class="bi bi-envelope-fill ii"></i>
+                                        <input type="email" th:field="*{email}" placeholder="email@example.com" required>
+                                    </div>
+                                </div>
+
+                                <!-- Full name -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-person-fill"></i> Họ và tên <span class="req">*</span></label>
+                                    <div class="iw">
+                                        <i class="bi bi-person-fill ii"></i>
+                                        <input type="text" th:field="*{hoTen}" placeholder="Nguyễn Văn A" required>
+                                    </div>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-telephone-fill"></i> Số điện thoại</label>
+                                    <div class="iw">
+                                        <i class="bi bi-telephone-fill ii"></i>
+                                        <input type="tel" th:field="*{sdt}" placeholder="0909 123 456">
+                                    </div>
+                                </div>
+
+                                <!-- Gender -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-gender-ambiguous"></i> Giới tính</label>
+                                    <div class="iw sw">
+                                        <i class="bi bi-gender-ambiguous ii"></i>
+                                        <select th:field="*{gioiTinh}">
+                                            <option value="">-- Chọn giới tính --</option>
+                                            <option value="NAM">🙋‍♂️ Nam</option>
+                                            <option value="NU">🙋‍♀️ Nữ</option>
+                                            <option value="KHAC">✨ Khác</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Avatar URL -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-camera-fill"></i> URL ảnh đại diện</label>
+                                    <div class="iw">
+                                        <i class="bi bi-camera-fill ii"></i>
+                                        <input type="url" th:field="*{anhDaiDien}"
+                                               placeholder="https://example.com/avatar.jpg"
+                                               oninput="liveAvatar(this.value)">
+                                    </div>
+                                    <div class="hint">Dán link ảnh đại diện của bạn</div>
+                                </div>
+
+                                <!-- Address -->
+                                <div class="fgroup full">
+                                    <label><i class="bi bi-geo-alt-fill"></i> Địa chỉ</label>
+                                    <div class="iw">
+                                        <i class="bi bi-geo-alt-fill ii"></i>
+                                        <input type="text" th:field="*{diaChi}"
+                                               placeholder="Số nhà, Đường, Quận/Huyện, Tỉnh/Thành phố">
+                                    </div>
+                                </div>
+
+                            </div><!-- /.fgrid -->
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-save">
+                                    <i class="bi bi-check-circle-fill"></i> Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ─ Tab 2: Password ─ -->
+                <div id="tab-password" class="tab-content">
+                    <div class="card-header-bar">
+                        <div class="ch-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                        <div>
+                            <h2>Đổi mật khẩu</h2>
+                            <p>Bảo mật tài khoản của bạn</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="pw-tip">
+                            <i class="bi bi-info-circle-fill"></i>
+                            Mật khẩu mạnh có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.
+                        </div>
+
+                        <form th:action="@{/profile/change-password}" method="post">
+                            <!-- Current password -->
+                            <div class="fgroup">
+                                <label><i class="bi bi-lock-fill"></i> Mật khẩu hiện tại <span class="req">*</span></label>
+                                <div class="iw">
+                                    <i class="bi bi-lock-fill ii"></i>
+                                    <input type="password" name="currentPassword" placeholder="Nhập mật khẩu hiện tại" required>
+                                </div>
+                            </div>
+
+                            <div class="fgrid">
+                                <!-- New password -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-key-fill"></i> Mật khẩu mới <span class="req">*</span></label>
+                                    <div class="iw">
+                                        <i class="bi bi-key-fill ii"></i>
+                                        <input type="password" name="newPassword" id="newPassword"
+                                               placeholder="Ít nhất 8 ký tự" required
+                                               oninput="checkPwStrength(this.value)">
+                                    </div>
+                                    <!-- Strength bar -->
+                                    <div style="display:flex;gap:4px;margin-top:7px;">
+                                        <span id="ps1" style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                        <span id="ps2" style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                        <span id="ps3" style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                        <span id="ps4" style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                    </div>
+                                    <div class="hint" id="pwsLabel">Nhập mật khẩu để kiểm tra độ mạnh</div>
+                                </div>
+
+                                <!-- Confirm -->
+                                <div class="fgroup">
+                                    <label><i class="bi bi-key-fill"></i> Xác nhận mật khẩu <span class="req">*</span></label>
+                                    <div class="iw">
+                                        <i class="bi bi-key-fill ii"></i>
+                                        <input type="password" name="confirmPassword" id="confirmPassword"
+                                               placeholder="Nhập lại mật khẩu mới" required
+                                               oninput="checkConfirm()">
+                                    </div>
+                                    <div class="hint" id="confirmLabel"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-save">
+                                    <i class="bi bi-shield-check"></i> Đổi mật khẩu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div><!-- /.panel-card -->
+
+            <!-- ── Quick links ── -->
+            <div class="panel-card">
+                <div class="card-header-bar">
+                    <div class="ch-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                    <div>
+                        <h2>Truy cập nhanh</h2>
+                        <p>Các trang thường dùng</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="quick-links">
+                        <a th:href="@{/sanpham}" class="quick-link">
+                            <div class="ql-icon ql-pink">🛍️</div>
+                            <div>
+                                <div>Cửa hàng</div>
+                                <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Xem sản phẩm</div>
+                            </div>
+                        </a>
+                        <a th:href="@{/gio-hang}"
+                           sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')"
+                           class="quick-link">
+                            <div class="ql-icon ql-purple">🛒</div>
+                            <div>
+                                <div>Giỏ hàng</div>
+                                <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Xem giỏ hàng</div>
+                            </div>
+                        </a>
+                        <a th:href="@{/don-hang}"
+                           sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')"
+                           class="quick-link">
+                            <div class="ql-icon ql-green">📦</div>
+                            <div>
+                                <div>Đơn hàng</div>
+                                <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Theo dõi đơn</div>
+                            </div>
+                        </a>
+                        <a th:href="@{/admin}"
+                           sec:authorize="hasAnyAuthority('OWNER','STAFF')"
+                           class="quick-link">
+                            <div class="ql-icon ql-orange">⚙️</div>
+                            <div>
+                                <div>Quản trị</div>
+                                <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Trang Admin</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /.right-panel -->
+    </div><!-- /.pg-grid -->
+</div><!-- /.page-wrap -->
+
+<footer class="site-footer">
+    🐾 PetShop – Chăm sóc thú cưng với tình yêu thương 💕 &nbsp;|&nbsp;
+    <a th:href="@{/}">Trang chủ</a>
+</footer>
+
+<script>
+    /* ── Tab switching ── */
+    function switchTab(btn, tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    /* ── Live avatar preview ── */
+    function liveAvatar(url) {
+        const img = document.querySelector('.avatar-img');
+        const ph  = document.querySelector('.avatar-placeholder');
+        if (!url) return;
+        if (img) { img.src = url; return; }
+        if (ph) {
+            const newImg = document.createElement('img');
+            newImg.src = url;
+            newImg.className = 'avatar-img';
+            newImg.alt = 'Avatar';
+            newImg.onerror = () => newImg.remove();
+            ph.replaceWith(newImg);
+        }
+    }
+
+    /* ── Password strength ── */
+    function checkPwStrength(val) {
+        const bars   = ['ps1','ps2','ps3','ps4'].map(id => document.getElementById(id));
+        const label  = document.getElementById('pwsLabel');
+        const colors = ['#f87171','#fb923c','#facc15','#4ade80'];
+        const labels = ['Rất yếu 😟','Yếu 😐','Khá mạnh 👍','Rất mạnh 💪'];
+        let s = 0;
+        if (val.length >= 6)  s++;
+        if (val.length >= 10) s++;
+        if (/[A-Z]/.test(val) && /[0-9]/.test(val)) s++;
+        if (/[^A-Za-z0-9]/.test(val)) s++;
+        bars.forEach((b,i) => b.style.background = i < s ? colors[Math.min(s-1,3)] : 'var(--gray-200)');
+        label.textContent = val.length === 0 ? 'Nhập mật khẩu để kiểm tra độ mạnh' : labels[Math.min(s-1,3)] || labels[0];
+        label.style.color = val.length === 0 ? 'var(--gray-400)' : colors[Math.min(s-1,3)];
+    }
+
+    /* ── Password confirm check ── */
+    function checkConfirm() {
+        const np = document.getElementById('newPassword').value;
+        const cp = document.getElementById('confirmPassword').value;
+        const lb = document.getElementById('confirmLabel');
+        if (!cp) { lb.textContent = ''; return; }
+        if (np === cp) { lb.textContent = '✅ Mật khẩu khớp'; lb.style.color = '#16a34a'; }
+        else           { lb.textContent = '❌ Mật khẩu không khớp'; lb.style.color = '#dc2626'; }
+    }
+</script>
+</body>
+</html>

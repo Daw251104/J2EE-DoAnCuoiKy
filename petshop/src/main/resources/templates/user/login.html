@@ -5,310 +5,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập – PetShop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Đăng nhập – PetShop 🐾</title>
+    <meta name="description" content="Đăng nhập vào PetShop để mua sắm sản phẩm cho thú cưng yêu của bạn.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        :root {
+            --pink-50:  #fff0f6;
+            --pink-100: #ffd6e8;
+            --pink-200: #ffadd2;
+            --pink-300: #ff85bc;
+            --pink-400: #f06595;
+            --rose:     #ff6b9d;
+            --rose-deep:#e05585;
+            --peach:    #ffb3c6;
+            --cream:    #fff8fb;
+            --white:    #ffffff;
+            --gray-100: #f8f0f4;
+            --gray-200: #f0e6ec;
+            --gray-400: #c4a0b5;
+            --gray-600: #8b5e76;
+            --gray-800: #4a2c3d;
+        }
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Nunito', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            overflow: hidden;
+            background: linear-gradient(145deg, #ffe8f2 0%, #fff3f8 40%, #fce8ff 100%);
             position: relative;
+            overflow: hidden;
         }
 
-        /* Animated blobs */
-        body::before, body::after {
-            content: '';
-            position: absolute;
+        /* Decorative blobs */
+        .blob {
+            position: fixed;
             border-radius: 50%;
-            filter: blur(80px);
-            animation: float 8s ease-in-out infinite alternate;
+            filter: blur(70px);
+            pointer-events: none;
             z-index: 0;
         }
-        body::before {
+        .blob-1 {
             width: 500px; height: 500px;
-            background: rgba(255, 160, 80, 0.25);
-            top: -150px; left: -150px;
+            background: radial-gradient(circle, #ffb3d166 0%, transparent 70%);
+            top: -180px; left: -120px;
+            animation: blobFloat 9s ease-in-out infinite alternate;
         }
-        body::after {
+        .blob-2 {
             width: 400px; height: 400px;
-            background: rgba(100, 180, 255, 0.2);
-            bottom: -100px; right: -100px;
-            animation-delay: 3s;
+            background: radial-gradient(circle, #f9a8d466 0%, transparent 70%);
+            bottom: -150px; right: -100px;
+            animation: blobFloat 11s ease-in-out infinite alternate-reverse;
         }
-        @keyframes float {
-            from { transform: translate(0, 0) scale(1); }
-            to   { transform: translate(40px, 30px) scale(1.08); }
+        .blob-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, #e9d5ff55 0%, transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            animation: blobFloat 7s ease-in-out infinite alternate;
+        }
+        @keyframes blobFloat {
+            from { transform: translate(0,0) scale(1); }
+            to   { transform: translate(30px, 20px) scale(1.06); }
         }
 
-        .wrapper {
+        /* Floating paw prints */
+        .paw-float {
+            position: fixed;
+            font-size: 1.8rem;
+            opacity: 0.08;
+            animation: pawDrift linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes pawDrift {
+            from { transform: translateY(110vh) rotate(0deg); opacity: 0.06; }
+            to   { transform: translateY(-10vh) rotate(360deg); opacity: 0.12; }
+        }
+
+        /* ===== WRAPPER CARD ===== */
+        .login-wrapper {
             position: relative;
             z-index: 1;
             display: flex;
-            width: 860px;
+            width: 900px;
             max-width: 96vw;
-            border-radius: 24px;
+            min-height: 540px;
+            border-radius: 32px;
             overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+            box-shadow:
+                0 4px 6px rgba(240,101,149,0.08),
+                0 20px 60px rgba(240,101,149,0.18),
+                0 0 0 1px rgba(255,255,255,0.9);
         }
 
-        /* Left panel */
+        /* ===== LEFT PANEL ===== */
         .panel-left {
-            flex: 1;
-            background: linear-gradient(160deg, #ff8c42, #ff5c7a, #a855f7);
+            flex: 1.1;
+            background: linear-gradient(160deg, #ff85bc 0%, #ff6b9d 45%, #e05585 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 48px 36px;
+            padding: 52px 40px;
             color: #fff;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .panel-left .paw {
-            font-size: 72px;
-            margin-bottom: 20px;
-            animation: bounce 2s ease-in-out infinite;
+        .panel-left::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-12px); }
+        .panel-left::after {
+            content: '';
+            position: absolute;
+            width: 280px; height: 280px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            bottom: -80px; right: -80px;
         }
+
+        .pet-emoji {
+            font-size: 80px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+            animation: puppyBounce 2.2s ease-in-out infinite;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
+        }
+        @keyframes puppyBounce {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50%       { transform: translateY(-14px) rotate(3deg); }
+        }
+
         .panel-left h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1.3;
-            margin-bottom: 14px;
+            font-size: 2.1rem;
+            font-weight: 900;
+            line-height: 1.25;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
         }
         .panel-left p {
             font-size: 0.95rem;
-            font-weight: 300;
+            font-weight: 400;
             opacity: 0.88;
-            line-height: 1.6;
-        }
-        .panel-left .dots {
-            display: flex;
-            gap: 8px;
-            margin-top: 32px;
-        }
-        .panel-left .dots span {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.5);
-        }
-        .panel-left .dots span.active {
-            background: #fff;
-            width: 24px;
-            border-radius: 4px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+            max-width: 220px;
         }
 
-        /* Right panel (form) */
+        .features-list {
+            list-style: none;
+            margin-top: 32px;
+            position: relative;
+            z-index: 1;
+            text-align: left;
+        }
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+        .features-list li .dot {
+            width: 22px; height: 22px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* ===== RIGHT PANEL ===== */
         .panel-right {
             flex: 1;
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            padding: 52px 44px;
+            background: var(--white);
+            padding: 52px 48px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .brand-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+        .brand-mini .logo-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .brand-mini .logo-text {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .panel-right h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #fff;
+            font-size: 1.85rem;
+            font-weight: 900;
+            color: var(--gray-800);
             margin-bottom: 6px;
         }
         .panel-right .subtitle {
-            color: rgba(255,255,255,0.55);
             font-size: 0.9rem;
-            margin-bottom: 36px;
+            color: var(--gray-400);
+            margin-bottom: 34px;
+            font-weight: 500;
         }
 
+        /* ===== ALERTS ===== */
         .alert-box {
-            border-radius: 10px;
-            padding: 12px 16px;
+            border-radius: 12px;
+            padding: 13px 16px;
             font-size: 0.88rem;
-            margin-bottom: 20px;
+            font-weight: 600;
+            margin-bottom: 22px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .alert-error {
-            background: rgba(255, 80, 80, 0.15);
-            border: 1px solid rgba(255,100,100,0.4);
-            color: #ff8585;
+            background: #fff0f0;
+            border: 1.5px solid #ffb3b3;
+            color: #cc3333;
         }
         .alert-success {
-            background: rgba(60, 200, 120, 0.15);
-            border: 1px solid rgba(60,200,120,0.4);
-            color: #5ee8a0;
+            background: #f0fff8;
+            border: 1.5px solid #86efac;
+            color: #166534;
         }
 
-        .form-group {
-            margin-bottom: 22px;
-        }
+        /* ===== FORM ===== */
+        .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
-            font-size: 0.82rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 800;
             letter-spacing: 0.8px;
-            color: rgba(255,255,255,0.6);
             text-transform: uppercase;
+            color: var(--gray-600);
             margin-bottom: 8px;
         }
-        .input-wrap {
-            position: relative;
-        }
-        .input-wrap i {
+
+        .input-wrap { position: relative; }
+        .input-wrap .input-icon {
             position: absolute;
-            left: 15px;
-            top: 50%;
+            left: 15px; top: 50%;
             transform: translateY(-50%);
-            color: rgba(255,255,255,0.35);
+            color: var(--pink-300);
             font-size: 1rem;
             pointer-events: none;
+            transition: color 0.2s;
         }
         .input-wrap input {
             width: 100%;
-            padding: 14px 16px 14px 44px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px;
-            color: #fff;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.97rem;
-            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+            padding: 13px 46px 13px 44px;
+            border: 2px solid var(--gray-200);
+            border-radius: 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            background: var(--gray-100);
             outline: none;
+            transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
         }
-        .input-wrap input::placeholder { color: rgba(255,255,255,0.3); }
+        .input-wrap input::placeholder { color: var(--gray-400); font-weight: 400; }
         .input-wrap input:focus {
-            border-color: #ff8c42;
-            background: rgba(255,255,255,0.1);
-            box-shadow: 0 0 0 3px rgba(255,140,66,0.2);
+            border-color: var(--pink-300);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(255,133,188,0.15);
         }
+        .input-wrap input:focus + .input-icon, /* icon after input trick – not ideal, use label */
+        .input-wrap:focus-within .input-icon { color: var(--rose); }
 
         .toggle-pw {
             position: absolute;
-            right: 14px;
-            top: 50%;
+            right: 14px; top: 50%;
             transform: translateY(-50%);
-            color: rgba(255,255,255,0.35);
+            color: var(--gray-400);
             cursor: pointer;
             font-size: 1rem;
             transition: color 0.2s;
+            user-select: none;
         }
-        .toggle-pw:hover { color: rgba(255,255,255,0.75); }
+        .toggle-pw:hover { color: var(--rose); }
 
+        /* ===== SUBMIT BTN ===== */
         .btn-login {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #ff8c42, #ff5c7a);
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: #fff;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 800;
             cursor: pointer;
-            letter-spacing: 0.5px;
-            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-            box-shadow: 0 8px 24px rgba(255,92,122,0.4);
-            margin-top: 6px;
+            letter-spacing: 0.4px;
+            box-shadow: 0 8px 24px rgba(255,107,157,0.35);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-login::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
         }
         .btn-login:hover {
-            opacity: 0.92;
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(255,92,122,0.5);
+            box-shadow: 0 12px 32px rgba(255,107,157,0.45);
         }
         .btn-login:active { transform: translateY(0); }
 
+        /* ===== DIVIDER ===== */
         .divider {
-            text-align: center;
-            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin: 24px 0 20px;
         }
         .divider::before, .divider::after {
             content: '';
-            position: absolute;
-            top: 50%;
-            width: 38%;
-            height: 1px;
-            background: rgba(255,255,255,0.12);
+            flex: 1;
+            height: 1.5px;
+            background: var(--gray-200);
+            border-radius: 2px;
         }
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
         .divider span {
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.35);
-            padding: 0 10px;
-            position: relative;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        .footer-links {
+        /* ===== FOOTER ===== */
+        .form-footer {
             text-align: center;
-            font-size: 0.88rem;
-            color: rgba(255,255,255,0.45);
-        }
-        .footer-links a {
-            color: #ff8c42;
-            text-decoration: none;
+            font-size: 0.9rem;
+            color: var(--gray-400);
             font-weight: 600;
+        }
+        .form-footer a {
+            color: var(--rose);
+            text-decoration: none;
+            font-weight: 800;
             transition: color 0.2s;
         }
-        .footer-links a:hover { color: #ffb380; }
+        .form-footer a:hover { color: var(--rose-deep); text-decoration: underline; }
 
-        @media (max-width: 640px) {
+        /* Back to home */
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray-400);
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .back-home:hover { color: var(--rose); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
             .panel-left { display: none; }
             .panel-right { padding: 40px 28px; }
+            .login-wrapper { border-radius: 24px; }
         }
     </style>
 </head>
 <body>
-<div class="wrapper">
 
-    <!-- Left decorative panel -->
+<!-- Decorative floating blobs -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<!-- Floating paw emojis -->
+<span class="paw-float" style="left:5%;animation-duration:18s;animation-delay:0s;">🐾</span>
+<span class="paw-float" style="left:20%;animation-duration:22s;animation-delay:4s;font-size:1.2rem;">🐾</span>
+<span class="paw-float" style="left:75%;animation-duration:16s;animation-delay:8s;">🐾</span>
+<span class="paw-float" style="left:88%;animation-duration:25s;animation-delay:2s;font-size:1.4rem;">🐾</span>
+<span class="paw-float" style="left:50%;animation-duration:20s;animation-delay:6s;font-size:1rem;">🐾</span>
+
+<div class="login-wrapper">
+
+    <!-- ===== LEFT PANEL ===== -->
     <div class="panel-left">
-        <div class="paw">🐾</div>
-        <h1>Chào mừng đến<br>PetShop!</h1>
-        <p>Nơi chăm sóc tốt nhất dành cho<br>người bạn nhỏ của bạn.</p>
-        <div class="dots">
-            <span class="active"></span>
-            <span></span>
-            <span></span>
-        </div>
+        <div class="pet-emoji">🐶</div>
+        <h1>Chào mừng<br>trở lại! 💕</h1>
+        <p>Đăng nhập để tiếp tục mua sắm những sản phẩm tốt nhất cho thú cưng nhé.</p>
+        <ul class="features-list">
+            <li><span class="dot">🛍️</span> Hàng trăm sản phẩm chính hãng</li>
+            <li><span class="dot">🚚</span> Giao hàng nhanh toàn quốc</li>
+            <li><span class="dot">⭐</span> Tích điểm đổi quà hấp dẫn</li>
+        </ul>
     </div>
 
-    <!-- Right form panel -->
+    <!-- ===== RIGHT PANEL ===== -->
     <div class="panel-right">
-        <h2>Đăng nhập</h2>
-        <p class="subtitle">Nhập thông tin tài khoản để tiếp tục</p>
 
-        <!-- Error message -->
+        <a th:href="@{/}" href="/" class="back-home">
+            <i class="bi bi-arrow-left-circle"></i> Về trang chủ
+        </a>
+
+        <div class="brand-mini">
+            <div class="logo-icon">🐾</div>
+            <span class="logo-text">PetShop</span>
+        </div>
+
+        <h2>Đăng nhập</h2>
+        <p class="subtitle">Nhập tài khoản của bạn để tiếp tục 🐾</p>
+
+        <!-- Alert: error -->
         <div th:if="${param.error}" class="alert-box alert-error">
             <i class="bi bi-exclamation-circle-fill"></i>
-            Tên đăng nhập hoặc mật khẩu không đúng.
+            Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại!
         </div>
 
-        <!-- Logout message -->
+        <!-- Alert: logout -->
         <div th:if="${param.logout}" class="alert-box alert-success">
             <i class="bi bi-check-circle-fill"></i>
-            Bạn đã đăng xuất thành công.
+            Bạn đã đăng xuất thành công. Hẹn gặp lại! 🐾
         </div>
 
-        <form th:action="@{/login}" method="post" autocomplete="on">
+        <form th:action="@{/login}" action="/login" method="post" autocomplete="on">
 
             <div class="form-group">
                 <label for="username">Tên đăng nhập</label>
                 <div class="input-wrap">
-                    <i class="bi bi-person"></i>
+                    <i class="bi bi-person-fill input-icon"></i>
                     <input type="text" id="username" name="username"
                            placeholder="Nhập tên đăng nhập" required autofocus>
                 </div>
@@ -317,7 +471,7 @@
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
                 <div class="input-wrap">
-                    <i class="bi bi-lock"></i>
+                    <i class="bi bi-lock-fill input-icon"></i>
                     <input type="password" id="password" name="password"
                            placeholder="Nhập mật khẩu" required>
                     <i class="bi bi-eye toggle-pw" id="togglePw" title="Hiện/ẩn mật khẩu"></i>
@@ -325,26 +479,31 @@
             </div>
 
             <button type="submit" class="btn-login">
-                <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
+                <i class="bi bi-box-arrow-in-right"></i> &nbsp; Đăng nhập ngay
             </button>
 
         </form>
 
         <div class="divider"><span>hoặc</span></div>
 
-        <div class="footer-links">
-            Chưa có tài khoản? <a th:href="@{/register}">Đăng ký ngay</a>
-        </div>
+        <p class="form-footer">
+            Chưa có tài khoản?&nbsp;
+            <a th:href="@{/register}" href="/register">Đăng ký miễn phí 🐾</a>
+        </p>
+
     </div>
 </div>
 
 <script>
-    document.getElementById('togglePw').addEventListener('click', function () {
-        const pw = document.getElementById('password');
-        const isHidden = pw.type === 'password';
-        pw.type = isHidden ? 'text' : 'password';
-        this.className = 'bi toggle-pw ' + (isHidden ? 'bi-eye-slash' : 'bi-eye');
-    });
+    const togglePw = document.getElementById('togglePw');
+    const pwInput  = document.getElementById('password');
+    if (togglePw) {
+        togglePw.addEventListener('click', function () {
+            const isHidden = pwInput.type === 'password';
+            pwInput.type = isHidden ? 'text' : 'password';
+            this.className = 'bi toggle-pw ' + (isHidden ? 'bi-eye-slash' : 'bi-eye');
+        });
+    }
 </script>
 </body>
 </html>
