@@ -1,278 +1,826 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" layout:decorate="~{layout}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sản Phẩm – PetShop 🐾</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        :root{
-            --pink-50:#fff0f6;--pink-100:#ffd6e8;--pink-200:#ffadd2;
-            --pink-300:#ff85bc;--pink-400:#f06595;
-            --rose:#ff6b9d;--rose-deep:#e05585;--peach:#ffb3c6;
-            --cream:#fff8fb;--white:#fff;
-            --gray-100:#f8f0f4;--gray-200:#f0e6ec;--gray-300:#ddc8d6;
-            --gray-400:#c4a0b5;--gray-600:#8b5e76;--gray-800:#4a2c3d;
+        :root {
+            --pink-50: #fff0f6;
+            --pink-100: #ffd6e8;
+            --pink-200: #ffadd2;
+            --pink-300: #ff85bc;
+            --pink-400: #f06595;
+            --rose: #ff6b9d;
+            --rose-deep: #e05585;
+            --peach: #ffb3c6;
+            --cream: #fff8fb;
+            --white: #fff;
+            --gray-100: #f8f0f4;
+            --gray-200: #f0e6ec;
+            --gray-300: #ddc8d6;
+            --gray-400: #c4a0b5;
+            --gray-600: #8b5e76;
+            --gray-800: #4a2c3d;
         }
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--gray-800);min-height:100vh;display:flex;flex-direction:column}
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column
+        }
+
         /* Topbar */
-        .topbar{background:linear-gradient(90deg,var(--pink-400),var(--rose));color:#fff;font-size:.78rem;font-weight:700;text-align:center;padding:7px 16px}
+        .topbar {
+            background: linear-gradient(90deg, var(--pink-400), var(--rose));
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 7px 16px
+        }
+
         /* Navbar */
-        .navbar{background:var(--white);box-shadow:0 2px 12px rgba(240,101,149,.10);position:sticky;top:0;z-index:1000;padding:0 5vw}
-        .navbar-inner{display:flex;align-items:center;height:68px;gap:18px}
-        .brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
-        .brand .li{width:40px;height:40px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 14px rgba(255,107,157,.35)}
-        .brand .lt{font-family:'Pacifico',cursive;font-size:1.4rem;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .ns{flex:1;max-width:340px;position:relative}
-        .ns input{width:100%;padding:9px 16px 9px 40px;border:2px solid var(--pink-100);border-radius:50px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:600;background:var(--gray-100);color:var(--gray-800);outline:none;transition:all .25s}
-        .ns input:focus{border-color:var(--pink-300);background:var(--white);box-shadow:0 0 0 4px rgba(255,133,188,.12)}
-        .ns i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none}
-        .spacer{flex:1}
-        .nab{display:flex;align-items:center;gap:8px}
-        .nbtn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:800;cursor:pointer;text-decoration:none;transition:all .2s;border:none}
-        .nbtn-o{border:2px solid var(--pink-200)!important;color:var(--rose);background:none}
-        .nbtn-o:hover{background:var(--pink-50)}
-        .nbtn-f{background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;box-shadow:0 4px 14px rgba(255,107,157,.35)}
-        .nbtn-f:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,157,.45)}
-        .uchip{display:flex;align-items:center;gap:8px;background:var(--pink-50);border:1.5px solid var(--pink-100);border-radius:50px;padding:6px 14px 6px 8px;color:var(--rose);font-weight:700;font-size:.85rem}
-        .uchip .av{width:30px;height:30px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
-        .uchip button{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:.85rem;font-family:'Nunito',sans-serif;font-weight:700}
+        .navbar {
+            background: var(--white);
+            box-shadow: 0 2px 12px rgba(240, 101, 149, .10);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0 5vw
+        }
+
+        .navbar-inner {
+            display: flex;
+            align-items: center;
+            height: 68px;
+            gap: 16px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none;
+            flex-shrink: 0
+        }
+
+        .brand .li {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 14px rgba(255, 107, 157, .35)
+        }
+
+        .brand .lt {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 13px;
+            border-radius: 10px;
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all .2s
+        }
+
+        .nav-links a:hover {
+            background: var(--pink-50);
+            color: var(--rose)
+        }
+
+        .ns {
+            flex: 1;
+            max-width: 340px;
+            position: relative
+        }
+
+        .ns input {
+            width: 100%;
+            padding: 9px 16px 9px 40px;
+            border: 2px solid var(--pink-100);
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .88rem;
+            font-weight: 600;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            outline: none;
+            transition: all .25s
+        }
+
+        .ns input:focus {
+            border-color: var(--pink-300);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(255, 133, 188, .12)
+        }
+
+        .ns i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            pointer-events: none
+        }
+
+        .spacer {
+            flex: 1
+        }
+
+        .nab {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .nbtn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .85rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s;
+            border: none
+        }
+
+        .nbtn-o {
+            border: 2px solid var(--pink-200) !important;
+            color: var(--rose);
+            background: none
+        }
+
+        .nbtn-o:hover {
+            background: var(--pink-50)
+        }
+
+        .nbtn-f {
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(255, 107, 157, .35)
+        }
+
+        .nbtn-f:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, .45)
+        }
+
+        .uchip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--pink-50);
+            border: 1.5px solid var(--pink-100);
+            border-radius: 50px;
+            padding: 6px 14px 6px 8px;
+            color: var(--rose);
+            font-weight: 700;
+            font-size: .85rem
+        }
+
+        .uchip .av {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff
+        }
+
+        .uchip button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-400);
+            font-size: .85rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700
+        }
+
         /* Hero */
-        .page-hero{background:linear-gradient(135deg,var(--pink-50),#fff3f8,var(--pink-100));padding:40px 5vw 32px;border-bottom:1.5px solid var(--pink-100)}
-        .hero-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
-        .hero-left{display:flex;align-items:center;gap:14px}
-        .hero-icon{width:54px;height:54px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 8px 24px rgba(255,107,157,.28)}
-        .hero-left h1{font-size:1.65rem;font-weight:900;color:var(--gray-800)}
-        .hero-left p{font-size:.87rem;color:var(--gray-400);margin-top:3px;font-weight:500}
-        .btn-add{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:14px;background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:800;text-decoration:none;box-shadow:0 6px 20px rgba(255,107,157,.38);transition:all .2s}
-        .btn-add:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,107,157,.48)}
+        .page-hero {
+            background: linear-gradient(135deg, var(--pink-50), #fff3f8, var(--pink-100));
+            padding: 40px 5vw 32px;
+            border-bottom: 1.5px solid var(--pink-100)
+        }
+
+        .hero-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px
+        }
+
+        .hero-left {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .hero-icon {
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 8px 24px rgba(255, 107, 157, .28)
+        }
+
+        .hero-left h1 {
+            font-size: 1.65rem;
+            font-weight: 900;
+            color: var(--gray-800)
+        }
+
+        .hero-left p {
+            font-size: .87rem;
+            color: var(--gray-400);
+            margin-top: 3px;
+            font-weight: 500
+        }
+
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 22px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            font-size: .92rem;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 6px 20px rgba(255, 107, 157, .38);
+            transition: all .2s
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(255, 107, 157, .48)
+        }
+
         /* Filter bar */
-        .fbar{padding:16px 5vw;background:var(--white);border-bottom:1.5px solid var(--pink-100);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-        .fl{font-size:.78rem;font-weight:800;color:var(--gray-400);text-transform:uppercase;letter-spacing:.6px;margin-right:4px}
-        .fchip{padding:6px 14px;border-radius:50px;border:1.5px solid var(--pink-200);background:var(--pink-50);color:var(--rose);font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s}
-        .fchip:hover,.fchip.active{background:linear-gradient(135deg,var(--pink-300),var(--rose));border-color:transparent;color:#fff}
-        .rcount{margin-left:auto;font-size:.8rem;font-weight:700;color:var(--gray-400)}
+        .fbar {
+            padding: 16px 5vw;
+            background: var(--white);
+            border-bottom: 1.5px solid var(--pink-100);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .fl {
+            font-size: .78rem;
+            font-weight: 800;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            margin-right: 4px
+        }
+
+        .fchip {
+            padding: 6px 14px;
+            border-radius: 50px;
+            border: 1.5px solid var(--pink-200);
+            background: var(--pink-50);
+            color: var(--rose);
+            font-family: 'Nunito', sans-serif;
+            font-size: .8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s
+        }
+
+        .fchip:hover,
+        .fchip.active {
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-color: transparent;
+            color: #fff
+        }
+
+        .rcount {
+            margin-left: auto;
+            font-size: .8rem;
+            font-weight: 700;
+            color: var(--gray-400)
+        }
+
         /* Main */
-        .container{padding:30px 5vw;flex:1}
+        .container {
+            padding: 30px 5vw;
+            flex: 1
+        }
+
         /* Alerts */
-        .alert-box{border-radius:14px;padding:13px 18px;font-size:.87rem;font-weight:700;margin-bottom:22px;display:flex;align-items:center;gap:10px}
-        .alert-s{background:#f0fff8;border:1.5px solid #86efac;color:#166534}
-        .alert-e{background:#fff0f0;border:1.5px solid #fca5a5;color:#cc3333}
-        .alert-box button{margin-left:auto;background:none;border:none;cursor:pointer;font-size:1rem;color:inherit;opacity:.6}
+        .alert-box {
+            border-radius: 14px;
+            padding: 13px 18px;
+            font-size: .87rem;
+            font-weight: 700;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .alert-s {
+            background: #f0fff8;
+            border: 1.5px solid #86efac;
+            color: #166534
+        }
+
+        .alert-e {
+            background: #fff0f0;
+            border: 1.5px solid #fca5a5;
+            color: #cc3333
+        }
+
+        .alert-box button {
+            margin-left: auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: inherit;
+            opacity: .6
+        }
+
         /* Grid */
-        .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+        .pgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px
+        }
+
         /* Card */
-        .pcard{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(240,101,149,.08);border:1.5px solid var(--pink-100);transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column}
-        .pcard:hover{transform:translateY(-6px);box-shadow:0 12px 36px rgba(240,101,149,.18);border-color:var(--pink-200)}
+        .pcard {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(240, 101, 149, .08);
+            border: 1.5px solid var(--pink-100);
+            transition: transform .25s, box-shadow .25s;
+            display: flex;
+            flex-direction: column
+        }
+
+        .pcard:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 36px rgba(240, 101, 149, .18);
+            border-color: var(--pink-200)
+        }
+
         /* Image */
-        .cimgw{position:relative;height:180px;background:var(--gray-100);overflow:hidden}
-        .cimgw img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
-        .pcard:hover .cimgw img{transform:scale(1.06)}
-        .no-img{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--gray-300)}
-        .no-img i{font-size:2.4rem}
-        .no-img span{font-size:.73rem;font-weight:600}
+        .cimgw {
+            position: relative;
+            height: 180px;
+            background: var(--gray-100);
+            overflow: hidden
+        }
+
+        .cimgw img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s
+        }
+
+        .pcard:hover .cimgw img {
+            transform: scale(1.06)
+        }
+
+        .no-img {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--gray-300)
+        }
+
+        .no-img i {
+            font-size: 2.4rem
+        }
+
+        .no-img span {
+            font-size: .73rem;
+            font-weight: 600
+        }
+
         /* Overlay badges */
-        .cbadges{position:absolute;top:9px;left:9px;display:flex;flex-direction:column;gap:5px}
-        .bp{padding:3px 9px;border-radius:50px;font-size:.68rem;font-weight:800}
-        .bp-pink{background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff}
-        .bp-purple{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
-        .bp-sale{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff}
-        .sdot{position:absolute;top:9px;right:9px;width:10px;height:10px;border-radius:50%;border:2px solid #fff}
-        .son{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.25)}
-        .soff{background:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.25)}
+        .cbadges {
+            position: absolute;
+            top: 9px;
+            left: 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .bp {
+            padding: 3px 9px;
+            border-radius: 50px;
+            font-size: .68rem;
+            font-weight: 800
+        }
+
+        .bp-pink {
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff
+        }
+
+        .bp-purple {
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+            color: #fff
+        }
+
+        .bp-sale {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff
+        }
+
+        .sdot {
+            position: absolute;
+            top: 9px;
+            right: 9px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid #fff
+        }
+
+        .son {
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, .25)
+        }
+
+        .soff {
+            background: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, .25)
+        }
+
         /* Card body */
-        .cbody{padding:14px;flex:1;display:flex;flex-direction:column}
-        .cname{font-size:.92rem;font-weight:800;color:var(--gray-800);margin-bottom:8px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-        .cprow{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
-        .cprice{font-size:1.05rem;font-weight:900;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .cstock{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:50px}
-        .sok{background:#dcfce7;color:#15803d}
-        .slow{background:#fef3c7;color:#92400e}
-        .sout{background:#fee2e2;color:#991b1b}
+        .cbody {
+            padding: 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column
+        }
+
+        .cname {
+            font-size: .92rem;
+            font-weight: 800;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden
+        }
+
+        .cprow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto
+        }
+
+        .cprice {
+            font-size: 1.05rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .cstock {
+            font-size: .72rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 50px
+        }
+
+        .sok {
+            background: #dcfce7;
+            color: #15803d
+        }
+
+        .slow {
+            background: #fef3c7;
+            color: #92400e
+        }
+
+        .sout {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
         /* Card footer */
-        .cfooter{padding:11px 14px;border-top:1.5px solid var(--pink-100);display:flex;gap:7px}
-        .cfooter form{flex:1}
-        .abtn{flex:1;padding:9px 0;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;border:none;transition:all .2s}
-        .ab-edit{background:var(--pink-50);color:var(--rose);border:1.5px solid var(--pink-200)!important}
-        .ab-edit:hover{background:var(--pink-100)}
-        .ab-del{background:#fff0f0;color:#e05555;border:1.5px solid #fca5a5!important}
-        .ab-del:hover{background:#fee2e2}
-        .ab-cart{width:100%;background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;box-shadow:0 4px 12px rgba(255,107,157,.3)}
-        .ab-cart:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 18px rgba(255,107,157,.4)}
-        .ab-cart:disabled{background:var(--gray-200);color:var(--gray-400);box-shadow:none;cursor:not-allowed;transform:none}
+        .cfooter {
+            padding: 11px 14px;
+            border-top: 1.5px solid var(--pink-100);
+            display: flex;
+            gap: 7px
+        }
+
+        .cfooter form {
+            flex: 1
+        }
+
+        .abtn {
+            flex: 1;
+            padding: 9px 0;
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .82rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            border: none;
+            transition: all .2s
+        }
+
+        .ab-edit {
+            background: var(--pink-50);
+            color: var(--rose);
+            border: 1.5px solid var(--pink-200) !important
+        }
+
+        .ab-edit:hover {
+            background: var(--pink-100)
+        }
+
+        .ab-del {
+            background: #fff0f0;
+            color: #e05555;
+            border: 1.5px solid #fca5a5 !important
+        }
+
+        .ab-del:hover {
+            background: #fee2e2
+        }
+
+        .ab-cart {
+            width: 100%;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, .3)
+        }
+
+        .ab-cart:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(255, 107, 157, .4)
+        }
+
+        .ab-cart:disabled {
+            background: var(--gray-200);
+            color: var(--gray-400);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none
+        }
+
         /* Empty state */
-        .empty{grid-column:1/-1;text-align:center;padding:72px 24px;color:var(--gray-400)}
-        .empty .ee{font-size:4rem;margin-bottom:14px}
-        .empty h3{font-size:1.1rem;font-weight:800;margin-bottom:7px;color:var(--gray-600)}
+        .empty {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 72px 24px;
+            color: var(--gray-400)
+        }
+
+        .empty .ee {
+            font-size: 4rem;
+            margin-bottom: 14px
+        }
+
+        .empty h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 7px;
+            color: var(--gray-600)
+        }
+
         /* Footer */
-        .site-footer{background:var(--gray-800);color:rgba(255,255,255,.5);text-align:center;padding:24px 5vw;font-size:.8rem}
-        .site-footer a{color:var(--peach);text-decoration:none}
-        @media(max-width:640px){.ns{display:none}.hero-row{flex-direction:column;align-items:flex-start}.pgrid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}}
+        .site-footer {
+            background: var(--gray-800);
+            color: rgba(255, 255, 255, .5);
+            text-align: center;
+            padding: 24px 5vw;
+            font-size: .8rem
+        }
+
+        .site-footer a {
+            color: var(--peach);
+            text-decoration: none
+        }
+
+        @media(max-width:640px) {
+            .ns {
+                display: none
+            }
+
+            .hero-row {
+                flex-direction: column;
+                align-items: flex-start
+            }
+
+            .pgrid {
+                grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+                gap: 12px
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<div class="topbar">🎉 Miễn phí vận chuyển đơn từ 299K &nbsp;|&nbsp; Mã <strong>PETLOVE</strong> giảm 15%</div>
-
-<!-- Navbar -->
-<header class="navbar">
-    <nav class="navbar-inner">
-        <a th:href="@{/}" class="brand">
-            <div class="li">🐾</div>
-            <span class="lt">PetShop</span>
-        </a>
-        <div class="ns">
-            <i class="bi bi-search"></i>
-            <input type="search" placeholder="Tìm kiếm sản phẩm...">
-        </div>
-        <div class="spacer"></div>
-        <div class="nab">
-            <a th:href="@{/}" class="nbtn" style="color:var(--gray-600);border:none;padding:8px 12px;">
-                <i class="bi bi-house-heart"></i> Trang chủ
-            </a>
-            <a th:href="@{/gio-hang}" sec:authorize="isAuthenticated()"
-               style="width:40px;height:40px;border-radius:50%;background:var(--pink-50);border:1.5px solid var(--pink-200);display:flex;align-items:center;justify-content:center;color:var(--rose);font-size:1.1rem;text-decoration:none;"
-               title="Giỏ hàng"><i class="bi bi-bag-heart"></i></a>
-            <div class="uchip" sec:authorize="isAuthenticated()">
-                <div class="av">🐾</div>
-                <span sec:authentication="name">User</span>
-                <form th:action="@{/logout}" method="post" style="margin:0">
-                    <button type="submit" title="Đăng xuất"><i class="bi bi-box-arrow-right"></i></button>
-                </form>
-            </div>
-            <a th:href="@{/login}" sec:authorize="isAnonymous()" class="nbtn nbtn-o">Đăng nhập</a>
-            <a th:href="@{/register}" sec:authorize="isAnonymous()" class="nbtn nbtn-f">Đăng ký</a>
-        </div>
-    </nav>
-</header>
-
-<!-- Hero -->
-<section class="page-hero">
-    <div class="hero-row">
-        <div class="hero-left">
-            <div class="hero-icon">🛍️</div>
-            <div>
-                <h1>Sản phẩm PetShop</h1>
-                <p>Tất cả sản phẩm chất lượng dành cho thú cưng yêu của bạn 🐾</p>
-            </div>
-        </div>
-        <a sec:authorize="hasAnyAuthority('STAFF','OWNER')" th:href="@{/sanpham/them}" class="btn-add">
-            <i class="bi bi-plus-circle-fill"></i> Thêm sản phẩm mới
-        </a>
-    </div>
-</section>
-
-<!-- Filter bar -->
-<div class="fbar">
-    <span class="fl">Lọc:</span>
-    <a href="#" class="fchip active">Tất cả</a>
-    <a href="#" class="fchip">🐶 Chó</a>
-    <a href="#" class="fchip">🐱 Mèo</a>
-    <a href="#" class="fchip">🐟 Cá</a>
-    <a href="#" class="fchip">Thức ăn</a>
-    <a href="#" class="fchip">Phụ kiện</a>
-    <span class="rcount" th:if="${sanPhams != null}">
-        <i class="bi bi-box-seam"></i> <span th:text="${sanPhams.size()}">0</span> sản phẩm
-    </span>
-</div>
-
-<!-- Main -->
-<main class="container">
-
-    <div th:if="${successMessage}" class="alert-box alert-s">
-        <i class="bi bi-check-circle-fill"></i>
-        <span th:text="${successMessage}"></span>
-        <button onclick="this.parentElement.remove()">✕</button>
-    </div>
-    <div th:if="${errorMessage}" class="alert-box alert-e">
-        <i class="bi bi-exclamation-circle-fill"></i>
-        <span th:text="${errorMessage}"></span>
-        <button onclick="this.parentElement.remove()">✕</button>
-    </div>
-
-    <!-- Product grid -->
-    <div class="pgrid">
-
-        <!-- Empty state -->
-        <div class="empty" th:if="${sanPhams == null or sanPhams.empty}">
-            <div class="ee">🛒</div>
-            <h3>Chưa có sản phẩm nào</h3>
-            <p>Hãy thêm sản phẩm đầu tiên để bắt đầu bán hàng nhé!</p>
-        </div>
-
-        <!-- Product cards -->
-        <div class="pcard" th:each="sp : ${sanPhams}">
-            <!-- Image area -->
-            <div class="cimgw">
-                <img th:if="${sp.hinhDaiDien != null and !sp.hinhDaiDien.isEmpty()}"
-                     th:src="${sp.hinhDaiDien}" alt="Ảnh sản phẩm">
-                <div class="no-img" th:unless="${sp.hinhDaiDien != null and !sp.hinhDaiDien.isEmpty()}">
-                    <i class="bi bi-image"></i><span>Chưa có ảnh</span>
+    <th:block layout:fragment="content">
+        <!-- Hero -->
+        <section class="page-hero">
+            <div class="hero-row">
+                <div class="hero-left">
+                    <div class="hero-icon">🛍️</div>
+                    <div>
+                        <h1>Sản phẩm PetShop</h1>
+                        <p>Tất cả sản phẩm chất lượng dành cho thú cưng yêu của bạn 🐾</p>
+                    </div>
                 </div>
-                <!-- Badges -->
-                <div class="cbadges">
-                    <span class="bp bp-pink" th:if="${sp.loaiSanPham != null}" th:text="${sp.loaiSanPham.tenLoai}"></span>
-                    <span class="bp bp-purple" th:if="${sp.loaiThuCung != null}" th:text="${sp.loaiThuCung.tenLoaiTC}"></span>
-                    <span class="bp bp-sale" th:if="${sp.khuyenMai != null and sp.khuyenMai > 0}"
-                          th:text="'-' + ${sp.khuyenMai} + '%'"></span>
-                </div>
-                <!-- Status dot -->
-                <span class="sdot" th:classappend="${sp.tinhTrang == 1} ? 'son' : 'soff'"
-                      th:title="${sp.tinhTrang == 1} ? 'Đang bán' : 'Ngừng bán'"></span>
-            </div>
-
-            <!-- Body -->
-            <div class="cbody">
-                <div class="cname" th:text="${sp.tenSP}">Tên sản phẩm</div>
-                <div class="cprow">
-                    <span class="cprice"
-                          th:text="${#numbers.formatDecimal(sp.giaBan,0,'COMMA',0,'POINT')} + ' đ'">150.000 đ</span>
-                    <span th:classappend="${sp.slTon > 10} ? 'cstock sok' : (${sp.slTon > 0} ? 'cstock slow' : 'cstock sout')"
-                          th:text="${sp.slTon == 0} ? 'Hết hàng' : 'Còn ' + ${sp.slTon}">Còn 50</span>
-                </div>
-            </div>
-
-            <!-- Footer actions -->
-            <div class="cfooter">
-                <!-- Staff/Owner -->
-                <a sec:authorize="hasAnyAuthority('OWNER','STAFF')"
-                   th:href="@{/sanpham/sua/{id}(id=${sp.maSP})}" class="abtn ab-edit">
-                    <i class="bi bi-pencil-fill"></i> Sửa
-                </a>
-                <a sec:authorize="hasAnyAuthority('OWNER','STAFF')"
-                   th:href="@{/sanpham/xoa/{id}(id=${sp.maSP})}" class="abtn ab-del"
-                   onclick="return confirm('Xóa sản phẩm này?')">
-                    <i class="bi bi-trash-fill"></i> Xóa
-                </a>
-                <!-- Customer -->
-                <form sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')"
-                      th:action="@{/gio-hang/them}" method="post" style="flex:1;">
-                    <input type="hidden" name="maSP" th:value="${sp.maSP}">
-                    <input type="hidden" name="soLuong" value="1">
-                    <button type="submit" class="abtn ab-cart"
-                            th:disabled="${sp.tinhTrang == 0 or sp.slTon == 0}">
-                        <i class="bi bi-bag-heart-fill"></i>
-                        <span th:text="${sp.slTon == 0} ? 'Hết hàng' : 'Thêm giỏ'">Thêm giỏ</span>
-                    </button>
-                </form>
-                <!-- Anonymous -->
-                <a sec:authorize="isAnonymous()" th:href="@{/login}"
-                   class="abtn ab-cart" style="flex:1;">
-                    <i class="bi bi-bag-heart-fill"></i> Mua ngay
+                <a sec:authorize="hasAnyAuthority('STAFF','OWNER')" th:href="@{/sanpham/them}" class="btn-add">
+                    <i class="bi bi-plus-circle-fill"></i> Thêm sản phẩm mới
                 </a>
             </div>
-        </div><!-- /.pcard -->
+        </section>
 
-    </div><!-- /.pgrid -->
-</main>
+        <!-- Filter bar -->
+        <div class="fbar">
+            <span class="fl">Lọc:</span>
+            <a href="#" class="fchip active">Tất cả</a>
+            <a href="#" class="fchip">🐶 Chó</a>
+            <a href="#" class="fchip">🐱 Mèo</a>
+            <a href="#" class="fchip">🐟 Cá</a>
+            <a href="#" class="fchip">Thức ăn</a>
+            <a href="#" class="fchip">Phụ kiện</a>
+            <span class="rcount" th:if="${sanPhams != null}">
+                <i class="bi bi-box-seam"></i> <span th:text="${sanPhams.size()}">0</span> sản phẩm
+            </span>
+        </div>
 
-<footer class="site-footer">
-    © 2025 PetShop 🐾 — Được tạo với ❤️ dành cho những người yêu thú cưng &nbsp;|&nbsp;
-    <a th:href="@{/}">Trang chủ</a>
-</footer>
+        <!-- Main -->
+        <main class="container">
+
+            <div th:if="${successMessage}" class="alert-box alert-s">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${successMessage}"></span>
+                <button onclick="this.parentElement.remove()">✕</button>
+            </div>
+            <div th:if="${errorMessage}" class="alert-box alert-e">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span th:text="${errorMessage}"></span>
+                <button onclick="this.parentElement.remove()">✕</button>
+            </div>
+
+            <!-- Product grid -->
+            <div class="pgrid">
+
+                <!-- Empty state -->
+                <div class="empty" th:if="${sanPhams == null or sanPhams.empty}">
+                    <div class="ee">🛒</div>
+                    <h3>Chưa có sản phẩm nào</h3>
+                    <p>Hãy thêm sản phẩm đầu tiên để bắt đầu bán hàng nhé!</p>
+                </div>
+
+                <!-- Product cards -->
+                <div class="pcard" th:each="sp : ${sanPhams}">
+                    <!-- Image area -->
+                    <div class="cimgw">
+                        <img th:if="${sp.hinhDaiDien != null and !sp.hinhDaiDien.isEmpty()}" th:src="${sp.hinhDaiDien}"
+                            alt="Ảnh sản phẩm">
+                        <div class="no-img" th:unless="${sp.hinhDaiDien != null and !sp.hinhDaiDien.isEmpty()}">
+                            <i class="bi bi-image"></i><span>Chưa có ảnh</span>
+                        </div>
+                        <!-- Badges -->
+                        <div class="cbadges">
+                            <span class="bp bp-pink" th:if="${sp.loaiSanPham != null}"
+                                th:text="${sp.loaiSanPham.tenLoai}"></span>
+                            <span class="bp bp-purple" th:if="${sp.loaiThuCung != null}"
+                                th:text="${sp.loaiThuCung.tenLoaiTC}"></span>
+                            <span class="bp bp-sale" th:if="${sp.khuyenMai != null and sp.khuyenMai > 0}"
+                                th:text="'-' + ${sp.khuyenMai} + '%'"></span>
+                        </div>
+                        <!-- Status dot -->
+                        <span class="sdot" th:classappend="${sp.tinhTrang == 1} ? 'son' : 'soff'"
+                            th:title="${sp.tinhTrang == 1} ? 'Đang bán' : 'Ngừng bán'"></span>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="cbody">
+                        <div class="cname" th:text="${sp.tenSP}">Tên sản phẩm</div>
+                        <div class="cprow">
+                            <span class="cprice"
+                                th:text="${#numbers.formatDecimal(sp.giaBan,0,'COMMA',0,'POINT')} + ' đ'">150.000
+                                đ</span>
+                            <span
+                                th:classappend="${sp.slTon > 10} ? 'cstock sok' : (${sp.slTon > 0} ? 'cstock slow' : 'cstock sout')"
+                                th:text="${sp.slTon == 0} ? 'Hết hàng' : 'Còn ' + ${sp.slTon}">Còn 50</span>
+                        </div>
+                    </div>
+
+                    <!-- Footer actions -->
+                    <div class="cfooter">
+                        <!-- Staff/Owner -->
+                        <a sec:authorize="hasAnyAuthority('OWNER','STAFF')"
+                            th:href="@{/sanpham/sua/{id}(id=${sp.maSP})}" class="abtn ab-edit">
+                            <i class="bi bi-pencil-fill"></i> Sửa
+                        </a>
+                        <a sec:authorize="hasAnyAuthority('OWNER','STAFF')"
+                            th:href="@{/sanpham/xoa/{id}(id=${sp.maSP})}" class="abtn ab-del"
+                            onclick="return confirm('Xóa sản phẩm này?')">
+                            <i class="bi bi-trash-fill"></i> Xóa
+                        </a>
+                        <!-- Customer -->
+                        <form sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')" th:action="@{/gio-hang/them}"
+                            method="post" style="flex:1;">
+                            <input type="hidden" name="maSP" th:value="${sp.maSP}">
+                            <input type="hidden" name="soLuong" value="1">
+                            <button type="submit" class="abtn ab-cart"
+                                th:disabled="${sp.tinhTrang == 0 or sp.slTon == 0}">
+                                <i class="bi bi-bag-heart-fill"></i>
+                                <span th:text="${sp.slTon == 0} ? 'Hết hàng' : 'Thêm giỏ'">Thêm giỏ</span>
+                            </button>
+                        </form>
+                        <!-- Anonymous -->
+                        <a sec:authorize="isAnonymous()" th:href="@{/login}" class="abtn ab-cart" style="flex:1;">
+                            <i class="bi bi-bag-heart-fill"></i> Mua ngay
+                        </a>
+                    </div>
+                </div><!-- /.pcard -->
+
+            </div><!-- /.pgrid -->
+        </main>
+
+    </th:block>
 </body>
+
 </html>

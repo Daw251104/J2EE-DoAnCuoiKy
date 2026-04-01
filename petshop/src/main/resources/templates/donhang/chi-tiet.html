@@ -1,312 +1,806 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" layout:decorate="~{layout}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi Tiết Đơn Hàng – PetShop 🐾</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        :root{--pink-50:#fff0f6;--pink-100:#ffd6e8;--pink-200:#ffadd2;--pink-300:#ff85bc;--pink-400:#f06595;--rose:#ff6b9d;--rose-deep:#e05585;--peach:#ffb3c6;--cream:#fff8fb;--white:#fff;--gray-100:#f8f0f4;--gray-200:#f0e6ec;--gray-300:#ddc8d6;--gray-400:#c4a0b5;--gray-600:#8b5e76;--gray-800:#4a2c3d;}
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--gray-800);min-height:100vh;display:flex;flex-direction:column}
-        .topbar{background:linear-gradient(90deg,var(--pink-400),var(--rose));color:#fff;font-size:.78rem;font-weight:700;text-align:center;padding:7px 16px}
-        .navbar{background:var(--white);box-shadow:0 2px 12px rgba(240,101,149,.10);position:sticky;top:0;z-index:1000;padding:0 5vw}
-        .navbar-inner{display:flex;align-items:center;height:68px;gap:16px}
-        .brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
-        .brand .li{width:40px;height:40px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 14px rgba(255,107,157,.35)}
-        .brand .lt{font-family:'Pacifico',cursive;font-size:1.4rem;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .breadcrumb{display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:600;color:var(--gray-400);margin-left:6px}
-        .breadcrumb a{color:var(--rose);text-decoration:none}.breadcrumb a:hover{text-decoration:underline}
-        .bc-sep{color:var(--gray-300)}
-        .spacer{flex:1}
-        .nav-user{display:flex;align-items:center;gap:10px}
-        .user-badge{display:flex;align-items:center;gap:8px;background:var(--pink-50);border:1.5px solid var(--pink-100);border-radius:50px;padding:6px 14px 6px 8px;color:var(--rose);font-weight:700;font-size:.85rem}
-        .user-badge .av{width:30px;height:30px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff}
-        .logout-btn{background:none;border:1.5px solid var(--pink-200);border-radius:50px;padding:7px 14px;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:700;color:var(--gray-600);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
-        .logout-btn:hover{background:#fff0f0;color:#e05555;border-color:#fca5a5}
+        :root {
+            --pink-50: #fff0f6;
+            --pink-100: #ffd6e8;
+            --pink-200: #ffadd2;
+            --pink-300: #ff85bc;
+            --pink-400: #f06595;
+            --rose: #ff6b9d;
+            --rose-deep: #e05585;
+            --peach: #ffb3c6;
+            --cream: #fff8fb;
+            --white: #fff;
+            --gray-100: #f8f0f4;
+            --gray-200: #f0e6ec;
+            --gray-300: #ddc8d6;
+            --gray-400: #c4a0b5;
+            --gray-600: #8b5e76;
+            --gray-800: #4a2c3d;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column
+        }
+
+        .topbar {
+            background: linear-gradient(90deg, var(--pink-400), var(--rose));
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 7px 16px
+        }
+
+        .navbar {
+            background: var(--white);
+            box-shadow: 0 2px 12px rgba(240, 101, 149, .10);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0 5vw
+        }
+
+        .navbar-inner {
+            display: flex;
+            align-items: center;
+            height: 68px;
+            gap: 16px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            text-decoration: none;
+            flex-shrink: 0
+        }
+
+        .brand .li {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 14px rgba(255, 107, 157, .35)
+        }
+
+        .brand .lt {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .84rem;
+            font-weight: 600;
+            color: var(--gray-400);
+            margin-left: 6px
+        }
+
+        .breadcrumb a {
+            color: var(--rose);
+            text-decoration: none
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline
+        }
+
+        .bc-sep {
+            color: var(--gray-300)
+        }
+
+        .spacer {
+            flex: 1
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--pink-50);
+            border: 1.5px solid var(--pink-100);
+            border-radius: 50px;
+            padding: 6px 14px 6px 8px;
+            color: var(--rose);
+            font-weight: 700;
+            font-size: .85rem
+        }
+
+        .user-badge .av {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1.5px solid var(--pink-200);
+            border-radius: 50px;
+            padding: 7px 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .83rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .2s
+        }
+
+        .logout-btn:hover {
+            background: #fff0f0;
+            color: #e05555;
+            border-color: #fca5a5
+        }
+
         /* Page */
-        .container{padding:30px 5vw 60px;flex:1;max-width:1060px;margin:0 auto;width:100%}
-        .page-header-row{display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
-        .btn-back{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;background:var(--white);border:1.5px solid var(--gray-200);color:var(--gray-600);font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;text-decoration:none;transition:all .2s}
-        .btn-back:hover{background:var(--gray-100);border-color:var(--gray-300)}
-        .page-title{display:flex;align-items:center;gap:10px}
-        .page-title .pt-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 6px 18px rgba(255,107,157,.28)}
-        .page-title h1{font-size:1.45rem;font-weight:900;color:var(--gray-800)}
-        .page-title .order-num{color:var(--rose)}
+        .container {
+            padding: 30px 5vw 60px;
+            flex: 1;
+            max-width: 1060px;
+            margin: 0 auto;
+            width: 100%
+        }
+
+        .page-header-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+            flex-wrap: wrap
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: 12px;
+            background: var(--white);
+            border: 1.5px solid var(--gray-200);
+            color: var(--gray-600);
+            font-family: 'Nunito', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all .2s
+        }
+
+        .btn-back:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300)
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .page-title .pt-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 6px 18px rgba(255, 107, 157, .28)
+        }
+
+        .page-title h1 {
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: var(--gray-800)
+        }
+
+        .page-title .order-num {
+            color: var(--rose)
+        }
+
         /* Grid */
-        .detail-grid{display:grid;grid-template-columns:360px 1fr;gap:22px;align-items:start}
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 22px;
+            align-items: start
+        }
+
         /* Cards */
-        .dcard{background:var(--white);border-radius:20px;box-shadow:0 2px 14px rgba(240,101,149,.08);border:1.5px solid var(--pink-100);overflow:hidden;margin-bottom:16px}
-        .dcard:last-child{margin-bottom:0}
-        .dcard-header{display:flex;align-items:center;gap:9px;padding:15px 20px;background:linear-gradient(135deg,var(--pink-50),var(--white));border-bottom:1.5px solid var(--pink-100)}
-        .dcard-header .dh-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--pink-300),var(--rose));border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;flex-shrink:0}
-        .dcard-header h2{font-size:.93rem;font-weight:800;color:var(--gray-800)}
-        .dcard-body{padding:18px 20px}
+        .dcard {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 2px 14px rgba(240, 101, 149, .08);
+            border: 1.5px solid var(--pink-100);
+            overflow: hidden;
+            margin-bottom: 16px
+        }
+
+        .dcard:last-child {
+            margin-bottom: 0
+        }
+
+        .dcard-header {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--pink-50), var(--white));
+            border-bottom: 1.5px solid var(--pink-100)
+        }
+
+        .dcard-header .dh-icon {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: .9rem;
+            flex-shrink: 0
+        }
+
+        .dcard-header h2 {
+            font-size: .93rem;
+            font-weight: 800;
+            color: var(--gray-800)
+        }
+
+        .dcard-body {
+            padding: 18px 20px
+        }
+
         /* Status banner */
-        .status-banner{border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;font-weight:700;font-size:.92rem}
-        .sb-cho    {background:#fef3c7;border:1.5px solid #fcd34d;color:#92400e}
-        .sb-xacnhan{background:#cff4fc;border:1.5px solid #67e8f9;color:#0c4a6e}
-        .sb-giao   {background:#dbeafe;border:1.5px solid #93c5fd;color:#1e40af}
-        .sb-dagiao {background:#dcfce7;border:1.5px solid #86efac;color:#166534}
-        .sb-huy    {background:#fee2e2;border:1.5px solid #fca5a5;color:#991b1b}
-        .sb-ico    {font-size:1.4rem;flex-shrink:0}
+        .status-banner {
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: .92rem
+        }
+
+        .sb-cho {
+            background: #fef3c7;
+            border: 1.5px solid #fcd34d;
+            color: #92400e
+        }
+
+        .sb-xacnhan {
+            background: #cff4fc;
+            border: 1.5px solid #67e8f9;
+            color: #0c4a6e
+        }
+
+        .sb-giao {
+            background: #dbeafe;
+            border: 1.5px solid #93c5fd;
+            color: #1e40af
+        }
+
+        .sb-dagiao {
+            background: #dcfce7;
+            border: 1.5px solid #86efac;
+            color: #166534
+        }
+
+        .sb-huy {
+            background: #fee2e2;
+            border: 1.5px solid #fca5a5;
+            color: #991b1b
+        }
+
+        .sb-ico {
+            font-size: 1.4rem;
+            flex-shrink: 0
+        }
+
         /* Info rows */
-        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .info-item .il{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:4px}
-        .info-item .iv{font-size:.9rem;font-weight:700;color:var(--gray-800)}
-        .info-item.full{grid-column:1/-1}
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .info-item .il {
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--gray-400);
+            margin-bottom: 4px
+        }
+
+        .info-item .iv {
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--gray-800)
+        }
+
+        .info-item.full {
+            grid-column: 1/-1
+        }
+
         /* Payment status */
-        .paid-ok  {color:#15803d;font-weight:800}
-        .paid-no  {color:#92400e;font-weight:800}
+        .paid-ok {
+            color: #15803d;
+            font-weight: 800
+        }
+
+        .paid-no {
+            color: #92400e;
+            font-weight: 800
+        }
+
         /* Action boxes */
-        .action-box{border-radius:16px;padding:18px;margin-top:0}
-        .ab-delivery{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac}
-        .ab-cancelled{background:linear-gradient(135deg,#fff5f5,#fee2e2);border:1.5px solid #fca5a5}
-        .ab-done{background:linear-gradient(135deg,var(--pink-50),var(--pink-100));border:1.5px solid var(--pink-200)}
-        .ab-title{font-size:.9rem;font-weight:800;margin-bottom:6px}
-        .ab-desc{font-size:.8rem;font-weight:500;opacity:.8;margin-bottom:12px;line-height:1.6}
-        .btn-confirm{width:100%;padding:12px;border-radius:13px;border:none;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:800;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 4px 14px rgba(34,197,94,.3)}
-        .btn-confirm:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(34,197,94,.4)}
+        .action-box {
+            border-radius: 16px;
+            padding: 18px;
+            margin-top: 0
+        }
+
+        .ab-delivery {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 1.5px solid #86efac
+        }
+
+        .ab-cancelled {
+            background: linear-gradient(135deg, #fff5f5, #fee2e2);
+            border: 1.5px solid #fca5a5
+        }
+
+        .ab-done {
+            background: linear-gradient(135deg, var(--pink-50), var(--pink-100));
+            border: 1.5px solid var(--pink-200)
+        }
+
+        .ab-title {
+            font-size: .9rem;
+            font-weight: 800;
+            margin-bottom: 6px
+        }
+
+        .ab-desc {
+            font-size: .8rem;
+            font-weight: 500;
+            opacity: .8;
+            margin-bottom: 12px;
+            line-height: 1.6
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 12px;
+            border-radius: 13px;
+            border: none;
+            font-family: 'Nunito', sans-serif;
+            font-size: .92rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all .2s;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, .3)
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, .4)
+        }
+
         /* Products table */
-        .prod-table{width:100%;border-collapse:collapse}
-        .prod-table thead th{padding:10px 14px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--rose);background:var(--pink-50);border-bottom:2px solid var(--pink-100)}
-        .prod-table thead th:first-child{border-radius:0}
-        .prod-table tbody tr{border-bottom:1px solid var(--pink-100);transition:background .15s}
-        .prod-table tbody tr:hover{background:var(--pink-50)}
-        .prod-table tbody tr:last-child{border-bottom:none}
-        .prod-table td{padding:12px 14px;font-size:.9rem;font-weight:600;vertical-align:middle}
-        .prod-img{width:54px;height:54px;object-fit:cover;border-radius:10px;border:2px solid var(--pink-100)}
-        .no-img-ph{width:54px;height:54px;border-radius:10px;background:var(--gray-200);display:flex;align-items:center;justify-content:center;color:var(--gray-400);font-size:1.2rem}
-        .prod-name{font-weight:800;color:var(--gray-800)}
-        .qty-badge{background:var(--pink-50);border:1.5px solid var(--pink-100);color:var(--rose);padding:3px 10px;border-radius:50px;font-size:.8rem;font-weight:800;display:inline-block}
-        .price-text{font-weight:700;color:var(--gray-600)}
-        .total-text{font-weight:900;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .prod-table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        .prod-table thead th {
+            padding: 10px 14px;
+            font-size: .75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--rose);
+            background: var(--pink-50);
+            border-bottom: 2px solid var(--pink-100)
+        }
+
+        .prod-table thead th:first-child {
+            border-radius: 0
+        }
+
+        .prod-table tbody tr {
+            border-bottom: 1px solid var(--pink-100);
+            transition: background .15s
+        }
+
+        .prod-table tbody tr:hover {
+            background: var(--pink-50)
+        }
+
+        .prod-table tbody tr:last-child {
+            border-bottom: none
+        }
+
+        .prod-table td {
+            padding: 12px 14px;
+            font-size: .9rem;
+            font-weight: 600;
+            vertical-align: middle
+        }
+
+        .prod-img {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid var(--pink-100)
+        }
+
+        .no-img-ph {
+            width: 54px;
+            height: 54px;
+            border-radius: 10px;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-400);
+            font-size: 1.2rem
+        }
+
+        .prod-name {
+            font-weight: 800;
+            color: var(--gray-800)
+        }
+
+        .qty-badge {
+            background: var(--pink-50);
+            border: 1.5px solid var(--pink-100);
+            color: var(--rose);
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: .8rem;
+            font-weight: 800;
+            display: inline-block
+        }
+
+        .price-text {
+            font-weight: 700;
+            color: var(--gray-600)
+        }
+
+        .total-text {
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
         /* Tfoot */
-        .prod-table tfoot td{padding:14px 14px;font-weight:800;border-top:2px solid var(--pink-100);background:var(--pink-50)}
-        .grand-total{font-size:1.2rem;font-weight:900;background:linear-gradient(135deg,var(--pink-400),var(--rose-deep));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .prod-table tfoot td {
+            padding: 14px 14px;
+            font-weight: 800;
+            border-top: 2px solid var(--pink-100);
+            background: var(--pink-50)
+        }
+
+        .grand-total {
+            font-size: 1.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
         /* Footer */
-        .site-footer{background:var(--gray-800);color:rgba(255,255,255,.5);text-align:center;padding:22px 5vw;font-size:.82rem}
-        .site-footer a{color:var(--peach);text-decoration:none}
-        @media(max-width:860px){.detail-grid{grid-template-columns:1fr}}
-        @media(max-width:540px){.info-grid{grid-template-columns:1fr}.prod-table thead{display:none}.prod-table td{display:block;padding:6px 14px}}
+        .site-footer {
+            background: var(--gray-800);
+            color: rgba(255, 255, 255, .5);
+            text-align: center;
+            padding: 22px 5vw;
+            font-size: .82rem
+        }
+
+        .site-footer a {
+            color: var(--peach);
+            text-decoration: none
+        }
+
+        @media(max-width:860px) {
+            .detail-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:540px) {
+            .info-grid {
+                grid-template-columns: 1fr
+            }
+
+            .prod-table thead {
+                display: none
+            }
+
+            .prod-table td {
+                display: block;
+                padding: 6px 14px
+            }
+        }
     </style>
 </head>
+
 <body>
-<div class="topbar">🐾 PetShop – Thiên đường mua sắm cho thú cưng yêu của bạn 💕</div>
+    <th:block layout:fragment="content">
 
-<header class="navbar">
-    <nav class="navbar-inner">
-        <a th:href="@{/}" class="brand"><div class="li">🐾</div><span class="lt">PetShop</span></a>
-        <div class="breadcrumb">
-            <span class="bc-sep">/</span>
-            <a th:href="@{/don-hang}">Đơn hàng</a>
-            <span class="bc-sep">/</span>
-            <span>#<span th:text="${donHang.maDH}">0</span></span>
-        </div>
-        <div class="spacer"></div>
-        <div class="nav-user">
-            <div class="user-badge"><div class="av">🐾</div><span sec:authentication="name">User</span></div>
-            <form th:action="@{/logout}" method="post">
-                <button type="submit" class="logout-btn"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
-            </form>
-        </div>
-    </nav>
-</header>
-
-<main class="container">
-    <!-- Page header row -->
-    <div class="page-header-row">
-        <a th:href="@{/don-hang}" class="btn-back"><i class="bi bi-arrow-left"></i> Quay lại</a>
-        <div class="page-title">
-            <div class="pt-icon">📋</div>
-            <h1>Chi tiết đơn hàng <span class="order-num">#<span th:text="${donHang.maDH}">0</span></span></h1>
-        </div>
-    </div>
-
-    <div class="detail-grid">
-
-        <!-- ═══ LEFT: Order info ═══ -->
-        <div>
-            <!-- Status card -->
-            <div class="dcard">
-                <div class="dcard-header">
-                    <div class="dh-icon"><i class="bi bi-info-circle-fill"></i></div>
-                    <h2>Thông tin đơn hàng</h2>
-                </div>
-                <div class="dcard-body">
-                    <!-- Status banner -->
-                    <div th:switch="${donHang.trangThai}">
-                        <div th:case="'CHO_XAC_NHAN'" class="status-banner sb-cho">
-                            <span class="sb-ico">⏳</span><div>
-                                <div>Chờ xác nhận</div>
-                                <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Đơn hàng đang chờ cửa hàng xác nhận</div>
-                            </div>
-                        </div>
-                        <div th:case="'DA_XAC_NHAN'" class="status-banner sb-xacnhan">
-                            <span class="sb-ico">✅</span><div>
-                                <div>Đã xác nhận</div>
-                                <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Cửa hàng đã xác nhận đơn hàng của bạn</div>
-                            </div>
-                        </div>
-                        <div th:case="'DANG_GIAO'" class="status-banner sb-giao">
-                            <span class="sb-ico">🚚</span><div>
-                                <div>Đang giao hàng</div>
-                                <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Đơn hàng đang trên đường đến tay bạn</div>
-                            </div>
-                        </div>
-                        <div th:case="'DA_GIAO'" class="status-banner sb-dagiao">
-                            <span class="sb-ico">🎉</span><div>
-                                <div>Giao hàng thành công</div>
-                                <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Cảm ơn bạn đã tin tưởng PetShop!</div>
-                            </div>
-                        </div>
-                        <div th:case="'DA_HUY'" class="status-banner sb-huy">
-                            <span class="sb-ico">❌</span><div>
-                                <div>Đơn hàng đã hủy</div>
-                                <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Đơn hàng này đã bị hủy</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Info grid -->
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="il">Ngày đặt</div>
-                            <div class="iv" th:text="${#temporals.format(donHang.ngayLapDonHang,'dd/MM/yyyy HH:mm')}">01/01/2024</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="il">Thanh toán</div>
-                            <div class="iv" th:text="${donHang.tenLoaiTT ?: 'N/A'}">COD</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="il">Trạng thái TT</div>
-                            <div class="iv">
-                                <span th:if="${donHang.daThanhToan == 1}" class="paid-ok">✅ Đã thanh toán</span>
-                                <span th:unless="${donHang.daThanhToan == 1}" class="paid-no">⏳ Chưa thanh toán</span>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <div class="il">Người nhận</div>
-                            <div class="iv" th:text="${donHang.tenNguoiNhan}">Tên</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="il">Số điện thoại</div>
-                            <div class="iv" th:text="${donHang.sdtNguoiNhan}">SĐT</div>
-                        </div>
-                        <div class="info-item full">
-                            <div class="il">Địa chỉ nhận</div>
-                            <div class="iv" th:text="${donHang.diaChiNhanHang}">Địa chỉ</div>
-                        </div>
-                    </div>
+        <main class="container">
+            <!-- Page header row -->
+            <div class="page-header-row">
+                <a th:href="@{/don-hang}" class="btn-back"><i class="bi bi-arrow-left"></i> Quay lại</a>
+                <div class="page-title">
+                    <div class="pt-icon">📋</div>
+                    <h1>Chi tiết đơn hàng <span class="order-num">#<span th:text="${donHang.maDH}">0</span></span></h1>
                 </div>
             </div>
 
-            <!-- Action boxes -->
-            <!-- Đang giao: xác nhận nhận hàng -->
-            <div class="dcard" th:if="${donHang.trangThai == 'DANG_GIAO'}">
-                <div class="dcard-body">
-                    <div class="action-box ab-delivery">
-                        <div class="ab-title" style="color:#15803d;">🚚 Đơn hàng đang trên đường giao</div>
-                        <div class="ab-desc" style="color:#166534;">Khi đã nhận được hàng, vui lòng bấm nút bên dưới để hoàn tất đơn hàng.</div>
-                        <form th:action="@{/don-hang/{id}/xac-nhan-nhan-hang(id=${donHang.maDH})}" method="post">
-                            <button type="submit" class="btn-confirm"
-                                    onclick="return confirm('Xác nhận bạn đã nhận được hàng?')">
-                                <i class="bi bi-box-seam"></i> Tôi đã nhận được hàng
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            <div class="detail-grid">
 
-            <!-- Đã giao -->
-            <div class="dcard" th:if="${donHang.trangThai == 'DA_GIAO'}">
-                <div class="dcard-body">
-                    <div class="action-box ab-done">
-                        <div class="ab-title" style="color:var(--rose);">🎉 Giao hàng thành công!</div>
-                        <div class="ab-desc" style="color:var(--rose-deep);">Cảm ơn bạn đã mua hàng tại PetShop! Chúc bé yêu luôn khỏe mạnh và vui vẻ 🐾💕</div>
-                        <a th:href="@{/sanpham}" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:12px;background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;font-weight:800;font-size:.85rem;text-decoration:none;transition:all .2s;">
-                            <i class="bi bi-bag-heart-fill"></i> Mua thêm
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Đã hủy -->
-            <div class="dcard" th:if="${donHang.trangThai == 'DA_HUY'}">
-                <div class="dcard-body">
-                    <div class="action-box ab-cancelled">
-                        <div class="ab-title" style="color:#dc2626;">❌ Đơn hàng đã bị hủy</div>
-                        <div class="ab-desc" style="color:#991b1b;">Đơn hàng này đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ PetShop nhé.</div>
-                        <a th:href="@{/sanpham}" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:12px;background:#fff0f0;border:1.5px solid #fca5a5;color:#dc2626;font-weight:800;font-size:.85rem;text-decoration:none;">
-                            <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══ RIGHT: Product detail ═══ -->
-        <div class="dcard">
-            <div class="dcard-header">
-                <div class="dh-icon"><i class="bi bi-box-seam-fill"></i></div>
-                <h2>Sản phẩm đã đặt</h2>
-            </div>
-            <div style="overflow-x:auto;">
-                <table class="prod-table">
-                    <thead>
-                        <tr>
-                            <th>Sản phẩm</th>
-                            <th style="text-align:center;">SL</th>
-                            <th style="text-align:right;">Đơn giá</th>
-                            <th style="text-align:right;padding-right:20px;">Thành tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="ct : ${donHang.chiTietDonHangs}">
-                            <td>
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <img th:if="${ct.hinhDaiDien != null and !ct.hinhDaiDien.isEmpty()}"
-                                         th:src="${ct.hinhDaiDien}" class="prod-img" alt="SP">
-                                    <div class="no-img-ph" th:unless="${ct.hinhDaiDien != null and !ct.hinhDaiDien.isEmpty()}">
-                                        <i class="bi bi-image"></i>
+                <!-- ═══ LEFT: Order info ═══ -->
+                <div>
+                    <!-- Status card -->
+                    <div class="dcard">
+                        <div class="dcard-header">
+                            <div class="dh-icon"><i class="bi bi-info-circle-fill"></i></div>
+                            <h2>Thông tin đơn hàng</h2>
+                        </div>
+                        <div class="dcard-body">
+                            <!-- Status banner -->
+                            <div th:switch="${donHang.trangThai}">
+                                <div th:case="'CHO_XAC_NHAN'" class="status-banner sb-cho">
+                                    <span class="sb-ico">⏳</span>
+                                    <div>
+                                        <div>Chờ xác nhận</div>
+                                        <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Đơn hàng
+                                            đang chờ cửa hàng xác nhận</div>
                                     </div>
-                                    <span class="prod-name" th:text="${ct.tenSP}">Tên SP</span>
                                 </div>
-                            </td>
-                            <td style="text-align:center;">
-                                <span class="qty-badge" th:text="'x' + ${ct.soLuong}">x1</span>
-                            </td>
-                            <td style="text-align:right;">
-                                <span class="price-text"
-                                      th:text="${#numbers.formatDecimal(ct.giaBanRa,0,'COMMA',0,'POINT')} + ' đ'">0 đ</span>
-                            </td>
-                            <td style="text-align:right;padding-right:20px;">
-                                <span class="total-text"
-                                      th:text="${#numbers.formatDecimal(ct.thanhTien,0,'COMMA',0,'POINT')} + ' đ'">0 đ</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="text-align:right;font-size:.9rem;color:var(--gray-600);">Tổng cộng:</td>
-                            <td style="text-align:right;padding-right:20px;">
-                                <span class="grand-total"
-                                      th:text="${#numbers.formatDecimal(donHang.tongTien,0,'COMMA',0,'POINT')} + ' đ'">0 đ</span>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                                <div th:case="'DA_XAC_NHAN'" class="status-banner sb-xacnhan">
+                                    <span class="sb-ico">✅</span>
+                                    <div>
+                                        <div>Đã xác nhận</div>
+                                        <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Cửa hàng
+                                            đã xác nhận đơn hàng của bạn</div>
+                                    </div>
+                                </div>
+                                <div th:case="'DANG_GIAO'" class="status-banner sb-giao">
+                                    <span class="sb-ico">🚚</span>
+                                    <div>
+                                        <div>Đang giao hàng</div>
+                                        <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Đơn hàng
+                                            đang trên đường đến tay bạn</div>
+                                    </div>
+                                </div>
+                                <div th:case="'DA_GIAO'" class="status-banner sb-dagiao">
+                                    <span class="sb-ico">🎉</span>
+                                    <div>
+                                        <div>Giao hàng thành công</div>
+                                        <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Cảm ơn
+                                            bạn đã tin tưởng PetShop!</div>
+                                    </div>
+                                </div>
+                                <div th:case="'DA_HUY'" class="status-banner sb-huy">
+                                    <span class="sb-ico">❌</span>
+                                    <div>
+                                        <div>Đơn hàng đã hủy</div>
+                                        <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Đơn hàng
+                                            này đã bị hủy</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Info grid -->
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="il">Ngày đặt</div>
+                                    <div class="iv"
+                                        th:text="${#temporals.format(donHang.ngayLapDonHang,'dd/MM/yyyy HH:mm')}">
+                                        01/01/2024</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="il">Thanh toán</div>
+                                    <div class="iv" th:text="${donHang.tenLoaiTT ?: 'N/A'}">COD</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="il">Trạng thái TT</div>
+                                    <div class="iv">
+                                        <span th:if="${donHang.daThanhToan == 1}" class="paid-ok">✅ Đã thanh toán</span>
+                                        <span th:unless="${donHang.daThanhToan == 1}" class="paid-no">⏳ Chưa thanh
+                                            toán</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="il">Người nhận</div>
+                                    <div class="iv" th:text="${donHang.tenNguoiNhan}">Tên</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="il">Số điện thoại</div>
+                                    <div class="iv" th:text="${donHang.sdtNguoiNhan}">SĐT</div>
+                                </div>
+                                <div class="info-item full">
+                                    <div class="il">Địa chỉ nhận</div>
+                                    <div class="iv" th:text="${donHang.diaChiNhanHang}">Địa chỉ</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action boxes -->
+                    <!-- Đang giao: xác nhận nhận hàng -->
+                    <div class="dcard" th:if="${donHang.trangThai == 'DANG_GIAO'}">
+                        <div class="dcard-body">
+                            <div class="action-box ab-delivery">
+                                <div class="ab-title" style="color:#15803d;">🚚 Đơn hàng đang trên đường giao</div>
+                                <div class="ab-desc" style="color:#166534;">Khi đã nhận được hàng, vui lòng bấm nút bên
+                                    dưới để hoàn tất đơn hàng.</div>
+                                <form th:action="@{/don-hang/{id}/xac-nhan-nhan-hang(id=${donHang.maDH})}"
+                                    method="post">
+                                    <button type="submit" class="btn-confirm"
+                                        onclick="return confirm('Xác nhận bạn đã nhận được hàng?')">
+                                        <i class="bi bi-box-seam"></i> Tôi đã nhận được hàng
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đã giao -->
+                    <div class="dcard" th:if="${donHang.trangThai == 'DA_GIAO'}">
+                        <div class="dcard-body">
+                            <div class="action-box ab-done">
+                                <div class="ab-title" style="color:var(--rose);">🎉 Giao hàng thành công!</div>
+                                <div class="ab-desc" style="color:var(--rose-deep);">Cảm ơn bạn đã mua hàng tại PetShop!
+                                    Chúc bé yêu luôn khỏe mạnh và vui vẻ 🐾💕</div>
+                                <a th:href="@{/sanpham}"
+                                    style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:12px;background:linear-gradient(135deg,var(--pink-300),var(--rose));color:#fff;font-weight:800;font-size:.85rem;text-decoration:none;transition:all .2s;">
+                                    <i class="bi bi-bag-heart-fill"></i> Mua thêm
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Đã hủy -->
+                    <div class="dcard" th:if="${donHang.trangThai == 'DA_HUY'}">
+                        <div class="dcard-body">
+                            <div class="action-box ab-cancelled">
+                                <div class="ab-title" style="color:#dc2626;">❌ Đơn hàng đã bị hủy</div>
+                                <div class="ab-desc" style="color:#991b1b;">Đơn hàng này đã bị hủy. Nếu có thắc mắc, vui
+                                    lòng liên hệ PetShop nhé.</div>
+                                <a th:href="@{/sanpham}"
+                                    style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:12px;background:#fff0f0;border:1.5px solid #fca5a5;color:#dc2626;font-weight:800;font-size:.85rem;text-decoration:none;">
+                                    <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ RIGHT: Product detail ═══ -->
+                <div class="dcard">
+                    <div class="dcard-header">
+                        <div class="dh-icon"><i class="bi bi-box-seam-fill"></i></div>
+                        <h2>Sản phẩm đã đặt</h2>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="prod-table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th style="text-align:center;">SL</th>
+                                    <th style="text-align:right;">Đơn giá</th>
+                                    <th style="text-align:right;padding-right:20px;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="ct : ${donHang.chiTietDonHangs}">
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:12px;">
+                                            <img th:if="${ct.hinhDaiDien != null and !ct.hinhDaiDien.isEmpty()}"
+                                                th:src="${ct.hinhDaiDien}" class="prod-img" alt="SP">
+                                            <div class="no-img-ph"
+                                                th:unless="${ct.hinhDaiDien != null and !ct.hinhDaiDien.isEmpty()}">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                            <span class="prod-name" th:text="${ct.tenSP}">Tên SP</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="qty-badge" th:text="'x' + ${ct.soLuong}">x1</span>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <span class="price-text"
+                                            th:text="${#numbers.formatDecimal(ct.giaBanRa,0,'COMMA',0,'POINT')} + ' đ'">0
+                                            đ</span>
+                                    </td>
+                                    <td style="text-align:right;padding-right:20px;">
+                                        <span class="total-text"
+                                            th:text="${#numbers.formatDecimal(ct.thanhTien,0,'COMMA',0,'POINT')} + ' đ'">0
+                                            đ</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" style="text-align:right;font-size:.9rem;color:var(--gray-600);">Tổng
+                                        cộng:</td>
+                                    <td style="text-align:right;padding-right:20px;">
+                                        <span class="grand-total"
+                                            th:text="${#numbers.formatDecimal(donHang.tongTien,0,'COMMA',0,'POINT')} + ' đ'">0
+                                            đ</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
             </div>
-        </div>
+        </main>
 
-    </div>
-</main>
-
-<footer class="site-footer">
-    🐾 PetShop – Chăm sóc thú cưng với tình yêu thương 💕 &nbsp;|&nbsp; <a th:href="@{/}">Trang chủ</a>
-</footer>
+    </th:block>
 </body>
+
 </html>

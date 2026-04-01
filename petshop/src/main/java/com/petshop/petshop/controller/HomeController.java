@@ -10,8 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping({"/", "/home",})  // xử lý cả /, /home, /index
+    @GetMapping({"/", "/home"})  // xử lý cả /, /home
     public String home() {
-        return "sanpham/index";  // trả về templates/home.html (hoặc index.html)
+        return "redirect:/sanpham";  // redirect để đồng bộ hiển thị dữ liệu sản phẩm
+    }
+
+    @GetMapping("/admin")
+    public String adminHome() {
+        return "redirect:/admin/accounts";
     }
 }
