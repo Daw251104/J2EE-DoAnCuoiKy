@@ -11,4 +11,5 @@ public class UpdateProfileRequest {
     private String diaChi;
     private String email;
     private String anhDaiDien;
+    private org.springframework.web.multipart.MultipartFile fileAnhDaiDien;
 }

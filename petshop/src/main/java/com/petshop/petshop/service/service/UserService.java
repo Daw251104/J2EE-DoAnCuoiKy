@@ -6,6 +6,11 @@ import com.petshop.petshop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
 
 @Service
 public class UserService {
@@ -46,10 +51,34 @@ public class UserService {
         taiKhoan.setDiaChi(request.getDiaChi());
         
         // Cập nhật ảnh đại diện nếu có
-        if (request.getAnhDaiDien() != null && !request.getAnhDaiDien().trim().isEmpty()) {
+        if (request.getFileAnhDaiDien() != null && !request.getFileAnhDaiDien().isEmpty()) {
+            taiKhoan.setAnhDaiDien(saveImage(request.getFileAnhDaiDien()));
+        } else if (request.getAnhDaiDien() != null && !request.getAnhDaiDien().trim().isEmpty()) {
             taiKhoan.setAnhDaiDien(request.getAnhDaiDien());
         }
 
         userRepository.save(taiKhoan);
+    }
+
+    private String saveImage(MultipartFile file) {
+        try {
+            String projectRoot = System.getProperty("user.dir");
+            String relativePath = "/src/main/resources/static/uploads/avatars/";
+            String uploadDir = projectRoot + relativePath;
+
+            Path uploadDirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(uploadDirPath);
+
+            String originalFilename = file.getOriginalFilename();
+            String safeFilename = originalFilename != null ? originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_") : "avatar.jpg";
+            String fileName = "avatar_" + System.currentTimeMillis() + "_" + safeFilename;
+
+            Path uploadPath = uploadDirPath.resolve(fileName);
+            file.transferTo(uploadPath.toFile());
+
+            return "/uploads/avatars/" + fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi lưu hình ảnh đại diện: " + e.getMessage(), e);
+        }
     }
 }

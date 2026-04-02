@@ -890,6 +890,12 @@
                                     <i class="bi bi-check-circle-fill"></i>
                                     <span th:text="${successMessage}"></span>
                                     <button onclick="this.parentElement.remove()">✕</button>
+                                    <script>
+                                        // Tự động reload trang sau 1.5s để server kịp đồng bộ ảnh mới
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 500);
+                                    </script>
                                 </div>
                                 <div th:if="${errorMessage}" class="alert-box alert-e">
                                     <i class="bi bi-exclamation-circle-fill"></i>
@@ -897,7 +903,8 @@
                                     <button onclick="this.parentElement.remove()">✕</button>
                                 </div>
 
-                                <form th:action="@{/profile/update}" th:object="${updateProfileRequest}" method="post">
+                                <form th:action="@{/profile/update}" th:object="${updateProfileRequest}" method="post"
+                                    enctype="multipart/form-data">
                                     <div class="fgrid">
 
                                         <!-- Username (readonly) -->
@@ -956,16 +963,16 @@
                                             </div>
                                         </div>
 
-                                        <!-- Avatar URL -->
+                                        <!-- Avatar -->
                                         <div class="fgroup">
-                                            <label><i class="bi bi-camera-fill"></i> URL ảnh đại diện</label>
-                                            <div class="iw">
-                                                <i class="bi bi-camera-fill ii"></i>
-                                                <input type="url" th:field="*{anhDaiDien}"
-                                                    placeholder="https://example.com/avatar.jpg"
-                                                    oninput="liveAvatar(this.value)">
+                                            <label><i class="bi bi-camera-fill"></i> Ảnh đại diện</label>
+                                            <div class="iw" style="margin-bottom: 8px;">
+                                                <i class="bi bi-upload ii"></i>
+                                                <input type="file" name="fileAnhDaiDien" accept="image/*"
+                                                    onchange="previewLocalImage(this)">
                                             </div>
-                                            <div class="hint">Dán link ảnh đại diện của bạn</div>
+
+                                            <div class="hint">Tải ảnh lên từ thiết bị</div>
                                         </div>
 
                                         <!-- Address -->
@@ -1147,6 +1154,17 @@
                 newImg.alt = 'Avatar';
                 newImg.onerror = () => newImg.remove();
                 ph.replaceWith(newImg);
+            }
+        }
+
+        /* ── Local file preview ── */
+        function previewLocalImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    liveAvatar(e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
