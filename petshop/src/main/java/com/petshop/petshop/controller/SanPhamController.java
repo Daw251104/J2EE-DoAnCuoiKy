@@ -12,8 +12,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.petshop.petshop.dto.SanPhamDTO;
 import com.petshop.petshop.service.service.SanPhamService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Controller
 @RequestMapping("/sanpham")
@@ -33,9 +35,16 @@ public class SanPhamController {
 
     // Xem danh sách sản phẩm (Mọi người đều xem được)
     @GetMapping
-    public String listSanPham(Model model) {
-        List<SanPham> sanPhams = sanPhamRepository.findAll();
-        model.addAttribute("sanPhams", sanPhams);
+    public String listSanPham(@RequestParam(defaultValue = "1") int page, Model model) {
+        int pageNumber = page < 1 ? 0 : page - 1;
+        Pageable pageable = PageRequest.of(pageNumber, 10);
+        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageable);
+        
+        model.addAttribute("sanPhams", sanPhamPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", sanPhamPage.getTotalPages());
+        model.addAttribute("totalItems", sanPhamPage.getTotalElements());
+        
         return "sanpham/index";
     }
 

@@ -401,7 +401,7 @@
         /* Grid */
         .pgrid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px
         }
 
@@ -676,6 +676,58 @@
             text-decoration: none
         }
 
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .pagination a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            border-radius: 12px;
+            background: var(--white);
+            color: var(--gray-600);
+            font-size: .95rem;
+            font-weight: 800;
+            text-decoration: none;
+            border: 1.5px solid var(--pink-100);
+            transition: all .2s;
+        }
+
+        .pagination a:hover:not(.disabled) {
+            background: var(--pink-50);
+            border-color: var(--pink-200);
+            color: var(--rose);
+            transform: translateY(-2px);
+        }
+
+        .pagination a.active {
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, .3);
+        }
+
+        .pagination a.disabled {
+            background: var(--gray-100);
+            color: var(--gray-400);
+            border-color: var(--gray-200);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        @media(max-width:860px) {
+            .pgrid { grid-template-columns: repeat(4, 1fr); }
+        }
+
         @media(max-width:640px) {
             .ns {
                 display: none
@@ -687,7 +739,7 @@
             }
 
             .pgrid {
-                grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
                 gap: 12px
             }
         }
@@ -818,6 +870,25 @@
                 </div><!-- /.pcard -->
 
             </div><!-- /.pgrid -->
+
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages != null and totalPages > 1}">
+                <a th:href="${currentPage > 1} ? @{/sanpham(page=${currentPage - 1})} : '#'"
+                   th:classappend="${currentPage == 1} ? 'disabled'">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                
+                <th:block th:each="i: ${#numbers.sequence(1, totalPages)}">
+                    <a th:href="@{/sanpham(page=${i})}" th:text="${i}" 
+                       th:classappend="${currentPage == i} ? 'active'">1</a>
+                </th:block>
+                
+                <a th:href="${currentPage < totalPages} ? @{/sanpham(page=${currentPage + 1})} : '#'"
+                   th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            
         </main>
 
     </th:block>
