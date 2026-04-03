@@ -35,15 +35,26 @@ public class SanPhamController {
 
     // Xem danh sách sản phẩm (Mọi người đều xem được)
     @GetMapping
-    public String listSanPham(@RequestParam(defaultValue = "1") int page, Model model) {
+    public String listSanPham(@RequestParam(defaultValue = "1") int page,
+                              @RequestParam(required = false) Integer maLoaiTC,
+                              @RequestParam(required = false) Integer maLoai,
+                              Model model) {
         int pageNumber = page < 1 ? 0 : page - 1;
         Pageable pageable = PageRequest.of(pageNumber, 10);
-        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageable);
+        
+        // filter san pham
+        Page<SanPham> sanPhamPage = sanPhamRepository.locSanPham(maLoaiTC, maLoai, pageable);
         
         model.addAttribute("sanPhams", sanPhamPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", sanPhamPage.getTotalPages());
         model.addAttribute("totalItems", sanPhamPage.getTotalElements());
+        
+        // Pass data for filter form
+        model.addAttribute("loaiSanPhams", loaiSanPhamRepository.findAll());
+        model.addAttribute("loaiThuCungs", loaiThuCungRepository.findAll());
+        model.addAttribute("currentMaLoaiTC", maLoaiTC);
+        model.addAttribute("currentMaLoai", maLoai);
         
         return "sanpham/index";
     }

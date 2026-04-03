@@ -53,7 +53,8 @@ public class DonHangService {
                     BigDecimal gia = gh.getSanPham().getGiaBan();
                     if (gh.getSanPham().getKhuyenMai() != null
                             && gh.getSanPham().getKhuyenMai().compareTo(BigDecimal.ZERO) > 0) {
-                        gia = gia.subtract(gh.getSanPham().getKhuyenMai());
+                        BigDecimal kmPerc = gh.getSanPham().getKhuyenMai().divide(BigDecimal.valueOf(100));
+                        gia = gia.multiply(BigDecimal.ONE.subtract(kmPerc));
                     }
                     return gia.multiply(BigDecimal.valueOf(gh.getSoLuong()));
                 })
@@ -82,7 +83,8 @@ public class DonHangService {
             BigDecimal giaBanRa = gh.getSanPham().getGiaBan();
             if (gh.getSanPham().getKhuyenMai() != null
                     && gh.getSanPham().getKhuyenMai().compareTo(BigDecimal.ZERO) > 0) {
-                giaBanRa = giaBanRa.subtract(gh.getSanPham().getKhuyenMai());
+                BigDecimal kmPerc = gh.getSanPham().getKhuyenMai().divide(BigDecimal.valueOf(100));
+                giaBanRa = giaBanRa.multiply(BigDecimal.ONE.subtract(kmPerc));
             }
             chiTiet.setGiaBanRa(giaBanRa);
             chiTietDonHangRepository.save(chiTiet);
@@ -97,11 +99,16 @@ public class DonHangService {
     /**
      * Lấy lịch sử đơn hàng của user.
      */
-    public List<DonHangResponse> layDanhSachDonHang(String username) {
+    public List<DonHangResponse> layDanhSachDonHang(String username, String trangThai) {
         TaiKhoan taiKhoan = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản: " + username));
-        return donHangRepository.findByKhachHangOrderByNgayLapDonHangDesc(taiKhoan)
-                .stream()
+        List<DonHang> danhSach = donHangRepository.findByKhachHangOrderByNgayLapDonHangDesc(taiKhoan);
+        if (trangThai != null && !trangThai.trim().isEmpty()) {
+            danhSach = danhSach.stream()
+                    .filter(d -> trangThai.equals(d.getTrangThai()))
+                    .collect(Collectors.toList());
+        }
+        return danhSach.stream()
                 .map(DonHangResponse::from)
                 .collect(Collectors.toList());
     }
@@ -125,8 +132,14 @@ public class DonHangService {
     /**
      * Lấy tất cả đơn hàng (OWNER/STAFF).
      */
-    public List<DonHangResponse> layTatCaDonHang() {
-        return donHangRepository.findAll().stream()
+    public List<DonHangResponse> layTatCaDonHang(String trangThai) {
+        List<DonHang> danhSach = donHangRepository.findAll();
+        if (trangThai != null && !trangThai.trim().isEmpty()) {
+            danhSach = danhSach.stream()
+                    .filter(d -> trangThai.equals(d.getTrangThai()))
+                    .collect(Collectors.toList());
+        }
+        return danhSach.stream()
                 .sorted((a, b) -> b.getNgayLapDonHang().compareTo(a.getNgayLapDonHang()))
                 .map(DonHangResponse::from)
                 .collect(Collectors.toList());

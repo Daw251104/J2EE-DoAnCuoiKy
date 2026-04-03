@@ -334,7 +334,9 @@
             font-size: .82rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all .2s
+            transition: all .2s;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .otab.active,
@@ -563,11 +565,11 @@
             <div th:unless="${donHangs.empty}">
                 <!-- Filter tabs -->
                 <div class="order-tabs">
-                    <button class="otab active">Tất cả</button>
-                    <button class="otab">⏳ Chờ xác nhận</button>
-                    <button class="otab">🚚 Đang giao</button>
-                    <button class="otab">✅ Đã giao</button>
-                    <button class="otab">❌ Đã hủy</button>
+                    <a th:href="@{/don-hang}" th:classappend="${currentTrangThai == null || currentTrangThai == ''} ? 'active' : ''" class="otab">Tất cả</a>
+                    <a th:href="@{/don-hang(trangThai='CHO_XAC_NHAN')}" th:classappend="${currentTrangThai == 'CHO_XAC_NHAN'} ? 'active' : ''" class="otab">⏳ Chờ xác nhận</a>
+                    <a th:href="@{/don-hang(trangThai='DANG_GIAO')}" th:classappend="${currentTrangThai == 'DANG_GIAO'} ? 'active' : ''" class="otab">🚚 Đang giao</a>
+                    <a th:href="@{/don-hang(trangThai='DA_GIAO')}" th:classappend="${currentTrangThai == 'DA_GIAO'} ? 'active' : ''" class="otab">✅ Đã giao</a>
+                    <a th:href="@{/don-hang(trangThai='DA_HUY')}" th:classappend="${currentTrangThai == 'DA_HUY'} ? 'active' : ''" class="otab">❌ Đã hủy</a>
                 </div>
 
                 <div class="order-card" th:each="dh : ${donHangs}">

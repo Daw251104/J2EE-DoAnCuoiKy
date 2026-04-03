@@ -71,9 +71,10 @@ public class DonHangController {
      * Lịch sử đơn hàng (CUSTOMER)
      */
     @GetMapping("/don-hang")
-    public String lichSuDonHang(Model model, Principal principal) {
-        List<DonHangResponse> donHangs = donHangService.layDanhSachDonHang(principal.getName());
+    public String lichSuDonHang(@RequestParam(required = false) String trangThai, Model model, Principal principal) {
+        List<DonHangResponse> donHangs = donHangService.layDanhSachDonHang(principal.getName(), trangThai);
         model.addAttribute("donHangs", donHangs);
+        model.addAttribute("currentTrangThai", trangThai);
         return "donhang/lich-su";
     }
 
@@ -117,20 +118,23 @@ public class DonHangController {
      * Danh sách tất cả đơn hàng (STAFF/OWNER)
      */
     @GetMapping("/staff/don-hang")
-    public String tatCaDonHang(Model model) {
-        List<DonHangResponse> donHangs = donHangService.layTatCaDonHang();
+    public String tatCaDonHang(@RequestParam(required = false) String trangThai, Model model) {
+        List<DonHangResponse> tatCa = donHangService.layTatCaDonHang(null);
         
         // Tính toán thống kê trên server
-        long choXacNhan = donHangs.stream().filter(d -> "CHO_XAC_NHAN".equals(d.getTrangThai())).count();
-        long dangGiao = donHangs.stream().filter(d -> "DANG_GIAO".equals(d.getTrangThai())).count();
-        long daGiao = donHangs.stream().filter(d -> "DA_GIAO".equals(d.getTrangThai())).count();
-        long daHuy = donHangs.stream().filter(d -> "DA_HUY".equals(d.getTrangThai())).count();
+        long choXacNhan = tatCa.stream().filter(d -> "CHO_XAC_NHAN".equals(d.getTrangThai())).count();
+        long dangGiao = tatCa.stream().filter(d -> "DANG_GIAO".equals(d.getTrangThai())).count();
+        long daGiao = tatCa.stream().filter(d -> "DA_GIAO".equals(d.getTrangThai())).count();
+        long daHuy = tatCa.stream().filter(d -> "DA_HUY".equals(d.getTrangThai())).count();
+        
+        List<DonHangResponse> donHangs = donHangService.layTatCaDonHang(trangThai);
         
         model.addAttribute("donHangs", donHangs);
         model.addAttribute("countChoXacNhan", choXacNhan);
         model.addAttribute("countDangGiao", dangGiao);
         model.addAttribute("countDaGiao", daGiao);
         model.addAttribute("countDaHuy", daHuy);
+        model.addAttribute("currentTrangThai", trangThai);
         
         return "donhang/staff-list";
     }

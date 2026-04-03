@@ -398,7 +398,9 @@
             font-size: .78rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all .2s
+            transition: all .2s;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .tf-chip.active,
@@ -723,11 +725,11 @@
                     <h2>Danh sách đơn hàng</h2>
                 </div>
                 <div class="table-filters">
-                    <button class="tf-chip active">Tất cả</button>
-                    <button class="tf-chip">⏳ Chờ duyệt</button>
-                    <button class="tf-chip">🚚 Đang giao</button>
-                    <button class="tf-chip">✅ Đã giao</button>
-                    <button class="tf-chip">❌ Đã hủy</button>
+                    <a th:href="@{/staff/don-hang}" th:classappend="${currentTrangThai == null || currentTrangThai == ''} ? 'active' : ''" class="tf-chip">Tất cả</a>
+                    <a th:href="@{/staff/don-hang(trangThai='CHO_XAC_NHAN')}" th:classappend="${currentTrangThai == 'CHO_XAC_NHAN'} ? 'active' : ''" class="tf-chip">⏳ Chờ duyệt</a>
+                    <a th:href="@{/staff/don-hang(trangThai='DANG_GIAO')}" th:classappend="${currentTrangThai == 'DANG_GIAO'} ? 'active' : ''" class="tf-chip">🚚 Đang giao</a>
+                    <a th:href="@{/staff/don-hang(trangThai='DA_GIAO')}" th:classappend="${currentTrangThai == 'DA_GIAO'} ? 'active' : ''" class="tf-chip">✅ Đã giao</a>
+                    <a th:href="@{/staff/don-hang(trangThai='DA_HUY')}" th:classappend="${currentTrangThai == 'DA_HUY'} ? 'active' : ''" class="tf-chip">❌ Đã hủy</a>
                 </div>
             </div>
 

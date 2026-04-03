@@ -351,6 +351,50 @@
             color: #fff
         }
 
+        .f-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .f-select {
+            padding: 7px 32px 7px 14px;
+            border-radius: 50px;
+            border: 1.5px solid var(--pink-200);
+            background: var(--pink-50) url('data:image/svg+xml;utf8,<svg fill="%23f06595" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right 8px center;
+            color: var(--rose);
+            font-family: 'Nunito', sans-serif;
+            font-size: .8rem;
+            font-weight: 800;
+            cursor: pointer;
+            outline: none;
+            transition: all .2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .f-select:hover, .f-select:focus {
+            background-color: var(--white);
+            border-color: var(--rose);
+        }
+
+        .f-clear {
+            font-size: .78rem;
+            color: var(--gray-400);
+            text-decoration: none;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+            padding: 4px 8px;
+        }
+        
+        .f-clear:hover {
+            color: var(--rose);
+        }
+
         .rcount {
             margin-left: auto;
             font-size: .8rem;
@@ -725,7 +769,9 @@
         }
 
         @media(max-width:860px) {
-            .pgrid { grid-template-columns: repeat(4, 1fr); }
+            .pgrid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         @media(max-width:640px) {
@@ -768,14 +814,27 @@
         <!-- Filter bar -->
         <div class="fbar">
             <span class="fl">Lọc:</span>
-            <a href="#" class="fchip active">Tất cả</a>
-            <a href="#" class="fchip">🐶 Chó</a>
-            <a href="#" class="fchip">🐱 Mèo</a>
-            <a href="#" class="fchip">🐟 Cá</a>
-            <a href="#" class="fchip">Thức ăn</a>
-            <a href="#" class="fchip">Phụ kiện</a>
+            <form th:action="@{/sanpham}" method="get" class="f-form" id="filterForm">
+                <select name="maLoaiTC" class="f-select" onchange="document.getElementById('filterForm').submit()">
+                    <option value="">🐶 Tất cả thú cưng</option>
+                    <option th:each="tc : ${loaiThuCungs}" 
+                            th:value="${tc.maLoaiTC}" 
+                            th:text="${tc.tenLoaiTC}" 
+                            th:selected="${tc.maLoaiTC == currentMaLoaiTC}"></option>
+                </select>
+                <select name="maLoai" class="f-select" onchange="document.getElementById('filterForm').submit()">
+                    <option value="">📦 Tất cả sản phẩm</option>
+                    <option th:each="sp : ${loaiSanPhams}" 
+                            th:value="${sp.maLoai}" 
+                            th:text="${sp.tenLoai}" 
+                            th:selected="${sp.maLoai == currentMaLoai}"></option>
+                </select>
+                <a th:href="@{/sanpham}" class="f-clear" th:if="${currentMaLoaiTC != null or currentMaLoai != null}">
+                    <i class="bi bi-x-circle-fill"></i> Bỏ lọc
+                </a>
+            </form>
             <span class="rcount" th:if="${sanPhams != null}">
-                <i class="bi bi-box-seam"></i> <span th:text="${sanPhams.size()}">0</span> sản phẩm
+                <i class="bi bi-box-seam"></i> <span th:text="${totalItems ?: sanPhams.size()}">0</span> sản phẩm
             </span>
         </div>
 
@@ -874,21 +933,21 @@
             <!-- Pagination -->
             <div class="pagination" th:if="${totalPages != null and totalPages > 1}">
                 <a th:href="${currentPage > 1} ? @{/sanpham(page=${currentPage - 1})} : '#'"
-                   th:classappend="${currentPage == 1} ? 'disabled'">
+                    th:classappend="${currentPage == 1} ? 'disabled'">
                     <i class="bi bi-chevron-left"></i>
                 </a>
-                
+
                 <th:block th:each="i: ${#numbers.sequence(1, totalPages)}">
-                    <a th:href="@{/sanpham(page=${i})}" th:text="${i}" 
-                       th:classappend="${currentPage == i} ? 'active'">1</a>
+                    <a th:href="@{/sanpham(page=${i})}" th:text="${i}"
+                        th:classappend="${currentPage == i} ? 'active'">1</a>
                 </th:block>
-                
+
                 <a th:href="${currentPage < totalPages} ? @{/sanpham(page=${currentPage + 1})} : '#'"
-                   th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    th:classappend="${currentPage == totalPages} ? 'disabled'">
                     <i class="bi bi-chevron-right"></i>
                 </a>
             </div>
-            
+
         </main>
 
     </th:block>
