@@ -615,15 +615,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="oc-actions" style="display:flex;gap:6px;flex-direction:column;">
-                            <a th:href="@{/don-hang/{id}(id=${dh.maDH})}" class="btn-view" style="width:100%;justify-content:center;">
+                        <div class="oc-actions">
+                            <a th:href="@{/don-hang/{id}(id=${dh.maDH})}" class="btn-view">
                                 <i class="bi bi-eye-fill"></i> Xem chi tiết
                             </a>
-                            <form th:if="${dh.trangThai == 'CHO_XAC_NHAN'}" th:action="@{/don-hang/{id}/huy(id=${dh.maDH})}" method="post" style="margin:0;">
-                                <button type="submit" class="btn-view" style="width:100%;justify-content:center;color:#cc3333;border-color:#fca5a5;background:#fff0f0;" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
-                                    <i class="bi bi-x-circle-fill"></i> Hủy đơn
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
