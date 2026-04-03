@@ -31,6 +31,9 @@ public class DonHangService {
     @Autowired
     private PhuongThucThanhToanRepository phuongThucThanhToanRepository;
 
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
+
     /**
      * Tạo đơn hàng từ giỏ hàng.
      */
@@ -213,6 +216,41 @@ public class DonHangService {
         }
 
         donHang.setTrangThai("DA_GIAO");
+        donHang.setDaThanhToan(1);
+        
+        // Giảm số lượng tồn kho của từng sản phẩm trong đơn hàng
+        if (donHang.getChiTietDonHangs() != null) {
+            for (ChiTietDonHang ct : donHang.getChiTietDonHangs()) {
+                SanPham sp = ct.getSanPham();
+                int slConLai = (sp.getSlTon() != null ? sp.getSlTon() : 0) - ct.getSl();
+                if (slConLai < 0) {
+                    slConLai = 0; // Tránh số lượng tồn âm
+                }
+                sp.setSlTon(slConLai);
+                sanPhamRepository.save(sp);
+            }
+        }
+        
+        donHangRepository.save(donHang);
+    }
+
+    /**
+     * Khách hàng hủy đơn ở trạng thái CHO_XAC_NHAN
+     */
+    @Transactional
+    public void huyDonHang(Integer maDH, String username) {
+        DonHang donHang = donHangRepository.findById(maDH)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng: " + maDH));
+
+        if (!donHang.getKhachHang().getUsername().equals(username)) {
+            throw new RuntimeException("Bạn không có quyền cập nhật đơn hàng này!");
+        }
+
+        if (!"CHO_XAC_NHAN".equals(donHang.getTrangThai())) {
+            throw new RuntimeException("Đơn hàng không ở trạng thái chờ xác nhận, không thể hủy!");
+        }
+
+        donHang.setTrangThai("DA_HUY");
         donHangRepository.save(donHang);
     }
 }

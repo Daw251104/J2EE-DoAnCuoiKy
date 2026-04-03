@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6" layout:decorate="~{layout}">
+
 
 <head>
     <meta charset="UTF-8">
@@ -632,199 +633,184 @@
 </head>
 
 <body>
-
-    <div class="staff-topbar">⚙️ PetShop Staff Panel – Quản lý đơn hàng</div>
-
-    <header class="navbar">
-        <nav class="navbar-inner">
-            <a th:href="@{/}" class="brand">
-                <div class="li">🐾</div><span class="lt">PetShop</span>
-            </a>
-            <ul class="nav-links">
-                <li><a th:href="@{/sanpham}"><i class="bi bi-grid-3x3-gap-fill"></i> Sản phẩm</a></li>
-                <li><a th:href="@{/staff/don-hang}" class="active"><i class="bi bi-clipboard2-list"></i> Đơn hàng</a>
-                </li>
-                <li><a th:href="@{/admin}"><i class="bi bi-shield-check"></i> Admin</a></li>
-            </ul>
-            <div class="spacer"></div>
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div class="staff-badge">
-                    <div class="av"><i class="bi bi-person-badge"></i></div>
-                    <span sec:authentication="name">Staff</span>
-                    <span
-                        style="background:#7c3aed;color:#fff;padding:2px 8px;border-radius:50px;font-size:.68rem;font-weight:800;">STAFF</span>
-                </div>
-                <form th:action="@{/logout}" method="post">
-                    <button type="submit" class="logout-btn"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
-                </form>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Hero -->
-    <section class="page-hero">
-        <div class="hero-row">
-            <div class="hero-left">
-                <div class="hero-icon">📋</div>
-                <div>
-                    <h1>Quản lý đơn hàng</h1>
-                    <p>Xem và xử lý các đơn hàng từ khách hàng</p>
+    <th:block layout:fragment="content">
+        <!-- Hero -->
+        <section class="page-hero">
+            <div class="hero-row">
+                <div class="hero-left">
+                    <div class="hero-icon">📋</div>
+                    <div>
+                        <h1>Quản lý đơn hàng</h1>
+                        <p>Xem và xử lý các đơn hàng từ khách hàng</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <main class="container">
-        <!-- Stat cards -->
-        <div class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-icon si-yellow">⏳</div>
-                <div class="stat-info">
-                    <div class="sv" th:text="${countChoXacNhan}">0</div>
-                    <div class="sl">Chờ xác nhận</div>
+        <main class="container">
+            <!-- Stat cards -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-icon si-yellow">⏳</div>
+                    <div class="stat-info">
+                        <div class="sv" th:text="${countChoXacNhan}">0</div>
+                        <div class="sl">Chờ xác nhận</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon si-blue">🚚</div>
-                <div class="stat-info">
-                    <div class="sv" th:text="${countDangGiao}">0</div>
-                    <div class="sl">Đang giao</div>
+                <div class="stat-card">
+                    <div class="stat-icon si-blue">🚚</div>
+                    <div class="stat-info">
+                        <div class="sv" th:text="${countDangGiao}">0</div>
+                        <div class="sl">Đang giao</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon si-green">✅</div>
-                <div class="stat-info">
-                    <div class="sv" th:text="${countDaGiao}">0</div>
-                    <div class="sl">Đã giao</div>
+                <div class="stat-card">
+                    <div class="stat-icon si-green">✅</div>
+                    <div class="stat-info">
+                        <div class="sv" th:text="${countDaGiao}">0</div>
+                        <div class="sl">Đã giao</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon si-red">❌</div>
-                <div class="stat-info">
-                    <div class="sv" th:text="${countDaHuy}">0</div>
-                    <div class="sl">Đã hủy</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Alerts -->
-        <div th:if="${successMessage}" class="alert-box alert-s">
-            <i class="bi bi-check-circle-fill"></i><span th:text="${successMessage}"></span>
-            <button onclick="this.parentElement.remove()">✕</button>
-        </div>
-        <div th:if="${errorMessage}" class="alert-box alert-e">
-            <i class="bi bi-exclamation-circle-fill"></i><span th:text="${errorMessage}"></span>
-            <button onclick="this.parentElement.remove()">✕</button>
-        </div>
-
-        <!-- Table card -->
-        <div class="table-card">
-            <div class="table-card-header">
-                <div class="tc-title">
-                    <div class="tci"><i class="bi bi-table"></i></div>
-                    <h2>Danh sách đơn hàng</h2>
-                </div>
-                <div class="table-filters">
-                    <a th:href="@{/staff/don-hang}" th:classappend="${currentTrangThai == null || currentTrangThai == ''} ? 'active' : ''" class="tf-chip">Tất cả</a>
-                    <a th:href="@{/staff/don-hang(trangThai='CHO_XAC_NHAN')}" th:classappend="${currentTrangThai == 'CHO_XAC_NHAN'} ? 'active' : ''" class="tf-chip">⏳ Chờ duyệt</a>
-                    <a th:href="@{/staff/don-hang(trangThai='DANG_GIAO')}" th:classappend="${currentTrangThai == 'DANG_GIAO'} ? 'active' : ''" class="tf-chip">🚚 Đang giao</a>
-                    <a th:href="@{/staff/don-hang(trangThai='DA_GIAO')}" th:classappend="${currentTrangThai == 'DA_GIAO'} ? 'active' : ''" class="tf-chip">✅ Đã giao</a>
-                    <a th:href="@{/staff/don-hang(trangThai='DA_HUY')}" th:classappend="${currentTrangThai == 'DA_HUY'} ? 'active' : ''" class="tf-chip">❌ Đã hủy</a>
+                <div class="stat-card">
+                    <div class="stat-icon si-red">❌</div>
+                    <div class="stat-info">
+                        <div class="sv" th:text="${countDaHuy}">0</div>
+                        <div class="sl">Đã hủy</div>
+                    </div>
                 </div>
             </div>
 
-            <div style="overflow-x:auto;">
-                <table class="order-tbl">
-                    <thead>
-                        <tr>
-                            <th>Mã ĐH</th>
-                            <th>Khách hàng</th>
-                            <th>Ngày đặt</th>
-                            <th>Tổng tiền</th>
-                            <th>Thanh toán</th>
-                            <th>Trạng thái</th>
-                            <th style="text-align:center;min-width:210px;">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Empty -->
-                        <tr class="empty-row" th:if="${donHangs.empty}">
-                            <td colspan="7">
-                                <div class="ee">📭</div>
-                                <div style="font-weight:800;color:var(--gray-600);font-size:1rem;">Chưa có đơn hàng nào
-                                </div>
-                            </td>
-                        </tr>
+            <!-- Alerts -->
+            <div th:if="${successMessage}" class="alert-box alert-s">
+                <i class="bi bi-check-circle-fill"></i><span th:text="${successMessage}"></span>
+                <button onclick="this.parentElement.remove()">✕</button>
+            </div>
+            <div th:if="${errorMessage}" class="alert-box alert-e">
+                <i class="bi bi-exclamation-circle-fill"></i><span th:text="${errorMessage}"></span>
+                <button onclick="this.parentElement.remove()">✕</button>
+            </div>
 
-                        <tr th:each="dh : ${donHangs}">
-                            <td class="order-id">#<span th:text="${dh.maDH}">0</span></td>
-                            <td>
-                                <div class="customer-name" th:text="${dh.tenNguoiNhan}">Tên</div>
-                                <div class="customer-phone" th:text="${dh.sdtNguoiNhan}">SĐT</div>
-                            </td>
-                            <td>
-                                <div class="date-main" th:text="${#temporals.format(dh.ngayLapDonHang,'dd/MM/yyyy')}">
-                                    01/01</div>
-                                <div class="date-time" th:text="${#temporals.format(dh.ngayLapDonHang,'HH:mm')}">00:00
-                                </div>
-                            </td>
-                            <td>
-                                <span class="price-col"
-                                    th:text="${#numbers.formatDecimal(dh.tongTien,0,'COMMA',0,'POINT')} + ' đ'">0
-                                    đ</span>
-                            </td>
-                            <td><span class="pttt-tag" th:text="${dh.tenLoaiTT ?: 'N/A'}">COD</span></td>
-                            <td>
-                                <span th:switch="${dh.trangThai}">
-                                    <span th:case="'CHO_XAC_NHAN'" class="spill s-cho">⏳ Chờ xác nhận</span>
-                                    <span th:case="'DANG_GIAO'" class="spill s-giao">🚚 Đang giao</span>
-                                    <span th:case="'DA_GIAO'" class="spill s-dagiao">✅ Đã giao</span>
-                                    <span th:case="'DA_HUY'" class="spill s-huy">❌ Đã hủy</span>
-                                    <span th:case="*" class="spill s-cho" th:text="${dh.trangThai}"></span>
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-cell" style="justify-content:center;">
-                                    <!-- View detail -->
-                                    <a th:href="@{/staff/don-hang/{id}(id=${dh.maDH})}" class="abtn abtn-view">
-                                        <i class="bi bi-eye-fill"></i> Chi tiết
-                                    </a>
-                                    <!-- Approve/reject only for CHO_XAC_NHAN -->
-                                    <div th:if="${dh.trangThai == 'CHO_XAC_NHAN'}" style="display:flex;gap:5px;">
-                                        <form th:action="@{/staff/don-hang/{id}/xac-nhan(id=${dh.maDH})}" method="post">
-                                            <button type="submit" class="abtn abtn-ok"
-                                                th:onclick="'return confirm(\'Duyệt đơn #' + ${dh.maDH} + '?\')'"
-                                                title="Xác nhận">
-                                                <i class="bi bi-check-lg"></i> Duyệt
-                                            </button>
-                                        </form>
-                                        <form th:action="@{/staff/don-hang/{id}/tu-choi(id=${dh.maDH})}" method="post">
-                                            <button type="submit" class="abtn abtn-reject"
-                                                th:onclick="'return confirm(\'Từ chối đơn #' + ${dh.maDH} + '?\')'"
-                                                title="Từ chối">
-                                                <i class="bi bi-x-lg"></i> Từ chối
-                                            </button>
-                                        </form>
+            <!-- Table card -->
+            <div class="table-card">
+                <div class="table-card-header">
+                    <div class="tc-title">
+                        <div class="tci"><i class="bi bi-table"></i></div>
+                        <h2>Danh sách đơn hàng</h2>
+                    </div>
+                    <div class="table-filters">
+                        <a th:href="@{/staff/don-hang}"
+                            th:classappend="${currentTrangThai == null || currentTrangThai == ''} ? 'active' : ''"
+                            class="tf-chip">Tất cả</a>
+                        <a th:href="@{/staff/don-hang(trangThai='CHO_XAC_NHAN')}"
+                            th:classappend="${currentTrangThai == 'CHO_XAC_NHAN'} ? 'active' : ''" class="tf-chip">⏳ Chờ
+                            duyệt</a>
+                        <a th:href="@{/staff/don-hang(trangThai='DANG_GIAO')}"
+                            th:classappend="${currentTrangThai == 'DANG_GIAO'} ? 'active' : ''" class="tf-chip">🚚 Đang
+                            giao</a>
+                        <a th:href="@{/staff/don-hang(trangThai='DA_GIAO')}"
+                            th:classappend="${currentTrangThai == 'DA_GIAO'} ? 'active' : ''" class="tf-chip">✅ Đã
+                            giao</a>
+                        <a th:href="@{/staff/don-hang(trangThai='DA_HUY')}"
+                            th:classappend="${currentTrangThai == 'DA_HUY'} ? 'active' : ''" class="tf-chip">❌ Đã
+                            hủy</a>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="order-tbl">
+                        <thead>
+                            <tr>
+                                <th>Mã ĐH</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Thanh toán</th>
+                                <th>Trạng thái</th>
+                                <th style="text-align:center;min-width:210px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Empty -->
+                            <tr class="empty-row" th:if="${donHangs.empty}">
+                                <td colspan="7">
+                                    <div class="ee">📭</div>
+                                    <div style="font-weight:800;color:var(--gray-600);font-size:1rem;">Chưa có đơn hàng
+                                        nào
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot th:unless="${donHangs.empty}">
-                        <tr>
-                            <td colspan="7">
-                                Hiển thị <strong th:text="${donHangs.size()}">0</strong> đơn hàng
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    </main>
+                                </td>
+                            </tr>
 
-    <footer class="site-footer">
-        🐾 PetShop Staff Panel &nbsp;|&nbsp; <a th:href="@{/}">Trang chủ</a>
-    </footer>
+                            <tr th:each="dh : ${donHangs}">
+                                <td class="order-id">#<span th:text="${dh.maDH}">0</span></td>
+                                <td>
+                                    <div class="customer-name" th:text="${dh.tenNguoiNhan}">Tên</div>
+                                    <div class="customer-phone" th:text="${dh.sdtNguoiNhan}">SĐT</div>
+                                </td>
+                                <td>
+                                    <div class="date-main"
+                                        th:text="${#temporals.format(dh.ngayLapDonHang,'dd/MM/yyyy')}">
+                                        01/01</div>
+                                    <div class="date-time" th:text="${#temporals.format(dh.ngayLapDonHang,'HH:mm')}">
+                                        00:00
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="price-col"
+                                        th:text="${#numbers.formatDecimal(dh.tongTien,0,'COMMA',0,'POINT')} + ' đ'">0
+                                        đ</span>
+                                </td>
+                                <td><span class="pttt-tag" th:text="${dh.tenLoaiTT ?: 'N/A'}">COD</span></td>
+                                <td>
+                                    <span th:switch="${dh.trangThai}">
+                                        <span th:case="'CHO_XAC_NHAN'" class="spill s-cho">⏳ Chờ xác nhận</span>
+                                        <span th:case="'DANG_GIAO'" class="spill s-giao">🚚 Đang giao</span>
+                                        <span th:case="'DA_GIAO'" class="spill s-dagiao">✅ Đã giao</span>
+                                        <span th:case="'DA_HUY'" class="spill s-huy">❌ Đã hủy</span>
+                                        <span th:case="*" class="spill s-cho" th:text="${dh.trangThai}"></span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-cell" style="justify-content:center;">
+                                        <!-- View detail -->
+                                        <a th:href="@{/staff/don-hang/{id}(id=${dh.maDH})}" class="abtn abtn-view">
+                                            <i class="bi bi-eye-fill"></i> Chi tiết
+                                        </a>
+                                        <!-- Approve/reject only for CHO_XAC_NHAN -->
+                                        <div th:if="${dh.trangThai == 'CHO_XAC_NHAN'}" style="display:flex;gap:5px;">
+                                            <form th:action="@{/staff/don-hang/{id}/xac-nhan(id=${dh.maDH})}"
+                                                method="post">
+                                                <button type="submit" class="abtn abtn-ok"
+                                                    th:onclick="'return confirm(\'Duyệt đơn #' + ${dh.maDH} + '?\')'"
+                                                    title="Xác nhận">
+                                                    <i class="bi bi-check-lg"></i> Duyệt
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/staff/don-hang/{id}/tu-choi(id=${dh.maDH})}"
+                                                method="post">
+                                                <button type="submit" class="abtn abtn-reject"
+                                                    th:onclick="'return confirm(\'Từ chối đơn #' + ${dh.maDH} + '?\')'"
+                                                    title="Từ chối">
+                                                    <i class="bi bi-x-lg"></i> Từ chối
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot th:unless="${donHangs.empty}">
+                            <tr>
+                                <td colspan="7">
+                                    Hiển thị <strong th:text="${donHangs.size()}">0</strong> đơn hàng
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+    </th:block>
 </body>
 
 </html>

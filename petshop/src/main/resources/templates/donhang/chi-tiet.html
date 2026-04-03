@@ -689,6 +689,21 @@
                     </div>
 
                     <!-- Action boxes -->
+                    <!-- Chờ xác nhận: Hủy đơn hàng -->
+                    <div class="dcard" th:if="${donHang.trangThai == 'CHO_XAC_NHAN'}">
+                        <div class="dcard-body">
+                            <div class="action-box ab-cancelled">
+                                <div class="ab-title" style="color:#dc2626;">❌ Hủy đơn hàng</div>
+                                <div class="ab-desc" style="color:#991b1b;">Bạn có thể hủy đơn hàng khi cửa hàng chưa duyệt đơn. Sau khi hủy, đơn sẽ không thể khôi phục.</div>
+                                <form th:action="@{/don-hang/{id}/huy(id=${donHang.maDH})}" method="post">
+                                    <button type="submit" class="btn-confirm" style="background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 14px rgba(239, 68, 68, .3);" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                                        <i class="bi bi-x-circle-fill"></i> Xác nhận hủy đơn
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Đang giao: xác nhận nhận hàng -->
                     <div class="dcard" th:if="${donHang.trangThai == 'DANG_GIAO'}">
                         <div class="dcard-body">

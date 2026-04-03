@@ -643,9 +643,24 @@
             </a>
             <ul class="nav-links">
                 <li><a th:href="@{/sanpham}"><i class="bi bi-grid-3x3-gap-fill"></i> Sản phẩm</a></li>
-                <li><a th:href="@{/gio-hang}"><i class="bi bi-bag-heart"></i> Giỏ hàng</a></li>
-                <li><a th:href="@{/don-hang}" class="active"><i class="bi bi-bag-check"></i> Đơn hàng</a></li>
-                <li><a th:href="@{/profile}"><i class="bi bi-person-circle"></i> Hồ sơ</a></li>
+
+                <!-- Khách hàng -->
+                <li sec:authorize="hasAnyAuthority('CUSTOMER', 'KHACH_HANG')"><a th:href="@{/gio-hang}"><i
+                            class="bi bi-bag-heart"></i> Giỏ hàng</a></li>
+                <li sec:authorize="hasAnyAuthority('CUSTOMER', 'KHACH_HANG')"><a th:href="@{/don-hang}"><i
+                            class="bi bi-bag-check"></i> Đơn hàng</a></li>
+
+                <!-- Nhân viên / Chủ cửa hàng -->
+                <li sec:authorize="hasAnyAuthority('OWNER', 'STAFF')"><a th:href="@{/staff/don-hang}"><i
+                            class="bi bi-clipboard2-list"></i>Đơn hàng</a></li>
+
+                <!-- Quản trị viên -->
+                <li sec:authorize="hasAnyAuthority('ADMIN', 'QUAN_TRI_VIEN')"><a th:href="@{/admin/accounts}"><i
+                            class="bi bi-shield-check"></i> Quản trị</a></li>
+
+                <!-- Mọi user đã đăng nhập đều xem được hồ sơ -->
+                <li sec:authorize="isAuthenticated()"><a th:href="@{/profile}"><i class="bi bi-person-circle"></i> Hồ
+                        sơ</a></li>
             </ul>
             <div class="spacer"></div>
             <div class="nab">
