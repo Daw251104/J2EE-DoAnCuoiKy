@@ -5,6 +5,7 @@
 package com.petshop.petshop.service.security;
 
 import com.petshop.petshop.model.TaiKhoan;
+import com.petshop.petshop.model.TrangThaiTaiKhoan;
 import com.petshop.petshop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,10 +39,19 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(role -> new SimpleGrantedAuthority(role.getTenLoaiTK()))
                 .collect(Collectors.toSet());
 
-        // 3. Trả về đối tượng UserDetails mà Spring Security yêu cầu
+        // 3. Ánh xạ trạng thái Business (Enum) sang Spring Security Flags
+        boolean isEnabled = user.getTrangThai() == TrangThaiTaiKhoan.ACTIVE || 
+                            user.getTrangThai() == TrangThaiTaiKhoan.LOCKED;
+        boolean isAccountNonLocked = user.getTrangThai() != TrangThaiTaiKhoan.LOCKED;
+
+        // 4. Trả về đối tượng UserDetails với đầy đủ các flag bảo mật
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
-                user.getPassword(), // Mật khẩu đã được mã hóa trong DB
+                user.getPassword(),
+                isEnabled,             // enabled (ACTIVE hoặc LOCKED thì coi là user đã kích hoạt)
+                true,                  // accountNonExpired
+                true,                  // credentialsNonExpired
+                isAccountNonLocked,    // accountNonLocked (Nếu trạng thái là LOCKED thì trả về false)
                 authorities
         );
     }
