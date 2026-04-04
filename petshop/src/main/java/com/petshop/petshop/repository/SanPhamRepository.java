@@ -12,10 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-/**
- *
- * @author datp4
- */
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     Optional<SanPham> findByTenSP(String tenSP);
 

@@ -8,10 +8,6 @@ import com.petshop.petshop.model.LoaiTaiKhoan;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- *
- * @author datp4
- */
-public interface RoleRepository extends JpaRepository <LoaiTaiKhoan , Integer> {
+public interface RoleRepository extends JpaRepository<LoaiTaiKhoan, Integer> {
     Optional<LoaiTaiKhoan> findByTenLoaiTK(String tenLoaiTK);
 }

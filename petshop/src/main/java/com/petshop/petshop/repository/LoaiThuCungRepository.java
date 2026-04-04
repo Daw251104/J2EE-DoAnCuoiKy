@@ -8,10 +8,6 @@ import com.petshop.petshop.model.LoaiThuCung;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- *
- * @author datp4
- */
 public interface LoaiThuCungRepository extends JpaRepository<LoaiThuCung, Integer> {
     Optional<LoaiThuCung> findByTenLoaiTC(String tenLoaiTC);
 }

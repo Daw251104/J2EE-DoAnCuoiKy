@@ -14,10 +14,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- *
- * @author datp4
- */
 @Data
 public class RegisterRequest {
 
@@ -44,5 +40,5 @@ public class RegisterRequest {
 
     private String diaChi;
 
-    private MultipartFile anhDaiDien;  // file upload (optional)
+    private MultipartFile anhDaiDien; // file upload (optional)
 }

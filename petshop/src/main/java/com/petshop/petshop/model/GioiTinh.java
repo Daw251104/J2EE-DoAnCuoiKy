@@ -4,10 +4,6 @@
  */
 package com.petshop.petshop.model;
 
-/**
- *
- * @author datp4
- */
 public enum GioiTinh {
     NAM, NU, KHAC
 }

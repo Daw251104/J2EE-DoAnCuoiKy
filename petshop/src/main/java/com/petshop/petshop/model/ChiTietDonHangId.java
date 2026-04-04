@@ -4,10 +4,6 @@
  */
 package com.petshop.petshop.model;
 
-/**
- *
- * @author datp4
- */
 import lombok.*;
 
 import java.io.Serializable;

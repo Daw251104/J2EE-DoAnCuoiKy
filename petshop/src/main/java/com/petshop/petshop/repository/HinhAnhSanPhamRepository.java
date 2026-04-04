@@ -7,9 +7,5 @@ package com.petshop.petshop.repository;
 import com.petshop.petshop.model.HinhAnhSanPham;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- *
- * @author datp4
- */
 public interface HinhAnhSanPhamRepository extends JpaRepository<HinhAnhSanPham, Integer> {
 }

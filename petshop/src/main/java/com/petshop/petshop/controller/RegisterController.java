@@ -18,10 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/**
- *
- * @author datp4
- */
 @Controller
 public class RegisterController {
     private final AuthService authService;
@@ -36,7 +32,7 @@ public class RegisterController {
         model.addAttribute("registerRequest", new RegisterRequest());
         model.addAttribute("successMessage", null);
         model.addAttribute("errorMessage", null);
-        return "user/register";  // tên template: src/main/resources/templates/register.html
+        return "user/register"; // tên template: src/main/resources/templates/register.html
     }
 
     // Xử lý submit form đăng ký (multipart vì có file ảnh)
@@ -62,7 +58,7 @@ public class RegisterController {
             redirectAttributes.addFlashAttribute("successMessage",
                     "Đăng ký thành công! Tài khoản: " + response.getUsername());
 
-            return "user/login";  // redirect để tránh resubmit form
+            return "user/login"; // redirect để tránh resubmit form
         } catch (RuntimeException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "user/register";
