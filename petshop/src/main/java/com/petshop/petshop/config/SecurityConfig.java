@@ -46,7 +46,8 @@ public class SecurityConfig {
             .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "QUAN_TRI_VIEN")
 
             // Các trang yêu cầu vai trò OWNER hoặc CHU_CUA_HANG
-            .requestMatchers("/owner/**", "/sanpham/them", "/sanpham/sua/**", "/sanpham/xoa/**").hasAnyAuthority("OWNER", "STAFF")
+            .requestMatchers("/owner/**", "/sanpham/them", "/sanpham/sua/**", "/sanpham/xoa/**", 
+                             "/sanpham/loai/them", "/sanpham/loaitc/them").hasAnyAuthority("OWNER", "STAFF")
 
             // Quản lý đơn hàng – OWNER / STAFF
             .requestMatchers("/staff/**").hasAnyAuthority("OWNER", "STAFF")

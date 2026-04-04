@@ -111,6 +111,19 @@ public class DonHangController {
         }
         return "redirect:/don-hang/" + maDH;
     }
+    /**
+     * Khách hàng hủy đơn hàng (khi ở trạng thái CHO_XAC_NHAN)
+     */
+    @PostMapping("/don-hang/{id}/huy")
+    public String huyDonHang(@PathVariable("id") Integer id, Principal principal, RedirectAttributes redirectAttributes) {
+        try {
+            donHangService.huyDonHang(id, principal.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Đã hủy đơn hàng #" + id + " thành công.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+        }
+        return "redirect:/don-hang";
+    }
 
     // ========================= STAFF / OWNER =========================
 
