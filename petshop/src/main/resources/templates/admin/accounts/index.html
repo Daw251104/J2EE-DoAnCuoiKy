@@ -1,250 +1,468 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Tài Khoản – Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --pink-50: #fff0f6; --pink-100: #ffd6e8; --pink-200: #ffadd2; --pink-300: #ff85bc;
-            --pink-400: #f06595; --rose: #ff6b9d; --rose-deep: #e05585; --peach: #ffb3c6;
-            --cream: #fff8fb; --white: #fff; --gray-100: #f8f0f4; --gray-300: #ddc8d6;
-            --gray-400: #c4a0b5; --gray-600: #8b5e76; --gray-800: #4a2c3d;
+            --pink-50: #fff0f6;
+            --pink-100: #ffd6e8;
+            --pink-200: #ffadd2;
+            --pink-300: #ff85bc;
+            --pink-400: #f06595;
+            --rose: #ff6b9d;
+            --rose-deep: #e05585;
+            --peach: #ffb3c6;
+            --cream: #fff8fb;
+            --white: #fff;
+            --gray-100: #f8f0f4;
+            --gray-300: #ddc8d6;
+            --gray-400: #c4a0b5;
+            --gray-600: #8b5e76;
+            --gray-800: #4a2c3d;
         }
-        body { font-family: 'Nunito', sans-serif; background: #fdf5f8; color: var(--gray-800); }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #fdf5f8;
+            color: var(--gray-800);
+        }
+
         .sidebar {
-            width: 260px; min-height: 100vh;
+            width: 260px;
+            min-height: 100vh;
             background: linear-gradient(180deg, #4a2c3d, #2d1b2d);
-            color: #ffd6e8; padding: 24px 0; position: fixed; top: 0; left: 0;
-            box-shadow: 4px 0 24px rgba(240,101,149,.1);
-            display: flex; flex-direction: column;
+            color: #ffd6e8;
+            padding: 24px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-shadow: 4px 0 24px rgba(240, 101, 149, .1);
+            display: flex;
+            flex-direction: column;
         }
+
         .sidebar .brand {
-            font-size: 1.4rem; font-weight: 800; color: #fff;
-            padding: 0 24px 24px; border-bottom: 1.5px solid rgba(255,214,232,0.15);
-            display: flex; align-items: center; gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            padding: 0 24px 24px;
+            border-bottom: 1.5px solid rgba(255, 214, 232, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
         .sidebar .brand .icon-box {
-            width: 38px; height: 38px;
+            width: 38px;
+            height: 38px;
             background: linear-gradient(135deg, var(--pink-300), var(--rose));
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(255,107,157,.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, .3);
         }
+
         .sidebar .nav-label {
-            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            color: var(--pink-300); padding: 24px 24px 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--pink-300);
+            padding: 24px 24px 8px;
         }
+
         .sidebar a {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 24px; color: #ffadd2; text-decoration: none;
-            transition: all 0.2s; font-size: 0.95rem; font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            color: #ffadd2;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            font-weight: 700;
             border-left: 4px solid transparent;
         }
-        .sidebar a i { font-size: 1.1rem; }
-        .sidebar a:hover, .sidebar a.active {
-            background: rgba(255,107,157,0.15); color: #fff;
+
+        .sidebar a i {
+            font-size: 1.1rem;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255, 107, 157, 0.15);
+            color: #fff;
             border-left-color: var(--rose);
         }
-        .main { margin-left: 260px; padding: 40px; }
+
+        .main {
+            margin-left: 260px;
+            padding: 40px;
+        }
+
         .page-header {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
             background: var(--white);
             padding: 20px 24px;
             border-radius: 20px;
-            box-shadow: 0 2px 14px rgba(240,101,149,.08);
+            box-shadow: 0 2px 14px rgba(240, 101, 149, .08);
             border: 1.5px solid var(--pink-100);
         }
-        .page-header h2 { font-size: 1.4rem; font-weight: 800; color: var(--gray-800); margin: 0; display: flex; align-items: center; gap: 10px;}
-        .page-header h2 i { color: var(--rose); }
-        .card { border: none; border-radius: 20px; box-shadow: 0 2px 16px rgba(240,101,149,0.08); border: 1.5px solid var(--pink-100); background: var(--white); }
-        .card-body { padding: 0; }
-        .table { margin: 0; }
-        .table thead th {
-            background: var(--pink-50); font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 0.5px; color: var(--rose-deep); border-bottom: 2px solid var(--pink-100); padding: 16px;
+
+        .page-header h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--gray-800);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .table tbody td { padding: 16px; vertical-align: middle; border-bottom: 1px solid var(--pink-50); font-weight: 600; color: var(--gray-600); }
-        .table tbody tr:hover td { background: #fff8fb; }
+
+        .page-header h2 i {
+            color: var(--rose);
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 2px 16px rgba(240, 101, 149, 0.08);
+            border: 1.5px solid var(--pink-100);
+            background: var(--white);
+        }
+
+        .card-body {
+            padding: 0;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table thead th {
+            background: var(--pink-50);
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--rose-deep);
+            border-bottom: 2px solid var(--pink-100);
+            padding: 16px;
+        }
+
+        .table tbody td {
+            padding: 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--pink-50);
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .table tbody tr:hover td {
+            background: #fff8fb;
+        }
+
         .avatar-sm {
-            width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
             border: 2px solid var(--pink-100);
         }
+
         .avatar-placeholder {
-            width: 42px; height: 42px; border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
             background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
-            display: inline-flex; align-items: center; justify-content: center;
-            color: #fff; font-weight: 800; font-size: 1rem;
-            box-shadow: 0 4px 10px rgba(255,107,157,.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(255, 107, 157, .2);
         }
-        .badge-active   { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
-        .badge-inactive { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-        .badge-pending  { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        .badge-inactive {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
         .status-badge {
-            font-size: 0.76rem; font-weight: 800; padding: 5px 12px;
-            border-radius: 50px; display: inline-block;
+            font-size: 0.76rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 50px;
+            display: inline-block;
         }
+
         .btn-create {
             background: linear-gradient(135deg, var(--pink-400), var(--rose-deep));
-            color: #fff; border: none; border-radius: 12px;
-            padding: 10px 22px; font-weight: 800; font-size: 0.95rem;
-            display: flex; align-items: center; gap: 8px; text-decoration: none;
-            box-shadow: 0 6px 16px rgba(255,107,157,0.3);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 22px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 6px 16px rgba(255, 107, 157, 0.3);
             transition: all 0.25s;
         }
-        .btn-create:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,107,157,0.4); color: #fff; }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 157, 0.4);
+            color: #fff;
+        }
+
         .role-chip {
-            display: inline-block; font-size: 0.72rem; font-weight: 800;
-            padding: 4px 10px; border-radius: 50px;
-            background: var(--pink-50); color: var(--rose); border: 1.5px solid var(--pink-100); margin: 2px 2px;
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 50px;
+            background: var(--pink-50);
+            color: var(--rose);
+            border: 1.5px solid var(--pink-100);
+            margin: 2px 2px;
         }
-        .action-form { display: inline-flex; align-items: center; gap: 8px; }
+
+        .action-form {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .action-form select {
-            font-size: 0.82rem; font-weight: 700; border-radius: 10px; border: 1.5px solid var(--pink-200);
-            padding: 6px 10px; background: var(--pink-50); outline: none; color: var(--rose-deep);
-            cursor: pointer; transition: border-color .2s;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: 10px;
+            border: 1.5px solid var(--pink-200);
+            padding: 6px 10px;
+            background: var(--pink-50);
+            outline: none;
+            color: var(--rose-deep);
+            cursor: pointer;
+            transition: border-color .2s;
         }
-        .action-form select:focus { border-color: var(--rose); }
+
+        .action-form select:focus {
+            border-color: var(--rose);
+        }
+
         .btn-apply {
-            font-size: 0.85rem; border: none; border-radius: 10px;
-            background: linear-gradient(135deg, var(--pink-300), var(--rose)); color: #fff; 
-            width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;
-            cursor: pointer; font-weight: 800; transition: all 0.2s; box-shadow: 0 3px 10px rgba(255,107,157,.2);
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 800;
+            transition: all 0.2s;
+            box-shadow: 0 3px 10px rgba(255, 107, 157, .2);
         }
-        .btn-apply:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(255,107,157,.3); }
-        
+
+        .btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(255, 107, 157, .3);
+        }
+
         /* Alerts */
         .alert-box {
-            border-radius: 14px; padding: 14px 20px; font-size: 0.9rem; font-weight: 700;
-            margin-bottom: 24px; display: flex; align-items: center; gap: 10px; border: 1.5px solid;
+            border-radius: 14px;
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1.5px solid;
             animation: fadeIn .3s ease;
         }
-        .alert-s { background: #f0fff8; border-color: #86efac; color: #166534; }
-        .alert-e { background: #fff0f0; border-color: #fca5a5; color: #cc3333; }
-        .alert-box .btn-close { margin-left: auto; font-size: 0.8rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .alert-s {
+            background: #f0fff8;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .alert-e {
+            background: #fff0f0;
+            border-color: #fca5a5;
+            color: #cc3333;
+        }
+
+        .alert-box .btn-close {
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<div class="sidebar">
-    <div class="brand">
-        <div class="icon-box"><i class="bi bi-shield-lock-fill"></i></div>
-        PetShop Admin
-    </div>
-    
-    <div class="nav-label">Quản lý</div>
-    <a th:href="@{/sanpham}" class=""><i class="bi bi-box2-heart-fill"></i> Sản phẩm</a>
-    <a th:href="@{/admin/accounts}" class="active"><i class="bi bi-people-fill"></i> Tài khoản</a>
-    
-    <div class="nav-label">Hệ thống</div>
-    <a th:href="@{/}"><i class="bi bi-house-heart-fill"></i> Cửa hàng</a>
-    
-    <div style="margin-top: auto; padding: 24px;">
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" style="width:100%;background:rgba(255,107,157,0.1);border:1.5px solid rgba(255,107,157,0.3);border-radius:12px;color:#ffadd2;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:0.95rem;font-weight:800;padding:12px;transition:all .2s;">
-                <i class="bi bi-box-arrow-right"></i> Đăng xuất
-            </button>
-        </form>
-    </div>
-</div>
+    <div class="sidebar">
+        <div class="brand">
+            <div class="icon-box"><i class="bi bi-shield-lock-fill"></i></div>
+            PetShop Admin
+        </div>
+        <a th:href="@{/sanpham}"><i class="bi bi-house-heart-fill"></i> Trang chủ</a>
+        <a th:href="@{/admin/accounts}" class="active"><i class="bi bi-people-fill"></i> Tài khoản</a>
 
-<div class="main">
-    <div class="page-header">
-        <h2><i class="bi bi-people-fill"></i> Quản lý Tài Khoản</h2>
-        <a th:href="@{/admin/accounts/create}" class="btn-create">
-            <i class="bi bi-person-plus-fill"></i> Tạo tài khoản mới
-        </a>
+
+        <div style="margin-top: auto; padding: 24px;">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit"
+                    style="width:100%;background:rgba(255,107,157,0.1);border:1.5px solid rgba(255,107,157,0.3);border-radius:12px;color:#ffadd2;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:0.95rem;font-weight:800;padding:12px;transition:all .2s;">
+                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                </button>
+            </form>
+        </div>
     </div>
 
-    <!-- Thông báo -->
-    <div th:if="${successMessage}" class="alert-box alert-s">
-        <i class="bi bi-check-circle-fill"></i>
-        <span th:text="${successMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${errorMessage}" class="alert-box alert-e">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-        <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+    <div class="main">
+        <div class="page-header">
+            <h2><i class="bi bi-people-fill"></i> Quản lý Tài Khoản</h2>
+            <a th:href="@{/admin/accounts/create}" class="btn-create">
+                <i class="bi bi-person-plus-fill"></i> Tạo tài khoản mới
+            </a>
+        </div>
 
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tài khoản</th>
-                            <th>Họ tên</th>
-                            <th>Email & SĐT</th>
-                            <th>Vai trò</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày tạo</th>
-                            <th style="text-align:center;">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="acc : ${accounts}">
-                            <td style="color:var(--gray-400);font-weight:800;" th:text="'#' + ${acc.maTK}"></td>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <img th:if="${acc.anhDaiDien != null && !acc.anhDaiDien.isEmpty()}"
-                                         th:src="${acc.anhDaiDien}" class="avatar-sm" alt="avatar">
-                                    <span th:unless="${acc.anhDaiDien != null && !acc.anhDaiDien.isEmpty()}"
-                                          class="avatar-placeholder"
-                                          th:text="${#strings.substring(acc.hoTen, 0, 1)}">A</span>
-                                    <div>
-                                        <div style="font-weight:800;color:var(--gray-800);" th:text="${acc.username}"></div>
+        <!-- Thông báo -->
+        <div th:if="${successMessage}" class="alert-box alert-s">
+            <i class="bi bi-check-circle-fill"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert-box alert-e">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tài khoản</th>
+                                <th>Họ tên</th>
+                                <th>Email & SĐT</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th style="text-align:center;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="acc : ${accounts}">
+                                <td style="color:var(--gray-400);font-weight:800;" th:text="'#' + ${acc.maTK}"></td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:12px;">
+                                        <img th:if="${acc.anhDaiDien != null && !acc.anhDaiDien.isEmpty()}"
+                                            th:src="${acc.anhDaiDien}" class="avatar-sm" alt="avatar">
+                                        <span th:unless="${acc.anhDaiDien != null && !acc.anhDaiDien.isEmpty()}"
+                                            class="avatar-placeholder"
+                                            th:text="${#strings.substring(acc.hoTen, 0, 1)}">A</span>
+                                        <div>
+                                            <div style="font-weight:800;color:var(--gray-800);"
+                                                th:text="${acc.username}"></div>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td th:text="${acc.hoTen}" style="color:var(--gray-800);font-weight:700;"></td>
-                            <td>
-                                <div th:text="${acc.email}"></div>
-                                <div style="font-size:0.8rem;color:var(--gray-400);" th:text="${acc.sdt}"></div>
-                            </td>
-                            <td>
-                                <div style="display:flex;flex-wrap:wrap;gap:4px;">
-                                    <span th:each="role : ${acc.loaiTaiKhoan}" class="role-chip" th:text="${role.tenLoaiTK}"></span>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="status-badge"
-                                      th:classappend="${acc.trangThai.name() == 'ACTIVE'} ? 'badge-active' : (${acc.trangThai.name() == 'INACTIVE'} ? 'badge-inactive' : 'badge-pending')"
-                                      th:text="${acc.trangThai}"></span>
-                            </td>
-                            <td th:text="${#temporals.format(acc.ngayTao, 'dd/MM/yyyy')}"></td>
-                            <td style="text-align:center;">
-                                <form th:action="@{/admin/accounts/{id}/status(id=${acc.maTK})}" method="post" class="action-form">
-                                    <select name="trangThai">
-                                        <option th:each="ts : ${trangThais}"
-                                                th:value="${ts}" th:text="${ts}"
+                                </td>
+                                <td th:text="${acc.hoTen}" style="color:var(--gray-800);font-weight:700;"></td>
+                                <td>
+                                    <div th:text="${acc.email}"></div>
+                                    <div style="font-size:0.8rem;color:var(--gray-400);" th:text="${acc.sdt}"></div>
+                                </td>
+                                <td>
+                                    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                                        <span th:each="role : ${acc.loaiTaiKhoan}" class="role-chip"
+                                            th:text="${role.tenLoaiTK}"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge"
+                                        th:classappend="${acc.trangThai.name() == 'ACTIVE'} ? 'badge-active' : (${acc.trangThai.name() == 'INACTIVE'} ? 'badge-inactive' : 'badge-pending')"
+                                        th:text="${acc.trangThai}"></span>
+                                </td>
+                                <td th:text="${#temporals.format(acc.ngayTao, 'dd/MM/yyyy')}"></td>
+                                <td style="text-align:center;">
+                                    <form th:action="@{/admin/accounts/{id}/status(id=${acc.maTK})}" method="post"
+                                        class="action-form">
+                                        <select name="trangThai">
+                                            <option th:each="ts : ${trangThais}" th:value="${ts}" th:text="${ts}"
                                                 th:selected="${ts == acc.trangThai}"></option>
-                                    </select>
-                                    <button type="submit" class="btn-apply" title="Cập nhật">
-                                        <i class="bi bi-check2"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        <tr th:if="${accounts.empty}">
-                            <td colspan="8" class="text-center py-5">
-                                <i class="bi bi-people" style="font-size:3rem;color:var(--pink-200);display:block;margin-bottom:10px;"></i>
-                                <span style="font-weight:800;color:var(--gray-600);">Chưa có tài khoản nào.</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                        </select>
+                                        <button type="submit" class="btn-apply" title="Cập nhật">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${accounts.empty}">
+                                <td colspan="8" class="text-center py-5">
+                                    <i class="bi bi-people"
+                                        style="font-size:3rem;color:var(--pink-200);display:block;margin-bottom:10px;"></i>
+                                    <span style="font-weight:800;color:var(--gray-600);">Chưa có tài khoản nào.</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

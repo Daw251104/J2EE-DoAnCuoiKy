@@ -1,27 +1,28 @@
 <!DOCTYPE html>
-<html lang="vi"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập – PetShop 🐾</title>
     <meta name="description" content="Đăng nhập vào PetShop để mua sắm sản phẩm cho thú cưng yêu của bạn.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Pacifico&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --pink-50:  #fff0f6;
+            --pink-50: #fff0f6;
             --pink-100: #ffd6e8;
             --pink-200: #ffadd2;
             --pink-300: #ff85bc;
             --pink-400: #f06595;
-            --rose:     #ff6b9d;
-            --rose-deep:#e05585;
-            --peach:    #ffb3c6;
-            --cream:    #fff8fb;
-            --white:    #ffffff;
+            --rose: #ff6b9d;
+            --rose-deep: #e05585;
+            --peach: #ffb3c6;
+            --cream: #fff8fb;
+            --white: #ffffff;
             --gray-100: #f8f0f4;
             --gray-200: #f0e6ec;
             --gray-400: #c4a0b5;
@@ -29,7 +30,13 @@
             --gray-800: #4a2c3d;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Nunito', sans-serif;
@@ -50,28 +57,43 @@
             pointer-events: none;
             z-index: 0;
         }
+
         .blob-1 {
-            width: 500px; height: 500px;
+            width: 500px;
+            height: 500px;
             background: radial-gradient(circle, #ffb3d166 0%, transparent 70%);
-            top: -180px; left: -120px;
+            top: -180px;
+            left: -120px;
             animation: blobFloat 9s ease-in-out infinite alternate;
         }
+
         .blob-2 {
-            width: 400px; height: 400px;
+            width: 400px;
+            height: 400px;
             background: radial-gradient(circle, #f9a8d466 0%, transparent 70%);
-            bottom: -150px; right: -100px;
+            bottom: -150px;
+            right: -100px;
             animation: blobFloat 11s ease-in-out infinite alternate-reverse;
         }
+
         .blob-3 {
-            width: 300px; height: 300px;
+            width: 300px;
+            height: 300px;
             background: radial-gradient(circle, #e9d5ff55 0%, transparent 70%);
-            top: 50%; left: 50%;
-            transform: translate(-50%,-50%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             animation: blobFloat 7s ease-in-out infinite alternate;
         }
+
         @keyframes blobFloat {
-            from { transform: translate(0,0) scale(1); }
-            to   { transform: translate(30px, 20px) scale(1.06); }
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(30px, 20px) scale(1.06);
+            }
         }
 
         /* Floating paw prints */
@@ -83,9 +105,17 @@
             pointer-events: none;
             z-index: 0;
         }
+
         @keyframes pawDrift {
-            from { transform: translateY(110vh) rotate(0deg); opacity: 0.06; }
-            to   { transform: translateY(-10vh) rotate(360deg); opacity: 0.12; }
+            from {
+                transform: translateY(110vh) rotate(0deg);
+                opacity: 0.06;
+            }
+
+            to {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0.12;
+            }
         }
 
         /* ===== WRAPPER CARD ===== */
@@ -99,9 +129,9 @@
             border-radius: 32px;
             overflow: hidden;
             box-shadow:
-                0 4px 6px rgba(240,101,149,0.08),
-                0 20px 60px rgba(240,101,149,0.18),
-                0 0 0 1px rgba(255,255,255,0.9);
+                0 4px 6px rgba(240, 101, 149, 0.08),
+                0 20px 60px rgba(240, 101, 149, 0.18),
+                0 0 0 1px rgba(255, 255, 255, 0.9);
         }
 
         /* ===== LEFT PANEL ===== */
@@ -118,19 +148,23 @@
             position: relative;
             overflow: hidden;
         }
+
         .panel-left::before {
             content: '';
             position: absolute;
             inset: 0;
             background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
+
         .panel-left::after {
             content: '';
             position: absolute;
-            width: 280px; height: 280px;
+            width: 280px;
+            height: 280px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.06);
-            bottom: -80px; right: -80px;
+            background: rgba(255, 255, 255, 0.06);
+            bottom: -80px;
+            right: -80px;
         }
 
         .pet-emoji {
@@ -139,11 +173,19 @@
             position: relative;
             z-index: 1;
             animation: puppyBounce 2.2s ease-in-out infinite;
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
         }
+
         @keyframes puppyBounce {
-            0%, 100% { transform: translateY(0) rotate(-3deg); }
-            50%       { transform: translateY(-14px) rotate(3deg); }
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-3deg);
+            }
+
+            50% {
+                transform: translateY(-14px) rotate(3deg);
+            }
         }
 
         .panel-left h1 {
@@ -154,6 +196,7 @@
             position: relative;
             z-index: 1;
         }
+
         .panel-left p {
             font-size: 0.95rem;
             font-weight: 400;
@@ -162,31 +205,6 @@
             position: relative;
             z-index: 1;
             max-width: 220px;
-        }
-
-        .features-list {
-            list-style: none;
-            margin-top: 32px;
-            position: relative;
-            z-index: 1;
-            text-align: left;
-        }
-        .features-list li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            opacity: 0.9;
-        }
-        .features-list li .dot {
-            width: 22px; height: 22px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem;
-            flex-shrink: 0;
         }
 
         /* ===== RIGHT PANEL ===== */
@@ -205,13 +223,18 @@
             gap: 8px;
             margin-bottom: 32px;
         }
+
         .brand-mini .logo-icon {
-            width: 36px; height: 36px;
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, var(--pink-300), var(--rose));
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1rem;
         }
+
         .brand-mini .logo-text {
             font-family: 'Pacifico', cursive;
             font-size: 1.3rem;
@@ -227,6 +250,7 @@
             color: var(--gray-800);
             margin-bottom: 6px;
         }
+
         .panel-right .subtitle {
             font-size: 0.9rem;
             color: var(--gray-400);
@@ -245,11 +269,13 @@
             align-items: center;
             gap: 10px;
         }
+
         .alert-error {
             background: #fff0f0;
             border: 1.5px solid #ffb3b3;
             color: #cc3333;
         }
+
         .alert-success {
             background: #f0fff8;
             border: 1.5px solid #86efac;
@@ -257,7 +283,10 @@
         }
 
         /* ===== FORM ===== */
-        .form-group { margin-bottom: 20px; }
+        .form-group {
+            margin-bottom: 20px;
+        }
+
         .form-group label {
             display: block;
             font-size: 0.8rem;
@@ -268,16 +297,21 @@
             margin-bottom: 8px;
         }
 
-        .input-wrap { position: relative; }
+        .input-wrap {
+            position: relative;
+        }
+
         .input-wrap .input-icon {
             position: absolute;
-            left: 15px; top: 50%;
+            left: 15px;
+            top: 50%;
             transform: translateY(-50%);
             color: var(--pink-300);
             font-size: 1rem;
             pointer-events: none;
             transition: color 0.2s;
         }
+
         .input-wrap input {
             width: 100%;
             padding: 13px 46px 13px 44px;
@@ -291,18 +325,28 @@
             outline: none;
             transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
         }
-        .input-wrap input::placeholder { color: var(--gray-400); font-weight: 400; }
+
+        .input-wrap input::placeholder {
+            color: var(--gray-400);
+            font-weight: 400;
+        }
+
         .input-wrap input:focus {
             border-color: var(--pink-300);
             background: var(--white);
-            box-shadow: 0 0 0 4px rgba(255,133,188,0.15);
+            box-shadow: 0 0 0 4px rgba(255, 133, 188, 0.15);
         }
-        .input-wrap input:focus + .input-icon, /* icon after input trick – not ideal, use label */
-        .input-wrap:focus-within .input-icon { color: var(--rose); }
+
+        .input-wrap input:focus+.input-icon,
+        /* icon after input trick – not ideal, use label */
+        .input-wrap:focus-within .input-icon {
+            color: var(--rose);
+        }
 
         .toggle-pw {
             position: absolute;
-            right: 14px; top: 50%;
+            right: 14px;
+            top: 50%;
             transform: translateY(-50%);
             color: var(--gray-400);
             cursor: pointer;
@@ -310,7 +354,10 @@
             transition: color 0.2s;
             user-select: none;
         }
-        .toggle-pw:hover { color: var(--rose); }
+
+        .toggle-pw:hover {
+            color: var(--rose);
+        }
 
         /* ===== SUBMIT BTN ===== */
         .btn-login {
@@ -325,23 +372,28 @@
             font-weight: 800;
             cursor: pointer;
             letter-spacing: 0.4px;
-            box-shadow: 0 8px 24px rgba(255,107,157,0.35);
+            box-shadow: 0 8px 24px rgba(255, 107, 157, 0.35);
             transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
             margin-top: 8px;
             position: relative;
             overflow: hidden;
         }
+
         .btn-login::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
         }
+
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(255,107,157,0.45);
+            box-shadow: 0 12px 32px rgba(255, 107, 157, 0.45);
         }
-        .btn-login:active { transform: translateY(0); }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
 
         /* ===== DIVIDER ===== */
         .divider {
@@ -350,13 +402,16 @@
             gap: 12px;
             margin: 24px 0 20px;
         }
-        .divider::before, .divider::after {
+
+        .divider::before,
+        .divider::after {
             content: '';
             flex: 1;
             height: 1.5px;
             background: var(--gray-200);
             border-radius: 2px;
         }
+
         .divider span {
             font-size: 0.78rem;
             font-weight: 700;
@@ -372,13 +427,18 @@
             color: var(--gray-400);
             font-weight: 600;
         }
+
         .form-footer a {
             color: var(--rose);
             text-decoration: none;
             font-weight: 800;
             transition: color 0.2s;
         }
-        .form-footer a:hover { color: var(--rose-deep); text-decoration: underline; }
+
+        .form-footer a:hover {
+            color: var(--rose-deep);
+            text-decoration: underline;
+        }
 
         /* Back to home */
         .back-home {
@@ -392,118 +452,113 @@
             margin-bottom: 24px;
             transition: color 0.2s;
         }
-        .back-home:hover { color: var(--rose); }
+
+        .back-home:hover {
+            color: var(--rose);
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 700px) {
-            .panel-left { display: none; }
-            .panel-right { padding: 40px 28px; }
-            .login-wrapper { border-radius: 24px; }
+            .panel-left {
+                display: none;
+            }
+
+            .panel-right {
+                padding: 40px 28px;
+            }
+
+            .login-wrapper {
+                border-radius: 24px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<!-- Decorative floating blobs -->
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
+    <!-- Decorative floating blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
-<!-- Floating paw emojis -->
-<span class="paw-float" style="left:5%;animation-duration:18s;animation-delay:0s;">🐾</span>
-<span class="paw-float" style="left:20%;animation-duration:22s;animation-delay:4s;font-size:1.2rem;">🐾</span>
-<span class="paw-float" style="left:75%;animation-duration:16s;animation-delay:8s;">🐾</span>
-<span class="paw-float" style="left:88%;animation-duration:25s;animation-delay:2s;font-size:1.4rem;">🐾</span>
-<span class="paw-float" style="left:50%;animation-duration:20s;animation-delay:6s;font-size:1rem;">🐾</span>
+    <!-- Floating paw emojis -->
+    <span class="paw-float" style="left:5%;animation-duration:18s;animation-delay:0s;">🐾</span>
+    <span class="paw-float" style="left:20%;animation-duration:22s;animation-delay:4s;font-size:1.2rem;">🐾</span>
+    <span class="paw-float" style="left:75%;animation-duration:16s;animation-delay:8s;">🐾</span>
+    <span class="paw-float" style="left:88%;animation-duration:25s;animation-delay:2s;font-size:1.4rem;">🐾</span>
+    <span class="paw-float" style="left:50%;animation-duration:20s;animation-delay:6s;font-size:1rem;">🐾</span>
 
-<div class="login-wrapper">
+    <div class="login-wrapper">
 
-    <!-- ===== LEFT PANEL ===== -->
-    <div class="panel-left">
-        <div class="pet-emoji">🐶</div>
-        <h1>Chào mừng<br>trở lại! 💕</h1>
-        <p>Đăng nhập để tiếp tục mua sắm những sản phẩm tốt nhất cho thú cưng nhé.</p>
-        <ul class="features-list">
-            <li><span class="dot">🛍️</span> Hàng trăm sản phẩm chính hãng</li>
-            <li><span class="dot">🚚</span> Giao hàng nhanh toàn quốc</li>
-            <li><span class="dot">⭐</span> Tích điểm đổi quà hấp dẫn</li>
-        </ul>
-    </div>
-
-    <!-- ===== RIGHT PANEL ===== -->
-    <div class="panel-right">
-
-        <a th:href="@{/}" href="/" class="back-home">
-            <i class="bi bi-arrow-left-circle"></i> Về trang chủ
-        </a>
-
-        <div class="brand-mini">
-            <div class="logo-icon">🐾</div>
-            <span class="logo-text">PetShop</span>
+        <!-- ===== LEFT PANEL ===== -->
+        <div class="panel-left">
+            <div class="pet-emoji">🐶</div>
+            <h1>Chào mừng<br>trở lại! 💕</h1>
+            <p>Đăng nhập để tiếp tục mua sắm những sản phẩm tốt nhất cho thú cưng nhé.</p>
         </div>
 
-        <h2>Đăng nhập</h2>
-        <p class="subtitle">Nhập tài khoản của bạn để tiếp tục 🐾</p>
+        <!-- ===== RIGHT PANEL ===== -->
+        <div class="panel-right">
 
-        <!-- Alert: error -->
-        <div th:if="${param.error}" class="alert-box alert-error">
-            <i class="bi bi-exclamation-circle-fill"></i>
-            Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại!
-        </div>
+            <a th:href="@{/}" href="/" class="back-home">
+                <i class="bi bi-arrow-left-circle"></i> Về trang chủ
+            </a>
 
-        <!-- Alert: logout -->
-        <div th:if="${param.logout}" class="alert-box alert-success">
-            <i class="bi bi-check-circle-fill"></i>
-            Bạn đã đăng xuất thành công. Hẹn gặp lại! 🐾
-        </div>
-
-        <form th:action="@{/login}" action="/login" method="post" autocomplete="on">
-
-            <div class="form-group">
-                <label for="username">Tên đăng nhập</label>
-                <div class="input-wrap">
-                    <i class="bi bi-person-fill input-icon"></i>
-                    <input type="text" id="username" name="username"
-                           placeholder="Nhập tên đăng nhập" required autofocus>
-                </div>
+            <div class="brand-mini">
+                <div class="logo-icon">🐾</div>
+                <span class="logo-text">PetShop</span>
             </div>
 
-            <div class="form-group">
-                <label for="password">Mật khẩu</label>
-                <div class="input-wrap">
-                    <i class="bi bi-lock-fill input-icon"></i>
-                    <input type="password" id="password" name="password"
-                           placeholder="Nhập mật khẩu" required>
-                    <i class="bi bi-eye toggle-pw" id="togglePw" title="Hiện/ẩn mật khẩu"></i>
+            <h2>Đăng nhập</h2>
+            <p class="subtitle">Nhập tài khoản của bạn để tiếp tục 🐾</p>
+
+            <form th:action="@{/login}" action="/login" method="post" autocomplete="on">
+
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-person-fill input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập" required
+                            autofocus>
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit" class="btn-login">
-                <i class="bi bi-box-arrow-in-right"></i> &nbsp; Đăng nhập ngay
-            </button>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <div class="input-wrap">
+                        <i class="bi bi-lock-fill input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+                        <i class="bi bi-eye toggle-pw" id="togglePw" title="Hiện/ẩn mật khẩu"></i>
+                    </div>
+                </div>
 
-        </form>
+                <button type="submit" class="btn-login">
+                    <i class="bi bi-box-arrow-in-right"></i> &nbsp; Đăng nhập ngay
+                </button>
 
-        <div class="divider"><span>hoặc</span></div>
+            </form>
 
-        <p class="form-footer">
-            Chưa có tài khoản?&nbsp;
-            <a th:href="@{/register}" href="/register">Đăng ký miễn phí 🐾</a>
-        </p>
+            <div class="divider"><span>hoặc</span></div>
 
+            <p class="form-footer">
+                Chưa có tài khoản?&nbsp;
+                <a th:href="@{/register}" href="/register">Đăng ký miễn phí 🐾</a>
+            </p>
+
+        </div>
     </div>
-</div>
 
-<script>
-    const togglePw = document.getElementById('togglePw');
-    const pwInput  = document.getElementById('password');
-    if (togglePw) {
-        togglePw.addEventListener('click', function () {
-            const isHidden = pwInput.type === 'password';
-            pwInput.type = isHidden ? 'text' : 'password';
-            this.className = 'bi toggle-pw ' + (isHidden ? 'bi-eye-slash' : 'bi-eye');
-        });
-    }
-</script>
+    <script>
+        const togglePw = document.getElementById('togglePw');
+        const pwInput = document.getElementById('password');
+        if (togglePw) {
+            togglePw.addEventListener('click', function () {
+                const isHidden = pwInput.type === 'password';
+                pwInput.type = isHidden ? 'text' : 'password';
+                this.className = 'bi toggle-pw ' + (isHidden ? 'bi-eye-slash' : 'bi-eye');
+            });
+        }
+    </script>
 </body>
+
 </html>

@@ -628,11 +628,6 @@
 
 <body>
 
-    <!-- Top announcement bar -->
-    <div class="topbar">
-        🎉 Miễn phí vận chuyển cho đơn hàng từ 299K &nbsp;|&nbsp; Dùng mã <strong>PETLOVE</strong> giảm 15%
-        &nbsp;—&nbsp; <a th:href="@{/sanpham}">Mua ngay →</a>
-    </div>
 
     <!-- ===== NAVBAR ===== -->
     <header class="navbar">
@@ -652,7 +647,7 @@
 
                 <!-- Nhân viên / Chủ cửa hàng -->
                 <li sec:authorize="hasAnyAuthority('OWNER', 'STAFF')"><a th:href="@{/staff/don-hang}"><i
-                            class="bi bi-clipboard2-list"></i>Đơn hàng</a></li>
+                            class="bi bi-bag-check"></i>Đơn hàng</a></li>
 
                 <!-- Quản trị viên -->
                 <li sec:authorize="hasAnyAuthority('ADMIN', 'QUAN_TRI_VIEN')"><a th:href="@{/admin/accounts}"><i

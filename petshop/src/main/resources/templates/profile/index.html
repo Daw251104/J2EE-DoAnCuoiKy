@@ -841,7 +841,7 @@
                         </span>
                     </div>
 
-                    <!-- Stats -->
+                    <!-- Stats 
                     <div class="stats-row">
                         <div class="stat-box">
                             <div class="sval">0</div>
@@ -855,7 +855,7 @@
                             <div class="sval">❤️</div>
                             <div class="slbl">Yêu thích</div>
                         </div>
-                    </div>
+                    </div>-->
 
                 </aside>
 
@@ -869,9 +869,9 @@
                             <button class="tab-btn active" onclick="switchTab(this,'tab-info')">
                                 <i class="bi bi-person-fill"></i> Thông tin cá nhân
                             </button>
-                            <button class="tab-btn" onclick="switchTab(this,'tab-password')">
+                            <!--<button class="tab-btn" onclick="switchTab(this,'tab-password')">
                                 <i class="bi bi-lock-fill"></i> Đổi mật khẩu
-                            </button>
+                            </button>-->
                         </div>
 
                         <!-- ─ Tab 1: Info ─ -->
@@ -996,7 +996,7 @@
                             </div>
                         </div>
 
-                        <!-- ─ Tab 2: Password ─ -->
+                        <!-- ─ Tab 2: Password 
                         <div id="tab-password" class="tab-content">
                             <div class="card-header-bar">
                                 <div class="ch-icon"><i class="bi bi-shield-lock-fill"></i></div>
@@ -1011,123 +1011,58 @@
                                     Mật khẩu mạnh có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.
                                 </div>
 
-                                <form th:action="@{/profile/change-password}" method="post">
-                                    <!-- Current password -->
-                                    <div class="fgroup">
-                                        <label><i class="bi bi-lock-fill"></i> Mật khẩu hiện tại <span
-                                                class="req">*</span></label>
-                                        <div class="iw">
-                                            <i class="bi bi-lock-fill ii"></i>
-                                            <input type="password" name="currentPassword"
-                                                placeholder="Nhập mật khẩu hiện tại" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="fgrid">
-                                        <!-- New password -->
-                                        <div class="fgroup">
-                                            <label><i class="bi bi-key-fill"></i> Mật khẩu mới <span
-                                                    class="req">*</span></label>
-                                            <div class="iw">
-                                                <i class="bi bi-key-fill ii"></i>
-                                                <input type="password" name="newPassword" id="newPassword"
-                                                    placeholder="Ít nhất 8 ký tự" required
-                                                    oninput="checkPwStrength(this.value)">
-                                            </div>
-                                            <!-- Strength bar -->
-                                            <div style="display:flex;gap:4px;margin-top:7px;">
-                                                <span id="ps1"
-                                                    style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                                <span id="ps2"
-                                                    style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                                <span id="ps3"
-                                                    style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                                <span id="ps4"
-                                                    style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                            </div>
-                                            <div class="hint" id="pwsLabel">Nhập mật khẩu để kiểm tra độ mạnh</div>
-                                        </div>
-
-                                        <!-- Confirm -->
-                                        <div class="fgroup">
-                                            <label><i class="bi bi-key-fill"></i> Xác nhận mật khẩu <span
-                                                    class="req">*</span></label>
-                                            <div class="iw">
-                                                <i class="bi bi-key-fill ii"></i>
-                                                <input type="password" name="confirmPassword" id="confirmPassword"
-                                                    placeholder="Nhập lại mật khẩu mới" required
-                                                    oninput="checkConfirm()">
-                                            </div>
-                                            <div class="hint" id="confirmLabel"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn-save">
-                                            <i class="bi bi-shield-check"></i> Đổi mật khẩu
-                                        </button>
-                                    </div>
-                                </form>
+                        <form th:action="@{/profile/change-password}" method="post">─ -->
+                        <!-- Current password
+                        <div class="fgroup">
+                            <label><i class="bi bi-lock-fill"></i> Mật khẩu hiện tại <span class="req">*</span></label>
+                            <div class="iw">
+                                <i class="bi bi-lock-fill ii"></i>
+                                <input type="password" name="currentPassword" placeholder="Nhập mật khẩu hiện tại"
+                                    required>
                             </div>
                         </div>
 
-                    </div><!-- /.panel-card -->
-
-                    <!-- ── Quick links ── -->
-                    <div class="panel-card">
-                        <div class="card-header-bar">
-                            <div class="ch-icon"><i class="bi bi-lightning-charge-fill"></i></div>
-                            <div>
-                                <h2>Truy cập nhanh</h2>
-                                <p>Các trang thường dùng</p>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="quick-links">
-                                <a th:href="@{/sanpham}" class="quick-link">
-                                    <div class="ql-icon ql-pink">🛍️</div>
-                                    <div>
-                                        <div>Cửa hàng</div>
-                                        <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Xem sản
-                                            phẩm
-                                        </div>
-                                    </div>
-                                </a>
-                                <a th:href="@{/gio-hang}" sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')"
-                                    class="quick-link">
-                                    <div class="ql-icon ql-purple">🛒</div>
-                                    <div>
-                                        <div>Giỏ hàng</div>
-                                        <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Xem giỏ
-                                            hàng
-                                        </div>
-                                    </div>
-                                </a>
-                                <a th:href="@{/don-hang}" sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')"
-                                    class="quick-link">
-                                    <div class="ql-icon ql-green">📦</div>
-                                    <div>
-                                        <div>Đơn hàng</div>
-                                        <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Theo dõi
-                                            đơn
-                                        </div>
-                                    </div>
-                                </a>
-                                <a th:href="@{/admin}" sec:authorize="hasAnyAuthority('OWNER','STAFF')"
-                                    class="quick-link">
-                                    <div class="ql-icon ql-orange">⚙️</div>
-                                    <div>
-                                        <div>Quản trị</div>
-                                        <div style="font-size:.73rem;color:var(--gray-400);font-weight:500;">Trang Admin
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
+                        <div class="fgrid"> -->
+                        <!-- New password 
+                            <div class="fgroup">
+                                <label><i class="bi bi-key-fill"></i> Mật khẩu mới <span class="req">*</span></label>
+                                <div class="iw">
+                                    <i class="bi bi-key-fill ii"></i>
+                                    <input type="password" name="newPassword" id="newPassword"
+                                        placeholder="Ít nhất 8 ký tự" required oninput="checkPwStrength(this.value)">
+                                </div>-->
+                        <!-- Strength bar 
+                                <div style="display:flex;gap:4px;margin-top:7px;">
+                                    <span id="ps1"
+                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                    <span id="ps2"
+                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                    <span id="ps3"
+                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                    <span id="ps4"
+                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
+                                </div>
+                                <div class="hint" id="pwsLabel">Nhập mật khẩu để kiểm tra độ mạnh</div>
+                            </div>-->
+                        <!-- Confirm 
+                            <div class="fgroup">
+                                <label><i class="bi bi-key-fill"></i> Xác nhận mật khẩu <span
+                                        class="req">*</span></label>
+                                <div class="iw">
+                                    <i class="bi bi-key-fill ii"></i>
+                                    <input type="password" name="confirmPassword" id="confirmPassword"
+                                        placeholder="Nhập lại mật khẩu mới" required oninput="checkConfirm()">
+                                </div>
+                                <div class="hint" id="confirmLabel"></div>
+                            </div>-->
                     </div>
+                    </form>
+                </div>
+            </div>
 
-                </div><!-- /.right-panel -->
-            </div><!-- /.pg-grid -->
+        </div><!-- /.panel-card -->
+        </div><!-- /.right-panel -->
+        </div><!-- /.pg-grid -->
         </div><!-- /.page-wrap -->
 
     </th:block>
@@ -1166,32 +1101,6 @@
                 }
                 reader.readAsDataURL(input.files[0]);
             }
-        }
-
-        /* ── Password strength ── */
-        function checkPwStrength(val) {
-            const bars = ['ps1', 'ps2', 'ps3', 'ps4'].map(id => document.getElementById(id));
-            const label = document.getElementById('pwsLabel');
-            const colors = ['#f87171', '#fb923c', '#facc15', '#4ade80'];
-            const labels = ['Rất yếu 😟', 'Yếu 😐', 'Khá mạnh 👍', 'Rất mạnh 💪'];
-            let s = 0;
-            if (val.length >= 6) s++;
-            if (val.length >= 10) s++;
-            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) s++;
-            if (/[^A-Za-z0-9]/.test(val)) s++;
-            bars.forEach((b, i) => b.style.background = i < s ? colors[Math.min(s - 1, 3)] : 'var(--gray-200)');
-            label.textContent = val.length === 0 ? 'Nhập mật khẩu để kiểm tra độ mạnh' : labels[Math.min(s - 1, 3)] || labels[0];
-            label.style.color = val.length === 0 ? 'var(--gray-400)' : colors[Math.min(s - 1, 3)];
-        }
-
-        /* ── Password confirm check ── */
-        function checkConfirm() {
-            const np = document.getElementById('newPassword').value;
-            const cp = document.getElementById('confirmPassword').value;
-            const lb = document.getElementById('confirmLabel');
-            if (!cp) { lb.textContent = ''; return; }
-            if (np === cp) { lb.textContent = '✅ Mật khẩu khớp'; lb.style.color = '#16a34a'; }
-            else { lb.textContent = '❌ Mật khẩu không khớp'; lb.style.color = '#dc2626'; }
         }
     </script>
 </body>
