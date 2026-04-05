@@ -17,7 +17,6 @@ public class AdminAccountController {
 
     private final AdminAccountService adminAccountService;
 
-    /** Danh sách tài khoản */
     @GetMapping
     public String listAccounts(Model model) {
         model.addAttribute("accounts", adminAccountService.getAllAccounts());
@@ -25,7 +24,6 @@ public class AdminAccountController {
         return "admin/accounts/index";
     }
 
-    /** Hiển thị form tạo tài khoản */
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("req", new AdminCreateAccountRequest());
@@ -35,10 +33,9 @@ public class AdminAccountController {
         return "admin/accounts/form";
     }
 
-    /** Xử lý tạo tài khoản */
     @PostMapping("/create")
     public String createAccount(@ModelAttribute("req") AdminCreateAccountRequest req,
-                                RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             adminAccountService.createAccount(req);
             redirectAttributes.addFlashAttribute("successMessage", "Tạo tài khoản thành công!");
@@ -48,11 +45,10 @@ public class AdminAccountController {
         return "redirect:/admin/accounts";
     }
 
-    /** Cập nhật trạng thái tài khoản */
     @PostMapping("/{id}/status")
     public String updateStatus(@PathVariable Integer id,
-                               @RequestParam TrangThaiTaiKhoan trangThai,
-                               RedirectAttributes redirectAttributes) {
+            @RequestParam TrangThaiTaiKhoan trangThai,
+            RedirectAttributes redirectAttributes) {
         try {
             adminAccountService.updateStatus(id, trangThai);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái thành công!");

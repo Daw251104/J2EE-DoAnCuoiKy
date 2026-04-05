@@ -175,7 +175,7 @@ public class SanPhamService {
     private String saveImage(MultipartFile file) {
         try {
             String projectRoot = System.getProperty("user.dir");
-            String relativePath = "/src/main/resources/static/uploads/products/";
+            String relativePath = "/uploads/products/";
             String uploadDir = projectRoot + relativePath;
 
             Path uploadDirPath = Paths.get(uploadDir).toAbsolutePath().normalize();

@@ -865,6 +865,27 @@
             </div>
         </div>
 
+        <!-- Quick Add Modal -->
+        <div class="modal-overlay" id="quickAddModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Thêm Mới</h2>
+                    <p id="modalDesc">Nhập tên loại...</p>
+                </div>
+                <div class="fgroup">
+                    <label><i class="bi bi-tag-fill"></i> Tên <span class="req">*</span></label>
+                    <div class="iw">
+                        <i class="bi bi-tag-fill ii"></i>
+                        <input type="text" id="quickAddInput" placeholder="Nhập tên..." onkeydown="if(event.key === 'Enter') { event.preventDefault(); document.getElementById('btnConfirmQuickAdd').click(); }">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn btn-cancel" onclick="closeQuickAdd()">Hủy</button>
+                    <button type="button" class="modal-btn btn-confirm" id="btnConfirmQuickAdd">Lưu</button>
+                </div>
+            </div>
+        </div>
+
         <script>
             let currentQuickAddType = '';
 

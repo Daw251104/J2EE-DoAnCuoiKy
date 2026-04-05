@@ -94,7 +94,7 @@ public class AdminAccountService {
     private String saveAvatar(MultipartFile file) {
         try {
             String projectRoot = System.getProperty("user.dir");
-            String uploadDir = projectRoot + "/src/main/resources/static/uploads/avatars/";
+            String uploadDir = projectRoot + "/uploads/avatars/";
             Path uploadDirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(uploadDirPath);
 

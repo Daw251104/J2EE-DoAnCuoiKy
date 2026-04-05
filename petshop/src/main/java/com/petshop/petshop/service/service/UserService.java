@@ -63,7 +63,7 @@ public class UserService {
     private String saveImage(MultipartFile file) {
         try {
             String projectRoot = System.getProperty("user.dir");
-            String relativePath = "/src/main/resources/static/uploads/avatars/";
+            String relativePath = "/uploads/avatars/";
             String uploadDir = projectRoot + relativePath;
 
             Path uploadDirPath = Paths.get(uploadDir).toAbsolutePath().normalize();

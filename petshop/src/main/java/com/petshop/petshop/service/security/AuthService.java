@@ -49,7 +49,7 @@ public class AuthService {
                 // Nhưng ClassPathResource chỉ đọc được, không ghi → cần dùng FileSystem
                 // Cách tốt hơn: kết hợp project root + relative path
                 String projectRoot = System.getProperty("user.dir");  // thư mục gốc dự án (chứa pom.xml)
-                String relativePath = "/src/main/resources/static/uploads/avatars/";
+                String relativePath = "/uploads/avatars/";
                 String uploadDir = projectRoot + relativePath;
 
                 // Normalize đường dẫn để tránh lỗi
