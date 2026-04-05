@@ -598,6 +598,170 @@
             display: none;
         }
 
+        /* ========== CHATBOT ========== */
+        .chatbot-widget {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1600;
+        }
+
+        .chatbot-toggle {
+            width: 56px;
+            height: 56px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            font-size: 1.35rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+
+        .chatbot-toggle:hover {
+            transform: translateY(-2px) scale(1.04);
+        }
+
+        .chatbot-panel {
+            width: min(92vw, 360px);
+            height: min(68vh, 520px);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--white);
+            border: 1px solid var(--pink-100);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 12px;
+        }
+
+        .chatbot-panel.open {
+            display: flex;
+        }
+
+        .chatbot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .chatbot-close {
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            background: #fffafd;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 9px 12px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .chat-message.bot {
+            background: var(--pink-50);
+            color: var(--gray-800);
+            border: 1px solid var(--pink-100);
+            align-self: flex-start;
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, var(--pink-300), var(--rose));
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .chat-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .chat-action-btn {
+            border: 1px solid var(--pink-200);
+            border-radius: 999px;
+            padding: 7px 11px;
+            background: #fff;
+            color: var(--rose);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background var(--transition), color var(--transition), border-color var(--transition);
+        }
+
+        .chat-action-btn:hover {
+            background: var(--pink-50);
+            border-color: var(--rose);
+        }
+
+        .chat-action-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .chatbot-form {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid var(--pink-100);
+            background: #fff;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            border: 1px solid var(--pink-200);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+        }
+
+        .chatbot-input:focus {
+            border-color: var(--pink-400);
+            box-shadow: 0 0 0 3px rgba(240, 101, 149, 0.15);
+        }
+
+        .chatbot-send {
+            border: none;
+            border-radius: 10px;
+            padding: 0 14px;
+            font-size: 1rem;
+            background: var(--rose);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .chatbot-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         /* ========== RESPONSIVE ========== */
         @media (max-width: 900px) {
             .navbar-search {
@@ -612,6 +776,11 @@
         @media (max-width: 640px) {
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+
+            .chatbot-widget {
+                right: 14px;
+                bottom: 14px;
             }
         }
 
@@ -728,6 +897,216 @@
             <span><a href="#">Chính sách bảo mật</a> · <a href="#">Điều khoản dịch vụ</a></span>
         </div>
     </footer>
+
+    <div class="chatbot-widget" id="chatbotWidget">
+        <div class="chatbot-panel" id="chatbotPanel" aria-hidden="true">
+            <div class="chatbot-header">
+                <span><i class="bi bi-robot"></i> PetShop AI Assistant</span>
+                <button type="button" class="chatbot-close" id="chatbotClose" aria-label="Dong chatbot">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages"></div>
+            <form class="chatbot-form" id="chatbotForm">
+                <input
+                    type="text"
+                    id="chatbotInput"
+                    class="chatbot-input"
+                    placeholder="Hoi ve san pham, don hang, cham soc thu cung..."
+                    maxlength="1000"
+                    autocomplete="off"
+                >
+                <button type="submit" class="chatbot-send" id="chatbotSend" aria-label="Gui">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </form>
+        </div>
+        <button type="button" class="chatbot-toggle" id="chatbotToggle" aria-label="Mo chatbot">
+            <i class="bi bi-chat-dots-fill"></i>
+        </button>
+    </div>
+
+    <script>
+        (function () {
+            const panel = document.getElementById('chatbotPanel');
+            const toggleBtn = document.getElementById('chatbotToggle');
+            const closeBtn = document.getElementById('chatbotClose');
+            const form = document.getElementById('chatbotForm');
+            const input = document.getElementById('chatbotInput');
+            const sendBtn = document.getElementById('chatbotSend');
+            const messages = document.getElementById('chatbotMessages');
+
+            if (!panel || !toggleBtn || !form || !input || !messages) {
+                return;
+            }
+
+            const TYPING_TEXT = 'Dang xu ly...';
+            let initialized = false;
+
+            function scrollToBottom() {
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function appendMessage(role, text, actions) {
+                const item = document.createElement('div');
+                item.className = 'chat-message ' + role;
+                item.textContent = text || '';
+
+                if (role === 'bot' && Array.isArray(actions) && actions.length > 0) {
+                    item.appendChild(renderActions(actions));
+                }
+
+                messages.appendChild(item);
+                scrollToBottom();
+                return item;
+            }
+
+            function appendTyping() {
+                return appendMessage('bot', TYPING_TEXT);
+            }
+
+            function removeTyping(typingElement) {
+                if (typingElement && typingElement.parentNode) {
+                    typingElement.parentNode.removeChild(typingElement);
+                }
+            }
+
+            function renderActions(actions) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'chat-actions';
+
+                actions.forEach(function (action) {
+                    if (!action || !action.label) {
+                        return;
+                    }
+
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'chat-action-btn';
+                    button.textContent = action.label;
+                    button.addEventListener('click', function () {
+                        handleAction(action, button);
+                    });
+                    wrapper.appendChild(button);
+                });
+
+                return wrapper;
+            }
+
+            function setPanelOpen(isOpen) {
+                panel.classList.toggle('open', isOpen);
+                panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+                toggleBtn.style.display = isOpen ? 'none' : 'inline-flex';
+                if (isOpen) {
+                    input.focus();
+                }
+            }
+
+            function initFirstMessage() {
+                if (initialized) {
+                    return;
+                }
+                appendMessage('bot', 'Xin chao. Minh la tro ly AI cua PetShop, ban can ho tro gi hom nay?');
+                initialized = true;
+            }
+
+            function normalizeResponse(data) {
+                const reply = data && data.reply ? String(data.reply) : 'Minh chua co cau tra loi phu hop.';
+                const actions = data && Array.isArray(data.actions) ? data.actions : [];
+                return { reply: reply, actions: actions };
+            }
+
+            async function askChatbot(question) {
+                const typing = appendTyping();
+                try {
+                    const response = await fetch('/api/chatbot/ask', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: question })
+                    });
+
+                    removeTyping(typing);
+                    if (!response.ok) {
+                        appendMessage('bot', 'Minh dang gap loi ket noi. Ban thu lai sau nhe.');
+                        return;
+                    }
+
+                    const data = normalizeResponse(await response.json());
+                    appendMessage('bot', data.reply, data.actions);
+                } catch (error) {
+                    removeTyping(typing);
+                    appendMessage('bot', 'He thong tam thoi ban, ban vui long thu lai sau.');
+                }
+            }
+
+            async function handleAction(action, button) {
+                if (!action || !action.type) {
+                    return;
+                }
+
+                if (action.type === 'OPEN_URL' && action.url) {
+                    window.location.href = action.url;
+                    return;
+                }
+
+                if (button) {
+                    button.disabled = true;
+                }
+
+                appendMessage('user', action.label || 'Thuc hien hanh dong');
+                const typing = appendTyping();
+
+                try {
+                    const response = await fetch('/api/chatbot/action', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(action)
+                    });
+
+                    removeTyping(typing);
+                    if (!response.ok) {
+                        appendMessage('bot', 'Minh chua xu ly duoc hanh dong nay luc nay.');
+                        return;
+                    }
+
+                    const data = normalizeResponse(await response.json());
+                    appendMessage('bot', data.reply, data.actions);
+                } catch (error) {
+                    removeTyping(typing);
+                    appendMessage('bot', 'He thong tam thoi ban, ban vui long thu lai sau.');
+                } finally {
+                    if (button) {
+                        button.disabled = false;
+                    }
+                    input.focus();
+                }
+            }
+
+            toggleBtn.addEventListener('click', function () {
+                initFirstMessage();
+                setPanelOpen(true);
+            });
+
+            closeBtn.addEventListener('click', function () {
+                setPanelOpen(false);
+            });
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const question = input.value.trim();
+                if (!question) {
+                    return;
+                }
+
+                appendMessage('user', question);
+                input.value = '';
+                sendBtn.disabled = true;
+                await askChatbot(question);
+                sendBtn.disabled = false;
+                input.focus();
+            });
+        })();
+    </script>
 
 </body>
 

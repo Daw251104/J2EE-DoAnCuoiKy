@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .hasAnyAuthority("CUSTOMER", "KHACH_HANG")
 
             // Các trang công khai (permitAll)
-            .requestMatchers("/", "/home", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error", "/sanpham", "/uploads/**").permitAll()
+            .requestMatchers("/", "/home", "/login", "/register", "/css/**", "/js/**", "/images/**", "/error", "/sanpham", "/uploads/**", "/api/chatbot/**").permitAll()
 
             // Bất kỳ yêu cầu nào khác đều cần xác thực
             .anyRequest().authenticated()
