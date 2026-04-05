@@ -803,7 +803,8 @@
                     <!-- Avatar -->
                     <div class="avatar-ring" style="display:inline-block;margin-bottom:16px;">
                         <img th:if="${!#strings.isEmpty(taiKhoan.anhDaiDien)}" th:src="${taiKhoan.anhDaiDien}"
-                            alt="Avatar" class="avatar-img">
+                            alt="Avatar" class="avatar-img"
+                            onerror="this.outerHTML='<div class=&quot;avatar-placeholder&quot;><i class=&quot;bi bi-person-fill&quot;></i></div>';">
                         <div th:unless="${!#strings.isEmpty(taiKhoan.anhDaiDien)}" class="avatar-placeholder">
                             <i class="bi bi-person-fill"></i>
                         </div>

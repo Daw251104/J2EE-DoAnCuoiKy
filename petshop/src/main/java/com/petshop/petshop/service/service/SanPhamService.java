@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.petshop.petshop.service.service;
 
 import com.petshop.petshop.dto.SanPhamDTO;
@@ -17,17 +13,16 @@ import com.petshop.petshop.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SanPhamService {
@@ -48,38 +43,33 @@ public class SanPhamService {
         this.hinhAnhSanPhamRepository = hinhAnhSanPhamRepository;
     }
 
-    // Hiển thị danh sách sản phẩm
     public List<SanPhamResponseDTO> getAllSanPhams() {
         return sanPhamRepository.findAll().stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    // Lấy sản phẩm theo ID
     public SanPhamResponseDTO getSanPhamById(Integer id) {
         SanPham sanPham = sanPhamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + id));
+                .orElseThrow(() -> new RuntimeException("San pham khong ton tai voi ID: " + id));
         return convertToResponseDTO(sanPham);
     }
 
-    // Thêm sản phẩm mới
     @Transactional
     public SanPhamResponseDTO createSanPham(SanPhamDTO dto) {
         SanPham sanPham = new SanPham();
         mapDtoToEntity(dto, sanPham);
         sanPham.setNgayTao(LocalDateTime.now());
-        
-        // Xử lý ảnh đại diện
+
         if (dto.getHinhDaiDien() != null && !dto.getHinhDaiDien().isEmpty()) {
             sanPham.setHinhDaiDien(saveImage(dto.getHinhDaiDien()));
         }
 
         sanPham = sanPhamRepository.save(sanPham);
 
-        // Thêm hình ảnh nếu có
         if (dto.getHinhAnhs() != null && !dto.getHinhAnhs().isEmpty()) {
             for (MultipartFile file : dto.getHinhAnhs()) {
-                if(file != null && !file.isEmpty()) {
+                if (file != null && !file.isEmpty()) {
                     HinhAnhSanPham ha = new HinhAnhSanPham();
                     ha.setHinhAnh(saveImage(file));
                     ha.setSanPham(sanPham);
@@ -91,42 +81,37 @@ public class SanPhamService {
         return convertToResponseDTO(sanPham);
     }
 
-    // Sửa sản phẩm
     @Transactional
     public SanPhamResponseDTO updateSanPham(Integer id, SanPhamDTO dto) {
         SanPham sanPham = sanPhamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + id));
+                .orElseThrow(() -> new RuntimeException("San pham khong ton tai voi ID: " + id));
         mapDtoToEntity(dto, sanPham);
-        
-        // Cập nhật ảnh đại diện nếu có
+
         if (dto.getHinhDaiDien() != null && !dto.getHinhDaiDien().isEmpty()) {
-             sanPham.setHinhDaiDien(saveImage(dto.getHinhDaiDien()));
+            sanPham.setHinhDaiDien(saveImage(dto.getHinhDaiDien()));
         }
-        
+
         sanPham = sanPhamRepository.save(sanPham);
 
-        // Cập nhật hình ảnh: Xóa cũ và thêm mới (giả sử replace toàn bộ)
         if (dto.getHinhAnhs() != null && !dto.getHinhAnhs().isEmpty()) {
             hinhAnhSanPhamRepository.deleteAll(sanPham.getHinhAnhSanPhams());
             for (MultipartFile file : dto.getHinhAnhs()) {
-                 if(file != null && !file.isEmpty()) {
+                if (file != null && !file.isEmpty()) {
                     HinhAnhSanPham ha = new HinhAnhSanPham();
                     ha.setHinhAnh(saveImage(file));
                     ha.setSanPham(sanPham);
                     hinhAnhSanPhamRepository.save(ha);
-                 }
+                }
             }
         }
 
         return convertToResponseDTO(sanPham);
     }
 
-    // Xóa sản phẩm
     @Transactional
     public void deleteSanPham(Integer id) {
         SanPham sanPham = sanPhamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + id));
-        // Xóa hình ảnh liên quan trước
+                .orElseThrow(() -> new RuntimeException("San pham khong ton tai voi ID: " + id));
         hinhAnhSanPhamRepository.deleteAll(sanPham.getHinhAnhSanPhams());
         sanPhamRepository.delete(sanPham);
     }
@@ -135,17 +120,16 @@ public class SanPhamService {
         sanPham.setTenSP(dto.getTenSP());
         sanPham.setGiaBan(dto.getGiaBan());
         sanPham.setSlTon(dto.getSlTon());
-        sanPham.setKhuyenMai(dto.getKhuyenMai());
-        sanPham.setTinhTrang(dto.getTinhTrang());
+        sanPham.setKhuyenMai(dto.getKhuyenMai() == null ? BigDecimal.ZERO : dto.getKhuyenMai());
+        sanPham.setTinhTrang(dto.getTinhTrang() == null ? 1 : dto.getTinhTrang());
         sanPham.setMoTa(dto.getMoTa());
-        // hinhDaiDien is handled separately
 
         LoaiSanPham loaiSanPham = loaiSanPhamRepository.findById(dto.getMaLoai())
-                .orElseThrow(() -> new RuntimeException("Loại sản phẩm không tồn tại với ID: " + dto.getMaLoai()));
+                .orElseThrow(() -> new RuntimeException("Loai san pham khong ton tai voi ID: " + dto.getMaLoai()));
         sanPham.setLoaiSanPham(loaiSanPham);
 
         LoaiThuCung loaiThuCung = loaiThuCungRepository.findById(dto.getMaLoaiTC())
-                .orElseThrow(() -> new RuntimeException("Loại thú cưng không tồn tại với ID: " + dto.getMaLoaiTC()));
+                .orElseThrow(() -> new RuntimeException("Loai thu cung khong ton tai voi ID: " + dto.getMaLoaiTC()));
         sanPham.setLoaiThuCung(loaiThuCung);
     }
 
@@ -167,29 +151,46 @@ public class SanPhamService {
                     .map(HinhAnhSanPham::getHinhAnh)
                     .collect(Collectors.toList()));
         } else {
-            response.setHinhAnhs(List.of()); // Trả về danh sách rỗng nếu không có hình
+            response.setHinhAnhs(List.of());
         }
         return response;
     }
 
     private String saveImage(MultipartFile file) {
         try {
-            String projectRoot = System.getProperty("user.dir");
-            String relativePath = "/uploads/products/";
-            String uploadDir = projectRoot + relativePath;
-
-            Path uploadDirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Path uploadDirPath = resolveProductUploadDir();
             Files.createDirectories(uploadDirPath);
 
-            String fileName = "product_" + System.currentTimeMillis() + "_" 
-                              + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9.-]", "_");
+            String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "image.jpg";
+            String fileName = "product_" + System.currentTimeMillis() + "_"
+                    + originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
 
             Path uploadPath = uploadDirPath.resolve(fileName);
             file.transferTo(uploadPath.toFile());
 
             return "/uploads/products/" + fileName;
         } catch (IOException e) {
-            throw new RuntimeException("Lỗi khi lưu hình ảnh sản phẩm: " + e.getMessage(), e);
+            throw new RuntimeException("Loi khi luu hinh anh san pham: " + e.getMessage(), e);
         }
+    }
+
+    private Path resolveProductUploadDir() {
+        Path[] candidates = new Path[]{
+                Paths.get("petshop", "src", "main", "resources", "static", "uploads", "products"),
+                Paths.get("src", "main", "resources", "static", "uploads", "products")
+        };
+
+        for (Path candidate : candidates) {
+            Path absoluteCandidate = candidate.toAbsolutePath().normalize();
+            Path staticDir = absoluteCandidate.getParent() != null
+                    ? absoluteCandidate.getParent().getParent()
+                    : null;
+
+            if (staticDir != null && Files.exists(staticDir)) {
+                return absoluteCandidate;
+            }
+        }
+
+        return candidates[0].toAbsolutePath().normalize();
     }
 }

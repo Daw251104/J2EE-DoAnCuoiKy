@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.petshop.petshop.service.security;
 
 import com.petshop.petshop.dto.RegisterRequest;
@@ -11,7 +7,6 @@ import com.petshop.petshop.model.TaiKhoan;
 import com.petshop.petshop.model.TrangThaiTaiKhoan;
 import com.petshop.petshop.repository.RoleRepository;
 import com.petshop.petshop.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,43 +30,16 @@ public class AuthService {
     @Transactional
     public TaiKhoanResponse register(RegisterRequest request) {
         if (taiKhoanRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Tên đăng nhập đã tồn tại");
+            throw new RuntimeException("Ten dang nhap da ton tai");
         }
         if (taiKhoanRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email đã tồn tại");
+            throw new RuntimeException("Email da ton tai");
         }
 
         String anhDaiDienPath = null;
         MultipartFile file = request.getAnhDaiDien();
         if (file != null && !file.isEmpty()) {
-            try {
-                // Cách 1: Dùng ClassPathResource (khuyến nghị cho static resources)
-                // Nhưng ClassPathResource chỉ đọc được, không ghi → cần dùng FileSystem
-                // Cách tốt hơn: kết hợp project root + relative path
-                String projectRoot = System.getProperty("user.dir");  // thư mục gốc dự án (chứa pom.xml)
-                String relativePath = "/uploads/avatars/";
-                String uploadDir = projectRoot + relativePath;
-
-                // Normalize đường dẫn để tránh lỗi
-                Path uploadDirPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-                Files.createDirectories(uploadDirPath);  // tạo thư mục nếu chưa có
-
-                String fileName = "avatar_" + System.currentTimeMillis() + "_" 
-                                  + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9.-]", "_");  // sanitize tên file
-
-                Path uploadPath = uploadDirPath.resolve(fileName);
-
-                // Lưu file
-                file.transferTo(uploadPath.toFile());
-
-                // Đường dẫn relative để lưu vào DB và phục vụ static
-                anhDaiDienPath = "/uploads/avatars/" + fileName;
-
-                System.out.println("Ảnh đã lưu tại: " + uploadPath.toString());  // log để debug
-
-            } catch (IOException e) {
-                throw new RuntimeException("Lỗi khi lưu ảnh đại diện: " + e.getMessage(), e);
-            }
+            anhDaiDienPath = saveAvatar(file);
         }
 
         TaiKhoan taiKhoan = TaiKhoan.builder()
@@ -83,13 +51,12 @@ public class AuthService {
                 .email(request.getEmail())
                 .diaChi(request.getDiaChi())
                 .anhDaiDien(anhDaiDienPath)
-                .trangThai(TrangThaiTaiKhoan.ACTIVE)  // hoặc PENDING nếu cần xác thực email
+                .trangThai(TrangThaiTaiKhoan.ACTIVE)
                 .loaiTaiKhoan(new HashSet<>())
                 .build();
 
-        // Gán role mặc định (giả sử có role "CUSTOMER")
         LoaiTaiKhoan defaultRole = loaiTaiKhoanRepository.findByTenLoaiTK("CUSTOMER")
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy role mặc định"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay role mac dinh"));
         taiKhoan.getLoaiTaiKhoan().add(defaultRole);
 
         TaiKhoan saved = taiKhoanRepository.save(taiKhoan);
@@ -106,5 +73,42 @@ public class AuthService {
                 .trangThai(saved.getTrangThai())
                 .ngayTao(saved.getNgayTao())
                 .build();
+    }
+
+    private String saveAvatar(MultipartFile file) {
+        try {
+            Path uploadDirPath = resolveAvatarUploadDir();
+            Files.createDirectories(uploadDirPath);
+
+            String originalFilename = file.getOriginalFilename() != null ? file.getOriginalFilename() : "avatar.jpg";
+            String fileName = "avatar_" + System.currentTimeMillis() + "_"
+                    + originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
+
+            Path uploadPath = uploadDirPath.resolve(fileName);
+            file.transferTo(uploadPath.toFile());
+            return "/uploads/avatars/" + fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Loi khi luu anh dai dien: " + e.getMessage(), e);
+        }
+    }
+
+    private Path resolveAvatarUploadDir() {
+        Path[] candidates = new Path[]{
+                Paths.get("petshop", "src", "main", "resources", "static", "uploads", "avatars"),
+                Paths.get("src", "main", "resources", "static", "uploads", "avatars")
+        };
+
+        for (Path candidate : candidates) {
+            Path absoluteCandidate = candidate.toAbsolutePath().normalize();
+            Path staticDir = absoluteCandidate.getParent() != null
+                    ? absoluteCandidate.getParent().getParent()
+                    : null;
+
+            if (staticDir != null && Files.exists(staticDir)) {
+                return absoluteCandidate;
+            }
+        }
+
+        return candidates[0].toAbsolutePath().normalize();
     }
 }
