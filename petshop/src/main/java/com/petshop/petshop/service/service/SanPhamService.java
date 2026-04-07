@@ -66,17 +66,7 @@ public class SanPhamService {
         }
 
         sanPham = sanPhamRepository.save(sanPham);
-
-        if (dto.getHinhAnhs() != null && !dto.getHinhAnhs().isEmpty()) {
-            for (MultipartFile file : dto.getHinhAnhs()) {
-                if (file != null && !file.isEmpty()) {
-                    HinhAnhSanPham ha = new HinhAnhSanPham();
-                    ha.setHinhAnh(saveImage(file));
-                    ha.setSanPham(sanPham);
-                    hinhAnhSanPhamRepository.save(ha);
-                }
-            }
-        }
+        saveSubImages(sanPham, dto.getHinhAnhs());
 
         return convertToResponseDTO(sanPham);
     }
@@ -92,18 +82,7 @@ public class SanPhamService {
         }
 
         sanPham = sanPhamRepository.save(sanPham);
-
-        if (dto.getHinhAnhs() != null && !dto.getHinhAnhs().isEmpty()) {
-            hinhAnhSanPhamRepository.deleteAll(sanPham.getHinhAnhSanPhams());
-            for (MultipartFile file : dto.getHinhAnhs()) {
-                if (file != null && !file.isEmpty()) {
-                    HinhAnhSanPham ha = new HinhAnhSanPham();
-                    ha.setHinhAnh(saveImage(file));
-                    ha.setSanPham(sanPham);
-                    hinhAnhSanPhamRepository.save(ha);
-                }
-            }
-        }
+        saveSubImages(sanPham, dto.getHinhAnhs());
 
         return convertToResponseDTO(sanPham);
     }
@@ -112,11 +91,14 @@ public class SanPhamService {
     public void deleteSanPham(Integer id) {
         SanPham sanPham = sanPhamRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("San pham khong ton tai voi ID: " + id));
-        hinhAnhSanPhamRepository.deleteAll(sanPham.getHinhAnhSanPhams());
+        if (sanPham.getHinhAnhSanPhams() != null && !sanPham.getHinhAnhSanPhams().isEmpty()) {
+            hinhAnhSanPhamRepository.deleteAll(sanPham.getHinhAnhSanPhams());
+        }
         sanPhamRepository.delete(sanPham);
     }
 
     private void mapDtoToEntity(SanPhamDTO dto, SanPham sanPham) {
+        validateGiaBanVnd(dto.getGiaBan());
         sanPham.setTenSP(dto.getTenSP());
         sanPham.setGiaBan(dto.getGiaBan());
         sanPham.setSlTon(dto.getSlTon());
@@ -154,6 +136,33 @@ public class SanPhamService {
             response.setHinhAnhs(List.of());
         }
         return response;
+    }
+
+    private void validateGiaBanVnd(BigDecimal giaBan) {
+        if (giaBan == null) {
+            throw new RuntimeException("Gia ban khong duoc de trong");
+        }
+        if (giaBan.compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Gia ban phai >= 0");
+        }
+        if (giaBan.stripTrailingZeros().scale() > 0) {
+            throw new RuntimeException("Gia ban VND khong duoc la so le");
+        }
+    }
+
+    private void saveSubImages(SanPham sanPham, List<MultipartFile> hinhAnhs) {
+        if (hinhAnhs == null || hinhAnhs.isEmpty()) {
+            return;
+        }
+        for (MultipartFile file : hinhAnhs) {
+            if (file == null || file.isEmpty()) {
+                continue;
+            }
+            HinhAnhSanPham ha = new HinhAnhSanPham();
+            ha.setHinhAnh(saveImage(file));
+            ha.setSanPham(sanPham);
+            hinhAnhSanPhamRepository.save(ha);
+        }
     }
 
     private String saveImage(MultipartFile file) {

@@ -4,6 +4,7 @@
  */
 package com.petshop.petshop.dto;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class SanPhamDTO {
 
     @NotNull(message = "Giá bán không được để trống")
     @Min(value = 0, message = "Giá bán phải >= 0")
+    @Digits(integer = 12, fraction = 0, message = "Giá bán phải là số nguyên (VND)")
     private BigDecimal giaBan;
 
     @NotNull(message = "Số lượng tồn không được để trống")

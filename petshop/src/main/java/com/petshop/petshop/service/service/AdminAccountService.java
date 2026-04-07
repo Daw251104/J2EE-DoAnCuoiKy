@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -30,6 +31,19 @@ public class AdminAccountService {
 
     public List<TaiKhoan> getAllAccounts() {
         return userRepository.findAll();
+    }
+
+    public List<TaiKhoan> getAccountsByFilters(String keyword,
+                                               String roleName,
+                                               TrangThaiTaiKhoan trangThai) {
+        String normalizedKeyword = normalize(keyword);
+        String normalizedRoleName = normalize(roleName);
+
+        return userRepository.findAll().stream()
+                .filter(account -> matchKeyword(account, normalizedKeyword))
+                .filter(account -> matchRole(account, normalizedRoleName))
+                .filter(account -> matchStatus(account, trangThai))
+                .toList();
     }
 
     public List<LoaiTaiKhoan> getAllRoles() {
@@ -86,6 +100,40 @@ public class AdminAccountService {
                 .orElseThrow(() -> new RuntimeException("Khong tim thay tai khoan ID: " + maTK));
         taiKhoan.setTrangThai(trangThai);
         return userRepository.save(taiKhoan);
+    }
+
+    private boolean matchKeyword(TaiKhoan account, String normalizedKeyword) {
+        if (normalizedKeyword.isBlank()) {
+            return true;
+        }
+
+        return normalize(account.getUsername()).contains(normalizedKeyword)
+                || normalize(account.getHoTen()).contains(normalizedKeyword)
+                || normalize(account.getEmail()).contains(normalizedKeyword);
+    }
+
+    private boolean matchRole(TaiKhoan account, String normalizedRoleName) {
+        if (normalizedRoleName.isBlank()) {
+            return true;
+        }
+        if (account.getLoaiTaiKhoan() == null || account.getLoaiTaiKhoan().isEmpty()) {
+            return false;
+        }
+
+        return account.getLoaiTaiKhoan().stream()
+                .map(role -> normalize(role.getTenLoaiTK()))
+                .anyMatch(role -> role.equals(normalizedRoleName));
+    }
+
+    private boolean matchStatus(TaiKhoan account, TrangThaiTaiKhoan trangThai) {
+        return trangThai == null || trangThai == account.getTrangThai();
+    }
+
+    private String normalize(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.trim().toLowerCase(Locale.ROOT);
     }
 
     private String saveAvatar(MultipartFile file) {

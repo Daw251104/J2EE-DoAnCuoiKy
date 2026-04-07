@@ -1,5 +1,6 @@
 package com.petshop.petshop.controller;
 
+import com.petshop.petshop.model.HinhAnhSanPham;
 import com.petshop.petshop.model.LoaiSanPham;
 import com.petshop.petshop.model.LoaiThuCung;
 import com.petshop.petshop.model.SanPham;
@@ -21,6 +22,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/sanpham")
@@ -111,6 +115,13 @@ public class SanPhamController {
 
         model.addAttribute("sanPham", dto);
         model.addAttribute("oldHinhDaiDien", sanPham.getHinhDaiDien());
+        List<String> oldHinhAnhs = sanPham.getHinhAnhSanPhams() == null
+                ? List.of()
+                : sanPham.getHinhAnhSanPhams().stream()
+                .sorted(Comparator.comparing(HinhAnhSanPham::getMaHinhAnh, Comparator.nullsLast(Integer::compareTo)))
+                .map(HinhAnhSanPham::getHinhAnh)
+                .collect(Collectors.toList());
+        model.addAttribute("oldHinhAnhs", oldHinhAnhs);
         
         model.addAttribute("loaiSanPhams", loaiSanPhamRepository.findAll());
         model.addAttribute("loaiThuCungs", loaiThuCungRepository.findAll());
@@ -139,6 +150,16 @@ public class SanPhamController {
             redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa sản phẩm vì có dữ liệu liên quan!");
         }
         return "redirect:/sanpham";
+    }
+
+    @GetMapping("/{id}/chi-tiet")
+    @ResponseBody
+    public ResponseEntity<?> getSanPhamDetail(@PathVariable("id") Integer id) {
+        try {
+            return ResponseEntity.ok(sanPhamService.getSanPhamById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     // API thêm nhanh Loại Sản Phẩm

@@ -472,7 +472,13 @@
             position: relative;
             height: 180px;
             background: var(--gray-100);
-            overflow: hidden
+            overflow: hidden;
+            cursor: pointer
+        }
+
+        .cimgw:focus-visible {
+            outline: 3px solid var(--rose);
+            outline-offset: -3px
         }
 
         .cimgw img {
@@ -768,9 +774,187 @@
             opacity: 0.6;
         }
 
+        /* Quick view modal */
+        .qv-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(30, 24, 29, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2200;
+            padding: 20px;
+            backdrop-filter: blur(4px)
+        }
+
+        .qv-overlay.show {
+            display: flex
+        }
+
+        body.qv-open {
+            overflow: hidden
+        }
+
+        .qv-modal {
+            width: min(900px, 96vw);
+            max-height: 92vh;
+            overflow: auto;
+            background: var(--white);
+            border-radius: 22px;
+            border: 1.5px solid var(--pink-100);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, .22);
+            position: relative
+        }
+
+        .qv-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: var(--pink-50);
+            color: var(--rose);
+            font-size: 1.05rem;
+            font-weight: 900;
+            z-index: 2
+        }
+
+        .qv-close:hover {
+            background: var(--pink-100)
+        }
+
+        .qv-body {
+            display: grid;
+            grid-template-columns: 1.05fr 1fr;
+            gap: 20px;
+            padding: 22px
+        }
+
+        .qv-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+
+        .qv-main {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 16px;
+            border: 1.5px solid var(--pink-100);
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden
+        }
+
+        .qv-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        .qv-main-empty {
+            color: var(--gray-300);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: .85rem;
+            font-weight: 700
+        }
+
+        .qv-main-empty i {
+            font-size: 2.4rem
+        }
+
+        .qv-thumbs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+            gap: 8px
+        }
+
+        .qv-thumb {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            border: 2px solid var(--pink-100);
+            background: var(--gray-100);
+            overflow: hidden;
+            cursor: pointer;
+            padding: 0
+        }
+
+        .qv-thumb.active {
+            border-color: var(--rose);
+            box-shadow: 0 0 0 2px rgba(240, 101, 149, .16)
+        }
+
+        .qv-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        .qv-info h3 {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--gray-800);
+            line-height: 1.35
+        }
+
+        .qv-price {
+            margin-top: 8px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--rose-deep)
+        }
+
+        .qv-meta {
+            margin-top: 14px;
+            display: grid;
+            gap: 8px;
+            font-size: .92rem
+        }
+
+        .qv-meta-row {
+            display: flex;
+            gap: 8px
+        }
+
+        .qv-meta-label {
+            min-width: 92px;
+            color: var(--gray-400);
+            font-weight: 800
+        }
+
+        .qv-meta-value {
+            color: var(--gray-600);
+            font-weight: 700
+        }
+
+        .qv-desc {
+            margin-top: 14px;
+            border: 1.5px solid var(--pink-100);
+            background: var(--pink-50);
+            border-radius: 12px;
+            padding: 12px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            color: var(--gray-600);
+            font-size: .9rem
+        }
+
         @media(max-width:860px) {
             .pgrid {
                 grid-template-columns: repeat(4, 1fr);
+            }
+
+            .qv-body {
+                grid-template-columns: 1fr
             }
         }
 
@@ -865,7 +1049,10 @@
                 <!-- Product cards -->
                 <div class="pcard" th:each="sp : ${sanPhams}">
                     <!-- Image area -->
-                    <div class="cimgw">
+                    <div class="cimgw" role="button" tabindex="0"
+                        th:attr="data-product-id=${sp.maSP},aria-label=|Xem chi tiet ${sp.tenSP}|"
+                        onclick="openProductQuickView(this.dataset.productId)"
+                        onkeydown="if(event.key==='Enter' || event.key===' '){event.preventDefault();openProductQuickView(this.dataset.productId);}">
                         <img th:if="${sp.hinhDaiDien != null and !sp.hinhDaiDien.isEmpty()}" th:src="${sp.hinhDaiDien}"
                             alt="Ảnh sản phẩm">
                         <div class="no-img" th:unless="${sp.hinhDaiDien != null and !sp.hinhDaiDien.isEmpty()}">
@@ -949,6 +1136,171 @@
             </div>
 
         </main>
+
+        <!-- Quick view modal -->
+        <div id="productQuickView" class="qv-overlay" onclick="closeProductQuickView(event)">
+            <div class="qv-modal" role="dialog" aria-modal="true" aria-labelledby="qvName"
+                onclick="event.stopPropagation()">
+                <button type="button" class="qv-close" onclick="closeProductQuickView()" aria-label="Dong">&times;</button>
+                <div class="qv-body">
+                    <div class="qv-gallery">
+                        <div class="qv-main" id="qvMain">
+                            <div class="qv-main-empty">
+                                <i class="bi bi-image"></i>
+                                <span>Dang tai hinh anh...</span>
+                            </div>
+                        </div>
+                        <div class="qv-thumbs" id="qvThumbs"></div>
+                    </div>
+                    <div class="qv-info">
+                        <h3 id="qvName">San pham</h3>
+                        <div class="qv-price" id="qvPrice">0 đ</div>
+                        <div class="qv-meta">
+                            <div class="qv-meta-row"><span class="qv-meta-label">Ma SP</span><span class="qv-meta-value"
+                                    id="qvCode">-</span></div>
+                            <div class="qv-meta-row"><span class="qv-meta-label">Loai</span><span class="qv-meta-value"
+                                    id="qvLoai">-</span></div>
+                            <div class="qv-meta-row"><span class="qv-meta-label">Thu cung</span><span class="qv-meta-value"
+                                    id="qvLoaiTC">-</span></div>
+                            <div class="qv-meta-row"><span class="qv-meta-label">Ton kho</span><span class="qv-meta-value"
+                                    id="qvStock">-</span></div>
+                            <div class="qv-meta-row"><span class="qv-meta-label">Khuyen mai</span><span
+                                    class="qv-meta-value" id="qvDiscount">0%</span></div>
+                        </div>
+                        <div class="qv-desc" id="qvDesc">Khong co mo ta.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const quickViewOverlay = document.getElementById('productQuickView');
+            const quickViewMain = document.getElementById('qvMain');
+            const quickViewThumbs = document.getElementById('qvThumbs');
+            const quickViewState = { images: [], activeIndex: 0 };
+            const vndFormatter = new Intl.NumberFormat('vi-VN');
+
+            function openProductQuickView(productId) {
+                if (!productId) return;
+                quickViewOverlay.classList.add('show');
+                document.body.classList.add('qv-open');
+                setQuickViewLoading();
+
+                fetch('/sanpham/' + productId + '/chi-tiet', { headers: { 'Accept': 'application/json' } })
+                    .then(async (response) => {
+                        const payload = await response.json().catch(() => ({}));
+                        if (!response.ok) {
+                            throw new Error(payload.message || 'Khong tai duoc thong tin san pham');
+                        }
+                        renderQuickView(payload);
+                    })
+                    .catch((error) => {
+                        showQuickViewError(error.message || 'Khong tai duoc thong tin san pham');
+                    });
+            }
+
+            function closeProductQuickView(event) {
+                if (event && event.target !== event.currentTarget) return;
+                quickViewOverlay.classList.remove('show');
+                document.body.classList.remove('qv-open');
+            }
+
+            function setQuickViewLoading() {
+                document.getElementById('qvName').textContent = 'Dang tai...';
+                document.getElementById('qvPrice').textContent = '...';
+                document.getElementById('qvCode').textContent = '-';
+                document.getElementById('qvLoai').textContent = '-';
+                document.getElementById('qvLoaiTC').textContent = '-';
+                document.getElementById('qvStock').textContent = '-';
+                document.getElementById('qvDiscount').textContent = '-';
+                document.getElementById('qvDesc').textContent = 'Dang tai thong tin mo ta...';
+                quickViewMain.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-image\"></i><span>Dang tai hinh anh...</span></div>';
+                quickViewThumbs.innerHTML = '';
+            }
+
+            function renderQuickView(data) {
+                const images = [];
+                if (data && data.hinhDaiDien) images.push(data.hinhDaiDien);
+                if (data && Array.isArray(data.hinhAnhs)) {
+                    data.hinhAnhs.forEach((img) => { if (img) images.push(img); });
+                }
+                quickViewState.images = [...new Set(images)];
+                quickViewState.activeIndex = 0;
+
+                const giaBan = Number(data?.giaBan ?? 0);
+                const slTon = Number(data?.slTon ?? 0);
+                const tinhTrang = Number(data?.tinhTrang ?? 0);
+                const khuyenMai = Number(data?.khuyenMai ?? 0);
+                const stockText = slTon > 0
+                    ? ((tinhTrang === 1 ? 'Dang ban' : 'Ngung ban') + ' - Con ' + slTon)
+                    : ((tinhTrang === 1 ? 'Dang ban' : 'Ngung ban') + ' - Het hang');
+
+                document.getElementById('qvName').textContent = data?.tenSP || 'San pham';
+                document.getElementById('qvPrice').textContent = vndFormatter.format(Number.isFinite(giaBan) ? giaBan : 0) + ' đ';
+                document.getElementById('qvCode').textContent = data?.maSP ?? '-';
+                document.getElementById('qvLoai').textContent = data?.tenLoaiSanPham || '-';
+                document.getElementById('qvLoaiTC').textContent = data?.tenLoaiThuCung || '-';
+                document.getElementById('qvStock').textContent = stockText;
+                document.getElementById('qvDiscount').textContent = khuyenMai > 0 ? khuyenMai + '%' : 'Khong';
+                document.getElementById('qvDesc').textContent = (data?.moTa && data.moTa.trim() !== '') ? data.moTa : 'Khong co mo ta.';
+
+                renderQuickViewImage();
+                renderQuickViewThumbs();
+            }
+
+            function renderQuickViewImage() {
+                const imageUrl = quickViewState.images[quickViewState.activeIndex];
+                quickViewMain.innerHTML = '';
+                if (!imageUrl) {
+                    quickViewMain.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-image\"></i><span>San pham chua co hinh</span></div>';
+                    return;
+                }
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = 'Anh san pham';
+                quickViewMain.appendChild(img);
+            }
+
+            function renderQuickViewThumbs() {
+                quickViewThumbs.innerHTML = '';
+                quickViewState.images.forEach((imageUrl, index) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'qv-thumb' + (index === quickViewState.activeIndex ? ' active' : '');
+                    btn.setAttribute('aria-label', 'Xem anh ' + (index + 1));
+                    btn.addEventListener('click', () => {
+                        quickViewState.activeIndex = index;
+                        renderQuickViewImage();
+                        renderQuickViewThumbs();
+                    });
+
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = 'Anh thumb';
+                    btn.appendChild(img);
+                    quickViewThumbs.appendChild(btn);
+                });
+            }
+
+            function showQuickViewError(message) {
+                document.getElementById('qvName').textContent = 'Khong lay duoc du lieu';
+                document.getElementById('qvPrice').textContent = '--';
+                document.getElementById('qvCode').textContent = '-';
+                document.getElementById('qvLoai').textContent = '-';
+                document.getElementById('qvLoaiTC').textContent = '-';
+                document.getElementById('qvStock').textContent = '-';
+                document.getElementById('qvDiscount').textContent = '-';
+                document.getElementById('qvDesc').textContent = message || 'Co loi xay ra.';
+                quickViewMain.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-exclamation-circle\"></i><span>Khong tai duoc hinh anh</span></div>';
+                quickViewThumbs.innerHTML = '';
+            }
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && quickViewOverlay.classList.contains('show')) {
+                    closeProductQuickView();
+                }
+            });
+        </script>
 
     </th:block>
 </body>

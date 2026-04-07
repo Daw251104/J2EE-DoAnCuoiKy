@@ -300,6 +300,61 @@
             box-shadow: 0 5px 14px rgba(255, 107, 157, .3);
         }
 
+        .filter-panel {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1.5px solid var(--pink-100);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(240, 101, 149, .08);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-input,
+        .filter-select {
+            border: 1.5px solid var(--pink-200);
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            outline: none;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            border-color: var(--rose);
+        }
+
+        .filter-hint {
+            margin-top: 8px;
+            font-size: 0.78rem;
+            color: var(--gray-400);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @media (max-width: 1100px) {
+            .filter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Alerts */
         .alert-box {
             border-radius: 14px;
@@ -386,6 +441,34 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
+        <form th:action="@{/admin/accounts}" method="get" class="filter-panel" id="accountFilterForm">
+            <div class="filter-grid">
+                <input type="search"
+                       name="keyword"
+                       class="filter-input"
+                       placeholder="Tìm theo tên đăng nhập, họ tên, email"
+                       th:value="${filterKeyword}">
+
+                <select name="role" class="filter-select">
+                    <option value="">Tất cả vai trò</option>
+                    <option th:each="r : ${roles}"
+                            th:value="${r.tenLoaiTK}"
+                            th:text="${r.tenLoaiTK}"
+                            th:selected="${filterRole == r.tenLoaiTK}"></option>
+                </select>
+
+                <select name="trangThai" class="filter-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option th:each="ts : ${trangThais}"
+                            th:value="${ts}"
+                            th:text="${ts}"
+                            th:selected="${filterTrangThai == ts.name()}"></option>
+                </select>
+            </div>
+            <div class="filter-hint">
+            </div>
+        </form>
+
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -438,6 +521,9 @@
                                 <td style="text-align:center;">
                                     <form th:action="@{/admin/accounts/{id}/status(id=${acc.maTK})}" method="post"
                                         class="action-form">
+                                        <input type="hidden" name="keyword" th:value="${filterKeyword}">
+                                        <input type="hidden" name="role" th:value="${filterRole}">
+                                        <input type="hidden" name="trangThaiFilter" th:value="${filterTrangThai}">
                                         <select name="trangThai">
                                             <option th:each="ts : ${trangThais}" th:value="${ts}" th:text="${ts}"
                                                 th:selected="${ts == acc.trangThai}"></option>
@@ -463,6 +549,59 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const form = document.getElementById('accountFilterForm');
+            if (!form) {
+                return;
+            }
+
+            const keywordInput = form.querySelector('input[name="keyword"]');
+            const roleSelect = form.querySelector('select[name="role"]');
+            const statusSelect = form.querySelector('select[name="trangThai"]');
+            let keywordDebounceTimer = null;
+
+            function submitFilter() {
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
+            }
+
+            if (keywordInput) {
+                keywordInput.addEventListener('input', function () {
+                    clearTimeout(keywordDebounceTimer);
+                    keywordDebounceTimer = setTimeout(submitFilter, 320);
+                });
+
+                keywordInput.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        clearTimeout(keywordDebounceTimer);
+                        submitFilter();
+                        return;
+                    }
+
+                    if (event.key === 'Escape' && keywordInput.value) {
+                        keywordInput.value = '';
+                        clearTimeout(keywordDebounceTimer);
+                        submitFilter();
+                    }
+                });
+            }
+
+            [roleSelect, statusSelect].forEach(function (element) {
+                if (!element) {
+                    return;
+                }
+                element.addEventListener('change', function () {
+                    clearTimeout(keywordDebounceTimer);
+                    submitFilter();
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

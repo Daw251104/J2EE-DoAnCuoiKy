@@ -392,6 +392,22 @@
             box-shadow: 0 4px 14px rgba(240, 101, 149, .15)
         }
 
+        .current-img-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+            gap: 10px;
+            margin-top: 8px
+        }
+
+        .current-img-sm {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid var(--pink-100);
+            box-shadow: 0 3px 10px rgba(240, 101, 149, .12)
+        }
+
         /* Status toggle */
         .status-row {
             display: flex;
@@ -754,8 +770,8 @@
                                         class="req">*</span></label>
                                 <div class="iw">
                                     <i class="bi bi-currency-exchange ii"></i>
-                                    <input type="number" th:field="*{giaBan}" placeholder="150000" min="0" required
-                                        oninput="formatPrice(this)">
+                                    <input type="number" th:field="*{giaBan}" placeholder="150000" min="0" step="1"
+                                        inputmode="numeric" required oninput="normalizeVndPrice(this)">
                                 </div>
                                 <div class="input-hint" id="priceDisplay">Nhập giá bán</div>
                             </div>
@@ -829,6 +845,31 @@
                                     th:unless="${oldHinhDaiDien != null and !oldHinhDaiDien.isEmpty()}">
                                     <div class="current-img-label">Ảnh tải lên:</div>
                                     <img id="mainPreviewNew" alt="Preview" class="current-img">
+                                </div>
+                            </div>
+
+                            <!-- Sub images -->
+                            <div class="fgroup full">
+                                <label><i class="bi bi-card-image"></i> Anh phu (chon nhieu anh)</label>
+                                <div class="img-upload-area">
+                                    <input type="file" id="hinhAnhs" name="hinhAnhs" accept="image/*" multiple
+                                        onchange="previewSubImages(this)">
+                                    <div class="upload-icon">🖼️</div>
+                                    <div class="upload-label">Them nhieu anh phu cho san pham</div>
+                                    <div class="upload-hint">Co the chon 1 lan nhieu file PNG/JPG</div>
+                                </div>
+
+                                <div class="current-img-wrap" id="subPreviewWrap" style="display:none;">
+                                    <div class="current-img-label">Anh phu vua chon:</div>
+                                    <div class="current-img-grid" id="subPreviewGrid"></div>
+                                </div>
+
+                                <div class="current-img-wrap" th:if="${oldHinhAnhs != null and !oldHinhAnhs.isEmpty()}">
+                                    <div class="current-img-label">Anh phu hien tai:</div>
+                                    <div class="current-img-grid">
+                                        <img th:each="img : ${oldHinhAnhs}" th:src="${img}" alt="Anh phu"
+                                            class="current-img-sm">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -941,6 +982,20 @@
 
             /* Existing scripts */
             /* Format price display */
+            function normalizeVndPrice(input) {
+                if (!input) return;
+                if (input.value !== '') {
+                    const numberValue = Number(input.value);
+                    if (Number.isFinite(numberValue)) {
+                        const integerValue = Math.trunc(numberValue);
+                        if (numberValue !== integerValue) {
+                            input.value = integerValue;
+                        }
+                    }
+                }
+                formatPrice(input);
+            }
+
             function formatPrice(input) {
                 const val = parseInt(input.value) || 0;
                 const display = document.getElementById('priceDisplay');
@@ -955,7 +1010,7 @@
             /* Init price display */
             (() => {
                 const pi = document.querySelector('input[name="giaBan"]');
-                if (pi && pi.value) formatPrice(pi);
+                if (pi && pi.value) normalizeVndPrice(pi);
             })();
 
             /* Preview main image */
@@ -976,6 +1031,31 @@
                     }
                 };
                 reader.readAsDataURL(input.files[0]);
+            }
+
+            function previewSubImages(input) {
+                const wrap = document.getElementById('subPreviewWrap');
+                const grid = document.getElementById('subPreviewGrid');
+                if (!wrap || !grid) return;
+
+                grid.innerHTML = '';
+                if (!input.files || input.files.length === 0) {
+                    wrap.style.display = 'none';
+                    return;
+                }
+
+                Array.from(input.files).forEach(file => {
+                    if (!file.type || !file.type.startsWith('image/')) return;
+                    const img = document.createElement('img');
+                    img.className = 'current-img-sm';
+                    img.alt = 'Preview';
+                    const objectUrl = URL.createObjectURL(file);
+                    img.src = objectUrl;
+                    img.onload = () => URL.revokeObjectURL(objectUrl);
+                    grid.appendChild(img);
+                });
+
+                wrap.style.display = grid.children.length > 0 ? 'block' : 'none';
             }
 
             /* Drag-and-drop highlight */
