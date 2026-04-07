@@ -358,6 +358,33 @@
             flex-wrap: wrap;
         }
 
+        .f-input {
+            width: 280px;
+            max-width: 100%;
+            padding: 7px 14px;
+            border-radius: 50px;
+            border: 1.5px solid var(--pink-200);
+            background: var(--pink-50);
+            color: var(--gray-800);
+            font-family: 'Nunito', sans-serif;
+            font-size: .82rem;
+            font-weight: 700;
+            outline: none;
+            transition: all .2s;
+        }
+
+        .f-input::placeholder {
+            color: var(--gray-400);
+            font-weight: 700;
+        }
+
+        .f-input:hover,
+        .f-input:focus {
+            background: var(--white);
+            border-color: var(--rose);
+            box-shadow: 0 0 0 3px rgba(240, 101, 149, .10);
+        }
+
         .f-select {
             padding: 7px 32px 7px 14px;
             border-radius: 50px;
@@ -376,6 +403,27 @@
 
         .f-select:hover, .f-select:focus {
             background-color: var(--white);
+            border-color: var(--rose);
+        }
+
+        .f-search-btn {
+            border: 1.5px solid var(--pink-200);
+            background: var(--pink-50);
+            color: var(--rose);
+            border-radius: 50px;
+            padding: 7px 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .8rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .f-search-btn:hover {
+            background: var(--white);
             border-color: var(--rose);
         }
 
@@ -839,6 +887,53 @@
             gap: 12px
         }
 
+        .qv-gallery-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px
+        }
+
+        .qv-counter {
+            font-size: .78rem;
+            font-weight: 800;
+            color: var(--gray-400);
+            background: var(--pink-50);
+            border: 1.5px solid var(--pink-100);
+            padding: 5px 10px;
+            border-radius: 999px
+        }
+
+        .qv-tool-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .qv-tool-btn {
+            border: 1.5px solid var(--pink-200);
+            background: var(--white);
+            color: var(--gray-600);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: .76rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer
+        }
+
+        .qv-tool-btn:hover:not(:disabled) {
+            background: var(--pink-50);
+            color: var(--rose)
+        }
+
+        .qv-tool-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed
+        }
+
         .qv-main {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -848,13 +943,60 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden
+            overflow: hidden;
+            position: relative
+        }
+
+        .qv-main-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center
         }
 
         .qv-main img {
             width: 100%;
             height: 100%;
             object-fit: cover
+        }
+
+        .qv-main-image {
+            cursor: zoom-in
+        }
+
+        .qv-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: none;
+            background: rgba(74, 44, 61, .62);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2
+        }
+
+        .qv-nav-btn:hover:not(:disabled) {
+            background: rgba(74, 44, 61, .82)
+        }
+
+        .qv-nav-btn:disabled {
+            opacity: .35;
+            cursor: not-allowed
+        }
+
+        .qv-nav-prev {
+            left: 10px
+        }
+
+        .qv-nav-next {
+            right: 10px
         }
 
         .qv-main-empty {
@@ -948,6 +1090,44 @@
             font-size: .9rem
         }
 
+        .qv-zoom-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(16, 12, 16, .9);
+            z-index: 2300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px
+        }
+
+        .qv-zoom-overlay.show {
+            display: flex
+        }
+
+        .qv-zoom-image {
+            max-width: 94vw;
+            max-height: 92vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .5)
+        }
+
+        .qv-zoom-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            border: none;
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer
+        }
+
         @media(max-width:860px) {
             .pgrid {
                 grid-template-columns: repeat(4, 1fr);
@@ -999,6 +1179,15 @@
         <div class="fbar">
             <span class="fl">Lọc:</span>
             <form th:action="@{/sanpham}" method="get" class="f-form" id="filterForm">
+                <input type="text"
+                       name="tuKhoa"
+                       class="f-input"
+                       th:value="${currentTuKhoa}"
+                       placeholder="Tìm theo tên hoặc mô tả..." />
+                <button type="submit" class="f-search-btn">
+                    <i class="bi bi-search"></i> Tìm
+                </button>
+
                 <select name="maLoaiTC" class="f-select" onchange="document.getElementById('filterForm').submit()">
                     <option value="">🐶 Tất cả thú cưng</option>
                     <option th:each="tc : ${loaiThuCungs}" 
@@ -1013,7 +1202,14 @@
                             th:text="${sp.tenLoai}" 
                             th:selected="${sp.maLoai == currentMaLoai}"></option>
                 </select>
-                <a th:href="@{/sanpham}" class="f-clear" th:if="${currentMaLoaiTC != null or currentMaLoai != null}">
+                <select name="chuCai" class="f-select" onchange="document.getElementById('filterForm').submit()">
+                    <option value="">A-Z</option>
+                    <option th:each="c : ${alphabetOptions}"
+                            th:value="${c}"
+                            th:text="${c}"
+                            th:selected="${currentChuCai == c}"></option>
+                </select>
+                <a th:href="@{/sanpham}" class="f-clear" th:if="${currentMaLoaiTC != null or currentMaLoai != null or currentChuCai != null or currentTuKhoa != null}">
                     <i class="bi bi-x-circle-fill"></i> Bỏ lọc
                 </a>
             </form>
@@ -1119,17 +1315,17 @@
 
             <!-- Pagination -->
             <div class="pagination" th:if="${totalPages != null and totalPages > 1}">
-                <a th:href="${currentPage > 1} ? @{/sanpham(page=${currentPage - 1})} : '#'"
+                <a th:href="${currentPage > 1} ? @{/sanpham(page=${currentPage - 1},maLoaiTC=${currentMaLoaiTC},maLoai=${currentMaLoai},tuKhoa=${currentTuKhoa},chuCai=${currentChuCai})} : '#'"
                     th:classappend="${currentPage == 1} ? 'disabled'">
                     <i class="bi bi-chevron-left"></i>
                 </a>
 
                 <th:block th:each="i: ${#numbers.sequence(1, totalPages)}">
-                    <a th:href="@{/sanpham(page=${i})}" th:text="${i}"
+                    <a th:href="@{/sanpham(page=${i},maLoaiTC=${currentMaLoaiTC},maLoai=${currentMaLoai},tuKhoa=${currentTuKhoa},chuCai=${currentChuCai})}" th:text="${i}"
                         th:classappend="${currentPage == i} ? 'active'">1</a>
                 </th:block>
 
-                <a th:href="${currentPage < totalPages} ? @{/sanpham(page=${currentPage + 1})} : '#'"
+                <a th:href="${currentPage < totalPages} ? @{/sanpham(page=${currentPage + 1},maLoaiTC=${currentMaLoaiTC},maLoai=${currentMaLoai},tuKhoa=${currentTuKhoa},chuCai=${currentChuCai})} : '#'"
                     th:classappend="${currentPage == totalPages} ? 'disabled'">
                     <i class="bi bi-chevron-right"></i>
                 </a>
@@ -1144,11 +1340,28 @@
                 <button type="button" class="qv-close" onclick="closeProductQuickView()" aria-label="Dong">&times;</button>
                 <div class="qv-body">
                     <div class="qv-gallery">
-                        <div class="qv-main" id="qvMain">
-                            <div class="qv-main-empty">
-                                <i class="bi bi-image"></i>
-                                <span>Dang tai hinh anh...</span>
+                        <div class="qv-gallery-tools">
+                            <span class="qv-counter" id="qvCounter">0/0</span>
+                            <div class="qv-tool-actions">
+                                <button type="button" class="qv-tool-btn" id="qvAutoBtn" onclick="toggleQuickViewAutoPlay()">
+                                    <i class="bi bi-play-fill"></i><span id="qvAutoLabel">Auto</span>
+                                </button>
+                                <button type="button" class="qv-tool-btn" id="qvZoomBtn" onclick="openQuickViewZoom()">
+                                    <i class="bi bi-zoom-in"></i><span>Zoom</span>
+                                </button>
                             </div>
+                        </div>
+                        <div class="qv-main" id="qvMain">
+                            <div class="qv-main-content" id="qvMainContent">
+                                <div class="qv-main-empty">
+                                    <i class="bi bi-image"></i>
+                                    <span>Dang tai hinh anh...</span>
+                                </div>
+                            </div>
+                            <button type="button" class="qv-nav-btn qv-nav-prev" id="qvPrevBtn" onclick="quickViewPrevImage()"
+                                aria-label="Anh truoc"><i class="bi bi-chevron-left"></i></button>
+                            <button type="button" class="qv-nav-btn qv-nav-next" id="qvNextBtn" onclick="quickViewNextImage()"
+                                aria-label="Anh sau"><i class="bi bi-chevron-right"></i></button>
                         </div>
                         <div class="qv-thumbs" id="qvThumbs"></div>
                     </div>
@@ -1173,15 +1386,30 @@
             </div>
         </div>
 
+        <div id="qvZoomOverlay" class="qv-zoom-overlay" onclick="closeQuickViewZoom(event)">
+            <button type="button" class="qv-zoom-close" onclick="closeQuickViewZoom()" aria-label="Dong zoom">&times;</button>
+            <img id="qvZoomImage" class="qv-zoom-image" alt="Zoom image">
+        </div>
+
         <script>
             const quickViewOverlay = document.getElementById('productQuickView');
             const quickViewMain = document.getElementById('qvMain');
+            const quickViewMainContent = document.getElementById('qvMainContent');
             const quickViewThumbs = document.getElementById('qvThumbs');
-            const quickViewState = { images: [], activeIndex: 0 };
+            const quickViewCounter = document.getElementById('qvCounter');
+            const quickViewAutoBtn = document.getElementById('qvAutoBtn');
+            const quickViewAutoLabel = document.getElementById('qvAutoLabel');
+            const quickViewZoomBtn = document.getElementById('qvZoomBtn');
+            const quickViewPrevBtn = document.getElementById('qvPrevBtn');
+            const quickViewNextBtn = document.getElementById('qvNextBtn');
+            const quickViewZoomOverlay = document.getElementById('qvZoomOverlay');
+            const quickViewZoomImage = document.getElementById('qvZoomImage');
+            const quickViewState = { images: [], activeIndex: 0, autoPlay: false, autoTimer: null, requestToken: 0 };
             const vndFormatter = new Intl.NumberFormat('vi-VN');
 
             function openProductQuickView(productId) {
                 if (!productId) return;
+                const requestToken = ++quickViewState.requestToken;
                 quickViewOverlay.classList.add('show');
                 document.body.classList.add('qv-open');
                 setQuickViewLoading();
@@ -1189,23 +1417,33 @@
                 fetch('/sanpham/' + productId + '/chi-tiet', { headers: { 'Accept': 'application/json' } })
                     .then(async (response) => {
                         const payload = await response.json().catch(() => ({}));
+                        if (requestToken !== quickViewState.requestToken) {
+                            return;
+                        }
                         if (!response.ok) {
                             throw new Error(payload.message || 'Khong tai duoc thong tin san pham');
                         }
                         renderQuickView(payload);
                     })
                     .catch((error) => {
+                        if (requestToken !== quickViewState.requestToken) {
+                            return;
+                        }
                         showQuickViewError(error.message || 'Khong tai duoc thong tin san pham');
                     });
             }
 
             function closeProductQuickView(event) {
                 if (event && event.target !== event.currentTarget) return;
+                stopQuickViewAutoPlay();
+                closeQuickViewZoom();
                 quickViewOverlay.classList.remove('show');
                 document.body.classList.remove('qv-open');
             }
 
             function setQuickViewLoading() {
+                stopQuickViewAutoPlay();
+                closeQuickViewZoom();
                 document.getElementById('qvName').textContent = 'Dang tai...';
                 document.getElementById('qvPrice').textContent = '...';
                 document.getElementById('qvCode').textContent = '-';
@@ -1214,8 +1452,11 @@
                 document.getElementById('qvStock').textContent = '-';
                 document.getElementById('qvDiscount').textContent = '-';
                 document.getElementById('qvDesc').textContent = 'Dang tai thong tin mo ta...';
-                quickViewMain.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-image\"></i><span>Dang tai hinh anh...</span></div>';
+                quickViewMainContent.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-image\"></i><span>Dang tai hinh anh...</span></div>';
                 quickViewThumbs.innerHTML = '';
+                quickViewState.images = [];
+                quickViewState.activeIndex = 0;
+                updateQuickViewControls();
             }
 
             function renderQuickView(data) {
@@ -1246,19 +1487,28 @@
 
                 renderQuickViewImage();
                 renderQuickViewThumbs();
+                updateQuickViewControls();
             }
 
             function renderQuickViewImage() {
                 const imageUrl = quickViewState.images[quickViewState.activeIndex];
-                quickViewMain.innerHTML = '';
+                quickViewMainContent.innerHTML = '';
                 if (!imageUrl) {
-                    quickViewMain.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-image\"></i><span>San pham chua co hinh</span></div>';
+                    quickViewMainContent.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-image\"></i><span>San pham chua co hinh</span></div>';
+                    updateQuickViewControls();
                     return;
                 }
                 const img = document.createElement('img');
+                img.className = 'qv-main-image';
                 img.src = imageUrl;
                 img.alt = 'Anh san pham';
-                quickViewMain.appendChild(img);
+                img.addEventListener('click', openQuickViewZoom);
+                quickViewMainContent.appendChild(img);
+
+                if (quickViewZoomOverlay.classList.contains('show')) {
+                    quickViewZoomImage.src = imageUrl;
+                }
+                updateQuickViewControls();
             }
 
             function renderQuickViewThumbs() {
@@ -1272,6 +1522,9 @@
                         quickViewState.activeIndex = index;
                         renderQuickViewImage();
                         renderQuickViewThumbs();
+                        if (quickViewState.autoPlay) {
+                            startQuickViewAutoPlay();
+                        }
                     });
 
                     const img = document.createElement('img');
@@ -1282,7 +1535,96 @@
                 });
             }
 
+            function quickViewPrevImage() {
+                const total = quickViewState.images.length;
+                if (total <= 1) return;
+                quickViewState.activeIndex = (quickViewState.activeIndex - 1 + total) % total;
+                renderQuickViewImage();
+                renderQuickViewThumbs();
+            }
+
+            function quickViewNextImage() {
+                const total = quickViewState.images.length;
+                if (total <= 1) return;
+                quickViewState.activeIndex = (quickViewState.activeIndex + 1) % total;
+                renderQuickViewImage();
+                renderQuickViewThumbs();
+            }
+
+            function startQuickViewAutoPlay() {
+                const total = quickViewState.images.length;
+                if (total <= 1) {
+                    stopQuickViewAutoPlay();
+                    return;
+                }
+                stopQuickViewAutoPlay(false);
+                quickViewState.autoPlay = true;
+                quickViewState.autoTimer = setInterval(() => {
+                    quickViewNextImage();
+                }, 2600);
+                updateQuickViewAutoButton();
+            }
+
+            function stopQuickViewAutoPlay(updateButton = true) {
+                if (quickViewState.autoTimer) {
+                    clearInterval(quickViewState.autoTimer);
+                    quickViewState.autoTimer = null;
+                }
+                quickViewState.autoPlay = false;
+                if (updateButton) {
+                    updateQuickViewAutoButton();
+                }
+            }
+
+            function toggleQuickViewAutoPlay() {
+                if (quickViewState.autoPlay) {
+                    stopQuickViewAutoPlay();
+                } else {
+                    startQuickViewAutoPlay();
+                }
+            }
+
+            function updateQuickViewAutoButton() {
+                const icon = quickViewAutoBtn.querySelector('i');
+                if (quickViewState.autoPlay) {
+                    icon.className = 'bi bi-pause-fill';
+                    quickViewAutoLabel.textContent = 'Stop';
+                } else {
+                    icon.className = 'bi bi-play-fill';
+                    quickViewAutoLabel.textContent = 'Auto';
+                }
+            }
+
+            function updateQuickViewControls() {
+                const total = quickViewState.images.length;
+                quickViewCounter.textContent = total > 0 ? (quickViewState.activeIndex + 1) + '/' + total : '0/0';
+
+                const hasMany = total > 1;
+                quickViewPrevBtn.disabled = !hasMany;
+                quickViewNextBtn.disabled = !hasMany;
+                quickViewAutoBtn.disabled = !hasMany;
+                quickViewZoomBtn.disabled = total === 0;
+
+                if (!hasMany && quickViewState.autoPlay) {
+                    stopQuickViewAutoPlay();
+                }
+            }
+
+            function openQuickViewZoom() {
+                const imageUrl = quickViewState.images[quickViewState.activeIndex];
+                if (!imageUrl) return;
+                quickViewZoomImage.src = imageUrl;
+                quickViewZoomOverlay.classList.add('show');
+            }
+
+            function closeQuickViewZoom(event) {
+                if (event && event.target !== event.currentTarget) return;
+                quickViewZoomOverlay.classList.remove('show');
+                quickViewZoomImage.src = '';
+            }
+
             function showQuickViewError(message) {
+                stopQuickViewAutoPlay();
                 document.getElementById('qvName').textContent = 'Khong lay duoc du lieu';
                 document.getElementById('qvPrice').textContent = '--';
                 document.getElementById('qvCode').textContent = '-';
@@ -1291,13 +1633,42 @@
                 document.getElementById('qvStock').textContent = '-';
                 document.getElementById('qvDiscount').textContent = '-';
                 document.getElementById('qvDesc').textContent = message || 'Co loi xay ra.';
-                quickViewMain.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-exclamation-circle\"></i><span>Khong tai duoc hinh anh</span></div>';
+                quickViewMainContent.innerHTML = '<div class=\"qv-main-empty\"><i class=\"bi bi-exclamation-circle\"></i><span>Khong tai duoc hinh anh</span></div>';
                 quickViewThumbs.innerHTML = '';
+                quickViewState.images = [];
+                quickViewState.activeIndex = 0;
+                updateQuickViewControls();
             }
 
             document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && quickViewOverlay.classList.contains('show')) {
-                    closeProductQuickView();
+                if (!quickViewOverlay.classList.contains('show')) {
+                    return;
+                }
+
+                if (event.key === 'Escape') {
+                    if (quickViewZoomOverlay.classList.contains('show')) {
+                        closeQuickViewZoom();
+                    } else {
+                        closeProductQuickView();
+                    }
+                    return;
+                }
+
+                if (event.key === 'ArrowLeft') {
+                    event.preventDefault();
+                    quickViewPrevImage();
+                    return;
+                }
+
+                if (event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    quickViewNextImage();
+                    return;
+                }
+
+                if (event.key === ' ') {
+                    event.preventDefault();
+                    toggleQuickViewAutoPlay();
                 }
             });
         </script>

@@ -37,8 +37,6 @@ public class DonHang {
 
     private Integer daThanhToan;
 
-    private String maVanChuyen;
-
     @ManyToOne
     @JoinColumn(name = "MAKH")
     private TaiKhoan khachHang;

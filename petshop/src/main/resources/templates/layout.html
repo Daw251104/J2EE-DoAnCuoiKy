@@ -941,13 +941,138 @@
             }
 
             const TYPING_TEXT = 'Dang xu ly...';
+            const STORAGE_PREFIX = 'petshop.chat.history.v1';
+            const MAX_HISTORY_ITEMS = 80;
             let initialized = false;
+
+            function getCurrentUsername() {
+                const userNode = document.querySelector('.uchip span');
+                const username = userNode ? String(userNode.textContent || '').trim().toLowerCase() : '';
+                return username || 'guest';
+            }
+
+            const storageKey = STORAGE_PREFIX + ':' + getCurrentUsername();
+
+            function emptyState() {
+                return {
+                    open: false,
+                    draft: '',
+                    messages: []
+                };
+            }
+
+            function safeParseJson(raw) {
+                try {
+                    return JSON.parse(raw);
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            function sanitizeAction(action) {
+                if (!action || typeof action !== 'object') {
+                    return null;
+                }
+
+                const cleaned = {
+                    type: action.type ? String(action.type) : '',
+                    label: action.label ? String(action.label) : '',
+                    productId: action.productId == null ? null : action.productId,
+                    quantity: action.quantity == null ? null : action.quantity,
+                    url: action.url ? String(action.url) : null
+                };
+
+                return cleaned.label ? cleaned : null;
+            }
+
+            function sanitizeMessage(entry) {
+                if (!entry || typeof entry !== 'object') {
+                    return null;
+                }
+
+                const role = entry.role === 'user' ? 'user' : 'bot';
+                const text = entry.text ? String(entry.text).trim() : '';
+                if (!text) {
+                    return null;
+                }
+
+                const actions = Array.isArray(entry.actions)
+                    ? entry.actions.map(sanitizeAction).filter(Boolean)
+                    : [];
+
+                return { role: role, text: text, actions: actions };
+            }
+
+            function loadState() {
+                try {
+                    const raw = localStorage.getItem(storageKey);
+                    if (!raw) {
+                        return emptyState();
+                    }
+
+                    const parsed = safeParseJson(raw);
+                    if (!parsed || typeof parsed !== 'object') {
+                        return emptyState();
+                    }
+
+                    const state = emptyState();
+                    state.open = !!parsed.open;
+                    state.draft = typeof parsed.draft === 'string'
+                        ? parsed.draft.slice(0, 1000)
+                        : '';
+                    state.messages = Array.isArray(parsed.messages)
+                        ? parsed.messages.map(sanitizeMessage).filter(Boolean).slice(-MAX_HISTORY_ITEMS)
+                        : [];
+                    return state;
+                } catch (error) {
+                    return emptyState();
+                }
+            }
+
+            let chatState = loadState();
+
+            function persistState() {
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify(chatState));
+                } catch (error) {
+                    // Ignore storage errors (private mode/quota)
+                }
+            }
+
+            function updateDraft(value) {
+                chatState.draft = String(value || '').slice(0, 1000);
+                persistState();
+            }
+
+            function updateOpenState(isOpen) {
+                chatState.open = !!isOpen;
+                persistState();
+            }
+
+            function pushHistory(role, text, actions) {
+                const normalized = sanitizeMessage({
+                    role: role,
+                    text: text,
+                    actions: actions
+                });
+                if (!normalized) {
+                    return;
+                }
+
+                chatState.messages.push(normalized);
+                if (chatState.messages.length > MAX_HISTORY_ITEMS) {
+                    chatState.messages = chatState.messages.slice(-MAX_HISTORY_ITEMS);
+                }
+                persistState();
+                initialized = true;
+            }
 
             function scrollToBottom() {
                 messages.scrollTop = messages.scrollHeight;
             }
 
-            function appendMessage(role, text, actions) {
+            function appendMessage(role, text, actions, options) {
+                const opts = options || {};
                 const item = document.createElement('div');
                 item.className = 'chat-message ' + role;
                 item.textContent = text || '';
@@ -958,11 +1083,16 @@
 
                 messages.appendChild(item);
                 scrollToBottom();
+
+                if (opts.persist !== false) {
+                    pushHistory(role, text, actions);
+                }
+
                 return item;
             }
 
             function appendTyping() {
-                return appendMessage('bot', TYPING_TEXT);
+                return appendMessage('bot', TYPING_TEXT, [], { persist: false });
             }
 
             function removeTyping(typingElement) {
@@ -993,13 +1123,28 @@
                 return wrapper;
             }
 
-            function setPanelOpen(isOpen) {
+            function setPanelOpen(isOpen, options) {
+                const opts = options || {};
                 panel.classList.toggle('open', isOpen);
                 panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
                 toggleBtn.style.display = isOpen ? 'none' : 'inline-flex';
+                if (opts.persist !== false) {
+                    updateOpenState(isOpen);
+                }
                 if (isOpen) {
                     input.focus();
                 }
+            }
+
+            function restoreMessages() {
+                if (!Array.isArray(chatState.messages) || chatState.messages.length === 0) {
+                    return;
+                }
+
+                chatState.messages.forEach(function (entry) {
+                    appendMessage(entry.role, entry.text, entry.actions, { persist: false });
+                });
+                initialized = true;
             }
 
             function initFirstMessage() {
@@ -1045,6 +1190,8 @@
                 }
 
                 if (action.type === 'OPEN_URL' && action.url) {
+                    appendMessage('user', action.label || 'Mo trang');
+                    updateOpenState(panel.classList.contains('open'));
                     window.location.href = action.url;
                     return;
                 }
@@ -1082,6 +1229,12 @@
                 }
             }
 
+            restoreMessages();
+            input.value = chatState.draft || '';
+            if (chatState.open) {
+                setPanelOpen(true, { persist: false });
+            }
+
             toggleBtn.addEventListener('click', function () {
                 initFirstMessage();
                 setPanelOpen(true);
@@ -1100,10 +1253,19 @@
 
                 appendMessage('user', question);
                 input.value = '';
+                updateDraft('');
                 sendBtn.disabled = true;
                 await askChatbot(question);
                 sendBtn.disabled = false;
                 input.focus();
+            });
+
+            input.addEventListener('input', function () {
+                updateDraft(input.value);
+            });
+
+            window.addEventListener('beforeunload', function () {
+                updateOpenState(panel.classList.contains('open'));
             });
         })();
     </script>

@@ -97,6 +97,18 @@ public class SanPhamService {
         sanPhamRepository.delete(sanPham);
     }
 
+    @Transactional
+    public void deleteSubImage(Integer maSP, Integer maHinhAnh) {
+        if (maSP == null || maHinhAnh == null) {
+            throw new RuntimeException("Thong tin xoa anh phu khong hop le");
+        }
+
+        HinhAnhSanPham hinhAnh = hinhAnhSanPhamRepository.findByMaHinhAnhAndSanPham_MaSP(maHinhAnh, maSP)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay anh phu can xoa"));
+
+        hinhAnhSanPhamRepository.delete(hinhAnh);
+    }
+
     private void mapDtoToEntity(SanPhamDTO dto, SanPham sanPham) {
         validateGiaBanVnd(dto.getGiaBan());
         sanPham.setTenSP(dto.getTenSP());
@@ -163,6 +175,24 @@ public class SanPhamService {
             ha.setSanPham(sanPham);
             hinhAnhSanPhamRepository.save(ha);
         }
+    }
+
+    private void deleteSelectedSubImages(Integer maSP, List<Integer> xoaHinhAnhIds) {
+        if (maSP == null || xoaHinhAnhIds == null || xoaHinhAnhIds.isEmpty()) {
+            return;
+        }
+        List<Integer> validIds = xoaHinhAnhIds.stream()
+                .filter(id -> id != null && id > 0)
+                .distinct()
+                .toList();
+        if (validIds.isEmpty()) {
+            return;
+        }
+        List<HinhAnhSanPham> canXoa = hinhAnhSanPhamRepository.findAllByMaHinhAnhInAndSanPham_MaSP(validIds, maSP);
+        if (canXoa.isEmpty()) {
+            return;
+        }
+        hinhAnhSanPhamRepository.deleteAll(canXoa);
     }
 
     private String saveImage(MultipartFile file) {

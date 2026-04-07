@@ -408,6 +408,35 @@
             box-shadow: 0 3px 10px rgba(240, 101, 149, .12)
         }
 
+        .sub-old-item {
+            position: relative;
+            display: block
+        }
+
+        .sub-old-remove {
+            position: absolute;
+            left: 50%;
+            bottom: 6px;
+            transform: translateX(-50%);
+            background: rgba(74, 44, 61, .72);
+            color: #fff;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: .65rem;
+            font-weight: 800;
+            letter-spacing: .1px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border: none;
+            cursor: pointer
+        }
+
+        .sub-old-remove:disabled {
+            opacity: .65;
+            cursor: not-allowed
+        }
+
         /* Status toggle */
         .status-row {
             display: flex;
@@ -867,9 +896,17 @@
                                 <div class="current-img-wrap" th:if="${oldHinhAnhs != null and !oldHinhAnhs.isEmpty()}">
                                     <div class="current-img-label">Anh phu hien tai:</div>
                                     <div class="current-img-grid">
-                                        <img th:each="img : ${oldHinhAnhs}" th:src="${img}" alt="Anh phu"
-                                            class="current-img-sm">
+                                        <div class="sub-old-item" th:each="img : ${oldHinhAnhs}">
+                                            <img th:src="${img.hinhAnh}" alt="Anh phu" class="current-img-sm">
+                                            <button type="button" class="sub-old-remove"
+                                                th:attr="data-product-id=${sanPham.maSP},data-image-id=${img.maHinhAnh}"
+                                                onclick="deleteSubImageNow(this)">
+                                                <i class="bi bi-trash3"></i>
+                                                <span class="sub-old-remove-text">Xoa ngay</span>
+                                            </button>
+                                        </div>
                                     </div>
+                                    <div class="upload-hint">Bam Xoa ngay de xoa truc tiep tung anh phu.</div>
                                 </div>
                             </div>
                         </div>
@@ -1056,6 +1093,60 @@
                 });
 
                 wrap.style.display = grid.children.length > 0 ? 'block' : 'none';
+            }
+
+            async function deleteSubImageNow(button) {
+                if (!button) return;
+
+                const productId = button.getAttribute('data-product-id');
+                const imageId = button.getAttribute('data-image-id');
+                if (!productId || !imageId) return;
+
+                if (!confirm('Xoa anh phu nay ngay bay gio?')) {
+                    return;
+                }
+
+                const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
+                const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+                const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+                const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.getAttribute('content') : '';
+                const headers = {};
+                if (csrfHeader && csrfToken) {
+                    headers[csrfHeader] = csrfToken;
+                }
+
+                const label = button.querySelector('.sub-old-remove-text');
+                const oldText = label ? label.textContent : '';
+                button.disabled = true;
+                if (label) label.textContent = 'Dang xoa...';
+
+                try {
+                    const response = await fetch(`/sanpham/${productId}/anh-phu/${imageId}/xoa`, {
+                        method: 'POST',
+                        headers
+                    });
+
+                    if (!response.ok) {
+                        const text = await response.text();
+                        throw new Error(text || 'Khong xoa duoc anh');
+                    }
+
+                    const item = button.closest('.sub-old-item');
+                    const grid = item ? item.parentElement : null;
+                    const wrap = grid ? grid.closest('.current-img-wrap') : null;
+
+                    if (item) {
+                        item.remove();
+                    }
+
+                    if (grid && grid.children.length === 0 && wrap) {
+                        wrap.remove();
+                    }
+                } catch (error) {
+                    alert('Khong xoa duoc anh phu. ' + (error.message || 'Ban thu lai nhe.'));
+                    button.disabled = false;
+                    if (label) label.textContent = oldText || 'Xoa ngay';
+                }
             }
 
             /* Drag-and-drop highlight */

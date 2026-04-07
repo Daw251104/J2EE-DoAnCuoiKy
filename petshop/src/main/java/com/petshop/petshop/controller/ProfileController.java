@@ -1,5 +1,6 @@
 package com.petshop.petshop.controller;
 
+import com.petshop.petshop.dto.ChangePasswordRequest;
 import com.petshop.petshop.dto.UpdateProfileRequest;
 import com.petshop.petshop.model.TaiKhoan;
 import com.petshop.petshop.service.service.UserService;
@@ -37,6 +38,12 @@ public class ProfileController {
         model.addAttribute("taiKhoan", taiKhoan);
         model.addAttribute("updateProfileRequest", request);
         model.addAttribute("gioiTinhs", com.petshop.petshop.model.GioiTinh.values());
+        if (!model.containsAttribute("changePasswordRequest")) {
+            model.addAttribute("changePasswordRequest", new ChangePasswordRequest());
+        }
+        if (!model.containsAttribute("activeTab")) {
+            model.addAttribute("activeTab", "tab-info");
+        }
         
         return "profile/index";
     }
@@ -47,10 +54,26 @@ public class ProfileController {
                                 RedirectAttributes redirectAttributes) {
         try {
             userService.capNhatThongTin(principal.getName(), request);
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin cá nhân thành công!");
+            redirectAttributes.addFlashAttribute("profileSuccessMessage", "Cập nhật thông tin cá nhân thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("profileErrorMessage", "Lỗi: " + e.getMessage());
         }
+        redirectAttributes.addFlashAttribute("activeTab", "tab-info");
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@ModelAttribute ChangePasswordRequest request,
+                                 Principal principal,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            userService.doiMatKhau(principal.getName(), request.getCurrentPassword(),
+                    request.getNewPassword(), request.getConfirmPassword());
+            redirectAttributes.addFlashAttribute("passwordSuccessMessage", "Đổi mật khẩu thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("passwordErrorMessage", "Lỗi: " + e.getMessage());
+        }
+        redirectAttributes.addFlashAttribute("activeTab", "tab-password");
         return "redirect:/profile";
     }
 }

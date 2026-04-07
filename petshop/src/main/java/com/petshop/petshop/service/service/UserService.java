@@ -4,6 +4,7 @@ import com.petshop.petshop.dto.UpdateProfileRequest;
 import com.petshop.petshop.model.TaiKhoan;
 import com.petshop.petshop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public TaiKhoan layThongTinTaiKhoan(String username) {
         return userRepository.findByUsername(username)
@@ -48,6 +52,60 @@ public class UserService {
             taiKhoan.setAnhDaiDien(request.getAnhDaiDien());
         }
 
+        userRepository.save(taiKhoan);
+    }
+
+    @Transactional
+    public void doiMatKhau(String username, String currentPassword, String newPassword, String confirmPassword) {
+        if (isBlank(currentPassword) || isBlank(newPassword) || isBlank(confirmPassword)) {
+            throw new RuntimeException("Vui long nhap day du thong tin doi mat khau");
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("Xac nhan mat khau moi khong khop");
+        }
+        if (newPassword.length() < 6) {
+            throw new RuntimeException("Mat khau moi phai co it nhat 6 ky tu");
+        }
+
+        TaiKhoan taiKhoan = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay tai khoan: " + username));
+
+        if (!passwordEncoder.matches(currentPassword, taiKhoan.getPassword())) {
+            throw new RuntimeException("Mat khau hien tai khong dung");
+        }
+        if (passwordEncoder.matches(newPassword, taiKhoan.getPassword())) {
+            throw new RuntimeException("Mat khau moi khong duoc trung voi mat khau cu");
+        }
+
+        taiKhoan.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(taiKhoan);
+    }
+
+    @Transactional
+    public void datLaiMatKhauTheoUsernameVaEmail(String username, String email, String newPassword, String confirmPassword) {
+        if (isBlank(username) || isBlank(email) || isBlank(newPassword) || isBlank(confirmPassword)) {
+            throw new RuntimeException("Vui long nhap day du thong tin");
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            throw new RuntimeException("Xac nhan mat khau moi khong khop");
+        }
+        if (newPassword.length() < 6) {
+            throw new RuntimeException("Mat khau moi phai co it nhat 6 ky tu");
+        }
+
+        TaiKhoan taiKhoan = userRepository.findByUsername(username.trim())
+                .orElseThrow(() -> new RuntimeException("Khong tim thay tai khoan voi username da nhap"));
+
+        String emailDb = taiKhoan.getEmail() == null ? "" : taiKhoan.getEmail().trim();
+        if (!emailDb.equalsIgnoreCase(email.trim())) {
+            throw new RuntimeException("Email khong khop voi tai khoan nay");
+        }
+
+        if (passwordEncoder.matches(newPassword, taiKhoan.getPassword())) {
+            throw new RuntimeException("Mat khau moi khong duoc trung voi mat khau cu");
+        }
+
+        taiKhoan.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(taiKhoan);
     }
 
@@ -87,5 +145,9 @@ public class UserService {
         }
 
         return candidates[0].toAbsolutePath().normalize();
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

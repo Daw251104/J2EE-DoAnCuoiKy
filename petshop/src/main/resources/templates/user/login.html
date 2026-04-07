@@ -42,11 +42,13 @@
             font-family: 'Nunito', sans-serif;
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             background: linear-gradient(145deg, #ffe8f2 0%, #fff3f8 40%, #fce8ff 100%);
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 28px 16px;
         }
 
         /* Decorative blobs */
@@ -128,6 +130,7 @@
             min-height: 540px;
             border-radius: 32px;
             overflow: hidden;
+            margin: 10px auto;
             box-shadow:
                 0 4px 6px rgba(240, 101, 149, 0.08),
                 0 20px 60px rgba(240, 101, 149, 0.18),
@@ -214,7 +217,8 @@
             padding: 52px 48px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
+            overflow-y: auto;
         }
 
         .brand-mini {
@@ -359,6 +363,26 @@
             color: var(--rose);
         }
 
+        .helper-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -8px;
+            margin-bottom: 14px;
+        }
+
+        .helper-row a {
+            color: var(--gray-400);
+            font-size: .82rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .helper-row a:hover {
+            color: var(--rose);
+            text-decoration: underline;
+        }
+
         /* ===== SUBMIT BTN ===== */
         .btn-login {
             width: 100%;
@@ -470,6 +494,10 @@
             .login-wrapper {
                 border-radius: 24px;
             }
+
+            body {
+                padding: 16px 10px;
+            }
         }
     </style>
 </head>
@@ -530,6 +558,10 @@
                         <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
                         <i class="bi bi-eye toggle-pw" id="togglePw" title="Hiện/ẩn mật khẩu"></i>
                     </div>
+                </div>
+
+                <div class="helper-row">
+                    <a th:href="@{/forgot-password}" href="/forgot-password">Quên mật khẩu?</a>
                 </div>
 
                 <button type="submit" class="btn-login">

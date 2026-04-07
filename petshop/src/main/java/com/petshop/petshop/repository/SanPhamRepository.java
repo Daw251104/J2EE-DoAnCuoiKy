@@ -15,6 +15,19 @@ import org.springframework.data.repository.query.Param;
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     Optional<SanPham> findByTenSP(String tenSP);
 
-    @Query("SELECT s FROM SanPham s WHERE (:maLoaiTC IS NULL OR s.loaiThuCung.maLoaiTC = :maLoaiTC) AND (:maLoai IS NULL OR s.loaiSanPham.maLoai = :maLoai)")
-    Page<SanPham> locSanPham(@Param("maLoaiTC") Integer maLoaiTC, @Param("maLoai") Integer maLoai, Pageable pageable);
+    @Query("""
+            SELECT s FROM SanPham s
+            WHERE (:maLoaiTC IS NULL OR s.loaiThuCung.maLoaiTC = :maLoaiTC)
+              AND (:maLoai IS NULL OR s.loaiSanPham.maLoai = :maLoai)
+              AND (:tuKhoa IS NULL
+                   OR LOWER(s.tenSP) LIKE LOWER(CONCAT('%', :tuKhoa, '%'))
+                   OR LOWER(COALESCE(s.moTa, '')) LIKE LOWER(CONCAT('%', :tuKhoa, '%')))
+              AND (:chuCai IS NULL OR UPPER(SUBSTRING(TRIM(s.tenSP), 1, 1)) = :chuCai)
+            ORDER BY s.tenSP ASC
+            """)
+    Page<SanPham> locSanPham(@Param("maLoaiTC") Integer maLoaiTC,
+                             @Param("maLoai") Integer maLoai,
+                             @Param("tuKhoa") String tuKhoa,
+                             @Param("chuCai") String chuCai,
+                             Pageable pageable);
 }

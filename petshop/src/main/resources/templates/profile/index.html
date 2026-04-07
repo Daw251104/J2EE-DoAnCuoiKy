@@ -557,6 +557,22 @@
             font-weight: 400;
         }
 
+        .iw .toggle-pw {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            cursor: pointer;
+            font-size: .95rem;
+            transition: color .2s;
+            user-select: none;
+        }
+
+        .iw .toggle-pw:hover {
+            color: var(--rose);
+        }
+
         .iw input.readonly {
             background: var(--gray-200) !important;
             color: var(--gray-400) !important;
@@ -645,6 +661,13 @@
             font-size: 1rem;
             flex-shrink: 0;
             margin-top: 1px;
+        }
+
+        .pw-match {
+            font-size: .78rem;
+            font-weight: 700;
+            margin-top: 6px;
+            color: var(--gray-400);
         }
 
         /* ── Submit button ─── */
@@ -867,16 +890,18 @@
                     <div class="panel-card">
                         <!-- Tab bar -->
                         <div class="tab-bar">
-                            <button class="tab-btn active" onclick="switchTab(this,'tab-info')">
+                            <button type="button" class="tab-btn" th:classappend="${activeTab == 'tab-info'} ? ' active'"
+                                onclick="switchTab(this,'tab-info')">
                                 <i class="bi bi-person-fill"></i> Thông tin cá nhân
                             </button>
-                            <!--<button class="tab-btn" onclick="switchTab(this,'tab-password')">
+                            <button type="button" class="tab-btn" th:classappend="${activeTab == 'tab-password'} ? ' active'"
+                                onclick="switchTab(this,'tab-password')">
                                 <i class="bi bi-lock-fill"></i> Đổi mật khẩu
-                            </button>-->
+                            </button>
                         </div>
 
                         <!-- ─ Tab 1: Info ─ -->
-                        <div id="tab-info" class="tab-content active">
+                        <div id="tab-info" class="tab-content" th:classappend="${activeTab == 'tab-info'} ? ' active'">
                             <div class="card-header-bar">
                                 <div class="ch-icon"><i class="bi bi-pencil-fill"></i></div>
                                 <div>
@@ -887,9 +912,9 @@
                             <div class="card-body">
 
                                 <!-- Alerts -->
-                                <div th:if="${successMessage}" class="alert-box alert-s">
+                                <div th:if="${profileSuccessMessage}" class="alert-box alert-s">
                                     <i class="bi bi-check-circle-fill"></i>
-                                    <span th:text="${successMessage}"></span>
+                                    <span th:text="${profileSuccessMessage}"></span>
                                     <button onclick="this.parentElement.remove()">✕</button>
                                     <script>
                                         // Tự động reload trang sau 1.5s để server kịp đồng bộ ảnh mới
@@ -898,9 +923,9 @@
                                         }, 500);
                                     </script>
                                 </div>
-                                <div th:if="${errorMessage}" class="alert-box alert-e">
+                                <div th:if="${profileErrorMessage}" class="alert-box alert-e">
                                     <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span th:text="${errorMessage}"></span>
+                                    <span th:text="${profileErrorMessage}"></span>
                                     <button onclick="this.parentElement.remove()">✕</button>
                                 </div>
 
@@ -997,8 +1022,8 @@
                             </div>
                         </div>
 
-                        <!-- ─ Tab 2: Password 
-                        <div id="tab-password" class="tab-content">
+                        <!-- ─ Tab 2: Password ─ -->
+                        <div id="tab-password" class="tab-content" th:classappend="${activeTab == 'tab-password'} ? ' active'">
                             <div class="card-header-bar">
                                 <div class="ch-icon"><i class="bi bi-shield-lock-fill"></i></div>
                                 <div>
@@ -1007,66 +1032,65 @@
                                 </div>
                             </div>
                             <div class="card-body">
+                                <div th:if="${passwordSuccessMessage}" class="alert-box alert-s">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span th:text="${passwordSuccessMessage}"></span>
+                                    <button onclick="this.parentElement.remove()">✕</button>
+                                </div>
+                                <div th:if="${passwordErrorMessage}" class="alert-box alert-e">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                    <span th:text="${passwordErrorMessage}"></span>
+                                    <button onclick="this.parentElement.remove()">✕</button>
+                                </div>
+
                                 <div class="pw-tip">
                                     <i class="bi bi-info-circle-fill"></i>
-                                    Mật khẩu mạnh có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.
+                                    Mật khẩu mới nên từ 6 ký tự trở lên và không trùng mật khẩu cũ.
                                 </div>
 
-                        <form th:action="@{/profile/change-password}" method="post">─ -->
-                        <!-- Current password
-                        <div class="fgroup">
-                            <label><i class="bi bi-lock-fill"></i> Mật khẩu hiện tại <span class="req">*</span></label>
-                            <div class="iw">
-                                <i class="bi bi-lock-fill ii"></i>
-                                <input type="password" name="currentPassword" placeholder="Nhập mật khẩu hiện tại"
-                                    required>
+                                <form th:action="@{/profile/change-password}" th:object="${changePasswordRequest}" method="post">
+                                    <div class="fgroup">
+                                        <label><i class="bi bi-lock-fill"></i> Mật khẩu hiện tại <span class="req">*</span></label>
+                                        <div class="iw">
+                                            <i class="bi bi-lock-fill ii"></i>
+                                            <input type="password" th:field="*{currentPassword}" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required>
+                                            <i class="bi bi-eye toggle-pw" onclick="togglePw('currentPassword', this)"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="fgrid">
+                                        <div class="fgroup">
+                                            <label><i class="bi bi-key-fill"></i> Mật khẩu mới <span class="req">*</span></label>
+                                            <div class="iw">
+                                                <i class="bi bi-key-fill ii"></i>
+                                                <input type="password" th:field="*{newPassword}" id="newPassword" placeholder="Nhập mật khẩu mới" required minlength="6" oninput="checkConfirmPassword()">
+                                                <i class="bi bi-eye toggle-pw" onclick="togglePw('newPassword', this)"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="fgroup">
+                                            <label><i class="bi bi-key-fill"></i> Xác nhận mật khẩu mới <span class="req">*</span></label>
+                                            <div class="iw">
+                                                <i class="bi bi-key-fill ii"></i>
+                                                <input type="password" th:field="*{confirmPassword}" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" required minlength="6" oninput="checkConfirmPassword()">
+                                                <i class="bi bi-eye toggle-pw" onclick="togglePw('confirmPassword', this)"></i>
+                                            </div>
+                                            <div class="pw-match" id="pwMatchLabel">Nhập lại mật khẩu mới để xác nhận.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-save">
+                                            <i class="bi bi-shield-check"></i> Cập nhật mật khẩu
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-
-                        <div class="fgrid"> -->
-                        <!-- New password 
-                            <div class="fgroup">
-                                <label><i class="bi bi-key-fill"></i> Mật khẩu mới <span class="req">*</span></label>
-                                <div class="iw">
-                                    <i class="bi bi-key-fill ii"></i>
-                                    <input type="password" name="newPassword" id="newPassword"
-                                        placeholder="Ít nhất 8 ký tự" required oninput="checkPwStrength(this.value)">
-                                </div>-->
-                        <!-- Strength bar 
-                                <div style="display:flex;gap:4px;margin-top:7px;">
-                                    <span id="ps1"
-                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                    <span id="ps2"
-                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                    <span id="ps3"
-                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                    <span id="ps4"
-                                        style="flex:1;height:4px;border-radius:4px;background:var(--gray-200);transition:background .3s;"></span>
-                                </div>
-                                <div class="hint" id="pwsLabel">Nhập mật khẩu để kiểm tra độ mạnh</div>
-                            </div>-->
-                        <!-- Confirm 
-                            <div class="fgroup">
-                                <label><i class="bi bi-key-fill"></i> Xác nhận mật khẩu <span
-                                        class="req">*</span></label>
-                                <div class="iw">
-                                    <i class="bi bi-key-fill ii"></i>
-                                    <input type="password" name="confirmPassword" id="confirmPassword"
-                                        placeholder="Nhập lại mật khẩu mới" required oninput="checkConfirm()">
-                                </div>
-                                <div class="hint" id="confirmLabel"></div>
-                            </div>-->
-                    </div>
-                    </form>
-                </div>
-            </div>
-
         </div><!-- /.panel-card -->
         </div><!-- /.right-panel -->
         </div><!-- /.pg-grid -->
         </div><!-- /.page-wrap -->
-
-    </th:block>
 
     <script>
         /* ── Tab switching ── */
@@ -1103,7 +1127,38 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        function togglePw(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const hidden = input.type === 'password';
+            input.type = hidden ? 'text' : 'password';
+            icon.className = 'bi toggle-pw ' + (hidden ? 'bi-eye-slash' : 'bi-eye');
+        }
+
+        function checkConfirmPassword() {
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const label = document.getElementById('pwMatchLabel');
+            if (!newPassword || !confirmPassword || !label) return;
+
+            if (!confirmPassword.value) {
+                label.textContent = 'Nhập lại mật khẩu mới để xác nhận.';
+                label.style.color = 'var(--gray-400)';
+                return;
+            }
+
+            if (newPassword.value === confirmPassword.value) {
+                label.textContent = 'Mật khẩu xác nhận đã khớp.';
+                label.style.color = '#16a34a';
+                return;
+            }
+
+            label.textContent = 'Mật khẩu xác nhận chưa khớp.';
+            label.style.color = '#dc2626';
+        }
     </script>
+    </th:block>
 </body>
 
 </html>
