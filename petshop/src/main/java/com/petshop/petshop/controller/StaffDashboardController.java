@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/staff")
 @RequiredArgsConstructor
-public class AdminDashboardController {
+public class StaffDashboardController {
 
     private final AdminDashboardService adminDashboardService;
 
@@ -19,7 +19,6 @@ public class AdminDashboardController {
     public String hienThiDashboard(Model model) {
         AdminDashboardSummaryDTO summary = adminDashboardService.layTongQuan();
         model.addAttribute("summary", summary);
-        return "admin/dashboard/index";
+        return "staff/dashboard/index";
     }
 }
-

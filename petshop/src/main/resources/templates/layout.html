@@ -815,12 +815,14 @@
                             class="bi bi-bag-check"></i> Đơn hàng</a></li>
 
                 <!-- Nhân viên / Chủ cửa hàng -->
+                <li sec:authorize="hasAnyAuthority('OWNER', 'STAFF')"><a th:href="@{/staff/dashboard}"><i
+                            class="bi bi-bar-chart-fill"></i>Dashboard</a></li>
                 <li sec:authorize="hasAnyAuthority('OWNER', 'STAFF')"><a th:href="@{/staff/don-hang}"><i
                             class="bi bi-bag-check"></i>Đơn hàng</a></li>
 
                 <!-- Quản trị viên -->
-                <li sec:authorize="hasAnyAuthority('ADMIN', 'QUAN_TRI_VIEN')"><a th:href="@{/admin/dashboard}"><i
-                            class="bi bi-shield-check"></i> Quản trị</a></li>
+                <li sec:authorize="hasAnyAuthority('ADMIN', 'QUAN_TRI_VIEN')"><a th:href="@{/admin/accounts}"><i
+                            class="bi bi-people-fill"></i> Quản trị tài khoản</a></li>
 
                 <!-- Mọi user đã đăng nhập đều xem được hồ sơ -->
                 <li sec:authorize="isAuthenticated()"><a th:href="@{/profile}"><i class="bi bi-person-circle"></i> Hồ
