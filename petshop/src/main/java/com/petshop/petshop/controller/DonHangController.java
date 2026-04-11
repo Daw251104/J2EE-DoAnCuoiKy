@@ -5,9 +5,12 @@ import com.petshop.petshop.dto.GioHangResponse;
 import com.petshop.petshop.dto.ThanhToanRequest;
 import com.petshop.petshop.model.DonHang;
 import com.petshop.petshop.model.PhuongThucThanhToan;
+import com.petshop.petshop.repository.DonHangRepository;
 import com.petshop.petshop.repository.PhuongThucThanhToanRepository;
 import com.petshop.petshop.service.service.DonHangService;
 import com.petshop.petshop.service.service.GioHangService;
+import com.petshop.petshop.service.service.VnPayService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class DonHangController {
@@ -29,6 +34,12 @@ public class DonHangController {
 
     @Autowired
     private PhuongThucThanhToanRepository phuongThucThanhToanRepository;
+
+    @Autowired
+    private VnPayService vnPayService;
+
+    @Autowired
+    private DonHangRepository donHangRepository;
 
     /**
      * Hiển thị trang form thanh toán
@@ -50,14 +61,38 @@ public class DonHangController {
     }
 
     /**
-     * Xử lý đặt hàng
+     * Xử lý đặt hàng — nếu PTTT là VNPay thì redirect sang cổng VNPay
      */
     @PostMapping("/thanh-toan")
     public String datHang(@ModelAttribute ThanhToanRequest request,
                           Principal principal,
+                          HttpServletRequest httpRequest,
                           RedirectAttributes redirectAttributes) {
         try {
             DonHang donHang = donHangService.datHang(principal.getName(), request);
+
+            // Kiểm tra phương thức thanh toán có phải VNPay không
+            PhuongThucThanhToan pttt = donHang.getPhuongThucThanhToan();
+            if (pttt != null && pttt.getTenLoaiTT() != null
+                    && pttt.getTenLoaiTT().toLowerCase().contains("vnpay")) {
+
+                // Lấy IP khách hàng
+                String ipAddr = httpRequest.getHeader("X-Forwarded-For");
+                if (ipAddr == null || ipAddr.isEmpty()) {
+                    ipAddr = httpRequest.getRemoteAddr();
+                }
+
+                // Tổng tiền (convert BigDecimal → long)
+                long amount = donHang.getTongTien().longValue();
+
+                // Tạo URL VNPay
+                String vnpayUrl = vnPayService.generatePaymentUrl(donHang.getMaDH(), amount, ipAddr);
+
+                // Redirect sang cổng VNPay
+                return "redirect:" + vnpayUrl;
+            }
+
+            // Nếu thanh toán COD (tiền mặt) → về trang đơn hàng như cũ
             redirectAttributes.addFlashAttribute("successMessage",
                     "Đặt hàng thành công! Mã đơn hàng của bạn là: #" + donHang.getMaDH());
             return "redirect:/don-hang";
@@ -65,6 +100,41 @@ public class DonHangController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
             return "redirect:/thanh-toan";
         }
+    }
+
+    /**
+     * VNPay Return URL — VNPay redirect khách hàng về đây sau khi thanh toán
+     */
+    @GetMapping("/vnpay-return")
+    public String vnpayReturn(@RequestParam Map<String, String> params,
+                              RedirectAttributes redirectAttributes) {
+        // Verify chữ ký từ VNPay
+        boolean isValid = vnPayService.validateSignature(params);
+        String responseCode = params.get("vnp_ResponseCode");
+        String txnRef = params.get("vnp_TxnRef"); // maDH
+
+        if (isValid && "00".equals(responseCode)) {
+            // Thanh toán thành công — cập nhật đơn hàng
+            try {
+                int maDH = Integer.parseInt(txnRef);
+                DonHang donHang = donHangRepository.findById(maDH).orElse(null);
+                if (donHang != null) {
+                    donHang.setDaThanhToan(1); // Đánh dấu đã thanh toán
+                    donHangRepository.save(donHang);
+                }
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Thanh toán VNPay thành công! Mã đơn hàng: #" + txnRef);
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Thanh toán VNPay thành công! Mã đơn hàng: #" + txnRef);
+            }
+        } else {
+            // Thanh toán thất bại
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Thanh toán VNPay thất bại! Mã lỗi: " + responseCode);
+        }
+
+        return "redirect:/don-hang";
     }
 
     /**

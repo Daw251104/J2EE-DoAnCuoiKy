@@ -763,8 +763,19 @@
                                     th:for="'pttt-' + ${pttt.maLoaiTT}">
                                     <input type="radio" th:id="'pttt-' + ${pttt.maLoaiTT}" th:value="${pttt.maLoaiTT}"
                                         th:field="*{maLoaiTT}" th:checked="${iterStat.first}" required>
-                                    <div class="pttt-icon">💳</div>
-                                    <span class="pttt-label" th:text="${pttt.tenLoaiTT}">Thanh toán</span>
+                                    <div class="pttt-icon"
+                                        th:style="${#strings.containsIgnoreCase(pttt.tenLoaiTT, 'vnpay')} ? 'background:linear-gradient(135deg,#1a73e8,#0d47a1)' : ''">
+                                        <span th:if="${#strings.containsIgnoreCase(pttt.tenLoaiTT, 'vnpay')}">💳</span>
+                                        <span th:if="${#strings.containsIgnoreCase(pttt.tenLoaiTT, 'mặt') or #strings.containsIgnoreCase(pttt.tenLoaiTT, 'cod')}">💵</span>
+                                        <span th:unless="${#strings.containsIgnoreCase(pttt.tenLoaiTT, 'vnpay') or #strings.containsIgnoreCase(pttt.tenLoaiTT, 'mặt') or #strings.containsIgnoreCase(pttt.tenLoaiTT, 'cod')}">💳</span>
+                                    </div>
+                                    <div>
+                                        <span class="pttt-label" th:text="${pttt.tenLoaiTT}">Thanh toán</span>
+                                        <div th:if="${#strings.containsIgnoreCase(pttt.tenLoaiTT, 'vnpay')}"
+                                            style="font-size:.72rem;color:var(--gray-400);font-weight:600;margin-top:2px;">
+                                            Chuyển hướng sang cổng VNPay
+                                        </div>
+                                    </div>
                                 </label>
                                 <!-- Fallback -->
                                 <div th:if="${dsPTTT.empty}"
