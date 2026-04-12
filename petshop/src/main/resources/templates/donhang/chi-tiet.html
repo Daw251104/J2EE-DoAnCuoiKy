@@ -618,12 +618,12 @@
                                             đang chờ cửa hàng xác nhận</div>
                                     </div>
                                 </div>
-                                <div th:case="'DA_XAC_NHAN'" class="status-banner sb-xacnhan">
-                                    <span class="sb-ico">✅</span>
+                                <div th:case="'CHO_GIAO_HANG'" class="status-banner sb-xacnhan">
+                                    <span class="sb-ico">📦</span>
                                     <div>
-                                        <div>Đã xác nhận</div>
+                                        <div>Chờ giao hàng</div>
                                         <div style="font-size:.75rem;opacity:.7;font-weight:500;margin-top:2px">Cửa hàng
-                                            đã xác nhận đơn hàng của bạn</div>
+                                            đã xác nhận đơn và đang chuẩn bị giao cho bạn</div>
                                     </div>
                                 </div>
                                 <div th:case="'DANG_GIAO'" class="status-banner sb-giao">
@@ -700,6 +700,16 @@
                                         <i class="bi bi-x-circle-fill"></i> Xác nhận hủy đơn
                                     </button>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dcard" th:if="${donHang.trangThai == 'CHO_GIAO_HANG'}">
+                        <div class="dcard-body">
+                            <div class="action-box ab-delivery">
+                                <div class="ab-title" style="color:#1d4ed8;">📦 Đơn hàng đang chờ giao</div>
+                                <div class="ab-desc" style="color:#1e3a8a;">PetShop đã xác nhận đơn hàng của bạn. Staff hoặc
+                                    owner sẽ chuyển đơn sang trạng thái đang giao khi bắt đầu giao hàng.</div>
                             </div>
                         </div>
                     </div>
