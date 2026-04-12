@@ -11,10 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
 public class DonHangService {
+
+    public static final String TRANG_THAI_CHO_XAC_NHAN = "CHO_XAC_NHAN";
+    public static final String TRANG_THAI_CHO_GIAO_HANG = "CHO_GIAO_HANG";
+    public static final String TRANG_THAI_DANG_GIAO = "DANG_GIAO";
+    public static final String TRANG_THAI_DA_GIAO = "DA_GIAO";
+    public static final String TRANG_THAI_DA_HUY = "DA_HUY";
 
     @Autowired
     private DonHangRepository donHangRepository;
@@ -51,6 +58,8 @@ public class DonHangService {
                 .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ!"));
 
         // Tính tổng tiền
+        boolean thanhToanOnline = laThanhToanOnline(phuongThuc);
+
         BigDecimal tongTien = gioHangItems.stream()
                 .map(gh -> {
                     BigDecimal gia = gh.getSanPham().getGiaBan();
@@ -70,7 +79,7 @@ public class DonHangService {
         donHang.setSdtNguoiNhan(request.getSdtNguoiNhan());
         donHang.setDiaChiNhanHang(request.getDiaChiNhanHang());
         donHang.setTongTien(tongTien);
-        donHang.setTrangThai("CHO_XAC_NHAN");
+        donHang.setTrangThai(thanhToanOnline ? TRANG_THAI_CHO_GIAO_HANG : TRANG_THAI_CHO_XAC_NHAN);
         donHang.setDaThanhToan(0);
         donHang.setKhachHang(taiKhoan);
         donHang.setPhuongThucThanhToan(phuongThuc);
@@ -165,14 +174,31 @@ public class DonHangService {
         DonHang donHang = donHangRepository.findById(maDH)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng: " + maDH));
 
-        if (!"CHO_XAC_NHAN".equals(donHang.getTrangThai())) {
+        if (!TRANG_THAI_CHO_XAC_NHAN.equals(donHang.getTrangThai())) {
             throw new RuntimeException("Đơn hàng không ở trạng thái chờ xác nhận!");
         }
 
         TaiKhoan staff = userRepository.findByUsername(staffUsername)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản staff"));
 
-        donHang.setTrangThai("DANG_GIAO");
+        donHang.setTrangThai(TRANG_THAI_CHO_GIAO_HANG);
+        donHang.setNguoiXuLy(staff);
+        donHangRepository.save(donHang);
+    }
+
+    @Transactional
+    public void xacNhanGiaoHang(Integer maDH, String staffUsername) {
+        DonHang donHang = donHangRepository.findById(maDH)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay don hang: " + maDH));
+
+        if (!TRANG_THAI_CHO_GIAO_HANG.equals(donHang.getTrangThai())) {
+            throw new RuntimeException("Don hang chua o trang thai cho giao hang!");
+        }
+
+        TaiKhoan staff = userRepository.findByUsername(staffUsername)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay tai khoan staff"));
+
+        donHang.setTrangThai(TRANG_THAI_DANG_GIAO);
         donHang.setNguoiXuLy(staff);
         donHangRepository.save(donHang);
     }
@@ -185,14 +211,14 @@ public class DonHangService {
         DonHang donHang = donHangRepository.findById(maDH)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng: " + maDH));
 
-        if (!"CHO_XAC_NHAN".equals(donHang.getTrangThai())) {
+        if (!TRANG_THAI_CHO_XAC_NHAN.equals(donHang.getTrangThai())) {
             throw new RuntimeException("Đơn hàng không ở trạng thái chờ xác nhận!");
         }
 
         TaiKhoan staff = userRepository.findByUsername(staffUsername)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản staff"));
 
-        donHang.setTrangThai("DA_HUY");
+        donHang.setTrangThai(TRANG_THAI_DA_HUY);
         donHang.setNguoiXuLy(staff);
         donHangRepository.save(donHang);
     }
@@ -211,11 +237,11 @@ public class DonHangService {
             throw new RuntimeException("Bạn không có quyền cập nhật đơn hàng này!");
         }
 
-        if (!"DANG_GIAO".equals(donHang.getTrangThai())) {
+        if (!TRANG_THAI_DANG_GIAO.equals(donHang.getTrangThai())) {
             throw new RuntimeException("Đơn hàng chưa ở trạng thái đang giao!");
         }
 
-        donHang.setTrangThai("DA_GIAO");
+        donHang.setTrangThai(TRANG_THAI_DA_GIAO);
         donHang.setDaThanhToan(1);
         
         // Giảm số lượng tồn kho của từng sản phẩm trong đơn hàng
@@ -246,11 +272,42 @@ public class DonHangService {
             throw new RuntimeException("Bạn không có quyền cập nhật đơn hàng này!");
         }
 
-        if (!"CHO_XAC_NHAN".equals(donHang.getTrangThai())) {
+        if (!TRANG_THAI_CHO_XAC_NHAN.equals(donHang.getTrangThai())) {
             throw new RuntimeException("Đơn hàng không ở trạng thái chờ xác nhận, không thể hủy!");
         }
 
-        donHang.setTrangThai("DA_HUY");
+        donHang.setTrangThai(TRANG_THAI_DA_HUY);
         donHangRepository.save(donHang);
+    }
+
+    @Transactional
+    public void capNhatThanhToanVnPay(Integer maDH, boolean thanhCong) {
+        DonHang donHang = donHangRepository.findById(maDH)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay don hang: " + maDH));
+
+        if (!laThanhToanOnline(donHang.getPhuongThucThanhToan())) {
+            return;
+        }
+
+        if (thanhCong) {
+            donHang.setDaThanhToan(1);
+            if (!TRANG_THAI_DANG_GIAO.equals(donHang.getTrangThai())
+                    && !TRANG_THAI_DA_GIAO.equals(donHang.getTrangThai())) {
+                donHang.setTrangThai(TRANG_THAI_CHO_GIAO_HANG);
+            }
+        } else if ((donHang.getDaThanhToan() == null || donHang.getDaThanhToan() == 0)
+                && !TRANG_THAI_DA_GIAO.equals(donHang.getTrangThai())) {
+            donHang.setTrangThai(TRANG_THAI_DA_HUY);
+        }
+
+        donHangRepository.save(donHang);
+    }
+
+    private boolean laThanhToanOnline(PhuongThucThanhToan phuongThuc) {
+        if (phuongThuc == null || phuongThuc.getTenLoaiTT() == null) {
+            return false;
+        }
+        String tenLoaiTT = phuongThuc.getTenLoaiTT().toLowerCase(Locale.ROOT);
+        return tenLoaiTT.contains("vnpay") || tenLoaiTT.contains("online");
     }
 }

@@ -5,7 +5,6 @@ import com.petshop.petshop.dto.GioHangResponse;
 import com.petshop.petshop.dto.ThanhToanRequest;
 import com.petshop.petshop.model.DonHang;
 import com.petshop.petshop.model.PhuongThucThanhToan;
-import com.petshop.petshop.repository.DonHangRepository;
 import com.petshop.petshop.repository.PhuongThucThanhToanRepository;
 import com.petshop.petshop.service.service.DonHangService;
 import com.petshop.petshop.service.service.GioHangService;
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +35,6 @@ public class DonHangController {
 
     @Autowired
     private VnPayService vnPayService;
-
-    @Autowired
-    private DonHangRepository donHangRepository;
 
     /**
      * Hiển thị trang form thanh toán
@@ -97,7 +92,7 @@ public class DonHangController {
                     "Đặt hàng thành công! Mã đơn hàng của bạn là: #" + donHang.getMaDH());
             return "redirect:/don-hang";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Loi: " + e.getMessage());
             return "redirect:/thanh-toan";
         }
     }
@@ -117,11 +112,13 @@ public class DonHangController {
             // Thanh toán thành công — cập nhật đơn hàng
             try {
                 int maDH = Integer.parseInt(txnRef);
-                DonHang donHang = donHangRepository.findById(maDH).orElse(null);
+                donHangService.capNhatThanhToanVnPay(maDH, true);
+                /*
                 if (donHang != null) {
                     donHang.setDaThanhToan(1); // Đánh dấu đã thanh toán
                     donHangRepository.save(donHang);
                 }
+                */
                 redirectAttributes.addFlashAttribute("successMessage",
                         "Thanh toán VNPay thành công! Mã đơn hàng: #" + txnRef);
             } catch (Exception e) {
@@ -130,6 +127,12 @@ public class DonHangController {
             }
         } else {
             // Thanh toán thất bại
+            try {
+                if (txnRef != null && !txnRef.isBlank()) {
+                    donHangService.capNhatThanhToanVnPay(Integer.parseInt(txnRef), false);
+                }
+            } catch (NumberFormatException ignored) {
+            }
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Thanh toán VNPay thất bại! Mã lỗi: " + responseCode);
         }
@@ -206,6 +209,7 @@ public class DonHangController {
         
         // Tính toán thống kê trên server
         long choXacNhan = tatCa.stream().filter(d -> "CHO_XAC_NHAN".equals(d.getTrangThai())).count();
+        long choGiaoHang = tatCa.stream().filter(d -> "CHO_GIAO_HANG".equals(d.getTrangThai())).count();
         long dangGiao = tatCa.stream().filter(d -> "DANG_GIAO".equals(d.getTrangThai())).count();
         long daGiao = tatCa.stream().filter(d -> "DA_GIAO".equals(d.getTrangThai())).count();
         long daHuy = tatCa.stream().filter(d -> "DA_HUY".equals(d.getTrangThai())).count();
@@ -214,6 +218,7 @@ public class DonHangController {
         
         model.addAttribute("donHangs", donHangs);
         model.addAttribute("countChoXacNhan", choXacNhan);
+        model.addAttribute("countChoGiaoHang", choGiaoHang);
         model.addAttribute("countDangGiao", dangGiao);
         model.addAttribute("countDaGiao", daGiao);
         model.addAttribute("countDaHuy", daHuy);
@@ -248,9 +253,22 @@ public class DonHangController {
                                  RedirectAttributes redirectAttributes) {
         try {
             donHangService.xacNhanDonHang(maDH, principal.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận đơn hàng #" + maDH + " → Đang giao!");
+            redirectAttributes.addFlashAttribute("successMessage", "Da xac nhan don hang #" + maDH + " -> Cho giao hang!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+        }
+        return "redirect:/staff/don-hang";
+    }
+
+    @PostMapping("/staff/don-hang/{maDH}/xac-nhan-giao")
+    public String xacNhanGiaoHang(@PathVariable Integer maDH,
+                                  Principal principal,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            donHangService.xacNhanGiaoHang(maDH, principal.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Da chuyen don hang #" + maDH + " sang Dang giao!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lá»—i: " + e.getMessage());
         }
         return "redirect:/staff/don-hang";
     }

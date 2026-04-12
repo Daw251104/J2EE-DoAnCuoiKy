@@ -615,6 +615,13 @@
                                             chờ nhân viên xử lý</div>
                                     </div>
                                 </div>
+                                <div th:case="'CHO_GIAO_HANG'" class="sban sban-giao"><span class="sban-ico">📦</span>
+                                    <div>
+                                        <div>Chờ giao hàng</div>
+                                        <div style="font-size:.74rem;opacity:.75;font-weight:500;margin-top:2px">Đơn
+                                            hàng đã duyệt và đang chờ bắt đầu giao</div>
+                                    </div>
+                                </div>
                                 <div th:case="'DANG_GIAO'" class="sban sban-giao"><span class="sban-ico">🚚</span>
                                     <div>
                                         <div>Đang giao hàng</div>
@@ -698,7 +705,7 @@
                                         method="post">
                                         <button type="submit" class="btn-approve"
                                             onclick="return confirm('Xác nhận duyệt đơn hàng này?')">
-                                            <i class="bi bi-check2-circle"></i> Xác nhận – Chuyển sang Đang Giao
+                                            <i class="bi bi-check2-circle"></i> Xác nhận – Chuyển sang Chờ giao hàng
                                         </button>
                                     </form>
                                     <form th:action="@{/staff/don-hang/{id}/tu-choi(id=${donHang.maDH})}" method="post">
@@ -709,8 +716,22 @@
                                     </form>
                                 </div>
                             </div>
+                            <div th:if="${donHang.trangThai == 'CHO_GIAO_HANG'}">
+                                <div class="action-panel">
+                                    <div class="ap-title"><i class="bi bi-truck"></i> Sẵn sàng giao hàng</div>
+                                    <div class="ap-desc">Đơn hàng này đã được xác nhận. Khi staff hoặc owner bắt đầu giao,
+                                        hãy chuyển đơn sang trạng thái đang giao.</div>
+                                    <form th:action="@{/staff/don-hang/{id}/xac-nhan-giao(id=${donHang.maDH})}"
+                                        method="post">
+                                        <button type="submit" class="btn-approve"
+                                            onclick="return confirm('Xác nhận bắt đầu giao đơn hàng này?')">
+                                            <i class="bi bi-truck"></i> Xác nhận – Chuyển sang Đang giao
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                             <!-- Locked state -->
-                            <div th:unless="${donHang.trangThai == 'CHO_XAC_NHAN'}" class="locked-card">
+                            <div th:unless="${donHang.trangThai == 'CHO_XAC_NHAN' or donHang.trangThai == 'CHO_GIAO_HANG'}" class="locked-card">
                                 <i class="bi bi-lock-fill"></i>
                                 <p>Đơn hàng đã qua giai đoạn chờ xác nhận.<br>Không thể thực hiện thao tác.</p>
                             </div>
