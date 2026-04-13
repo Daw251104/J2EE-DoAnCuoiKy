@@ -1294,8 +1294,8 @@
                             <i class="bi bi-trash-fill"></i> Xóa
                         </a>
                         <!-- Customer -->
-                        <form sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')" th:action="@{/gio-hang/them}"
-                            method="post" style="flex:1;">
+                        <form sec:authorize="hasAnyAuthority('CUSTOMER','KHACH_HANG')" th:action="@{/gio-hang/api/them}"
+                            method="post" style="flex:1;" onsubmit="addToCartAjax(event, this)">
                             <input type="hidden" name="maSP" th:value="${sp.maSP}">
                             <input type="hidden" name="soLuong" value="1">
                             <button type="submit" class="abtn ab-cart"
@@ -1671,6 +1671,45 @@
                     toggleQuickViewAutoPlay();
                 }
             });
+
+            function addToCartAjax(event, form) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang thêm...';
+                
+                // Fetch to the api endpoint automatically taking the CSRF token from formData
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(async res => {
+                    const text = await res.text();
+                    if (res.ok) return Number(text);
+                    throw new Error(text || 'Bạn cần đăng nhập hoặc có lỗi xảy ra');
+                })
+                .then(newCount => {
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount(newCount);
+                    }
+                    submitBtn.innerHTML = '<i class="bi bi-check2"></i> Đã thêm';
+                    submitBtn.classList.replace('ab-cart', 'ab-edit');
+                    
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.classList.replace('ab-edit', 'ab-cart');
+                    }, 1500);
+                })
+                .catch(error => {
+                    alert(error.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
+            }
         </script>
 
     </th:block>

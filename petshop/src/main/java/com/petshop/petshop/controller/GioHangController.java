@@ -49,7 +49,7 @@ public class GioHangController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
-        return "redirect:/gio-hang";
+        return "redirect:/sanpham";
     }
 
     /**
@@ -83,5 +83,47 @@ public class GioHangController {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
         return "redirect:/gio-hang";
+    }
+
+    /**
+     * API: Lấy số lượng giỏ hàng
+     */
+    @GetMapping("/api/count")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> getCartCount(Principal principal) {
+        if (principal == null) return org.springframework.http.ResponseEntity.ok(0);
+        try {
+            List<GioHangResponse> items = gioHangService.layGioHang(principal.getName());
+            int total = items.stream().mapToInt(GioHangResponse::getSoLuong).sum();
+            return org.springframework.http.ResponseEntity.ok(total);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.ok(0);
+        }
+    }
+
+    /**
+     * API: Thêm vào giỏ hàng qua AJAX
+     */
+    @PostMapping("/api/them")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> themVaoGioHangApi(@RequestParam Integer maSP,
+                                 @RequestParam(defaultValue = "1") Integer soLuong,
+                                 Principal principal) {
+        try {
+            if (principal == null) {
+                return org.springframework.http.ResponseEntity.status(401).body("Vui lòng đăng nhập");
+            }
+            GioHangRequest request = new GioHangRequest();
+            request.setMaSP(maSP);
+            request.setSoLuong(soLuong);
+            gioHangService.themVaoGioHang(principal.getName(), request);
+            
+            // Trả về số lượng mới nhất
+            List<GioHangResponse> items = gioHangService.layGioHang(principal.getName());
+            int total = items.stream().mapToInt(GioHangResponse::getSoLuong).sum();
+            return org.springframework.http.ResponseEntity.ok(total);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
